@@ -6,12 +6,21 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibCG", "LibCG.vcxproj", "{BDBD9457-DC7A-43E3-AD77-C005ED27CFFF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloTriangle", "Samples\HelloTriangle\HelloTriangle.vcxproj", "{CA4D06BC-5E13-479A-B49C-A1593CC38D1A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BDBD9457-DC7A-43E3-AD77-C005ED27CFFF} = {BDBD9457-DC7A-43E3-AD77-C005ED27CFFF}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{F57D13AB-FED7-4400-A49E-917D3574134E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloCube", "Samples\HelloCube\HelloCube.vcxproj", "{84D942DE-EE05-4BDE-B6ED-F33CDAB6DC56}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BDBD9457-DC7A-43E3-AD77-C005ED27CFFF} = {BDBD9457-DC7A-43E3-AD77-C005ED27CFFF}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloTexture", "Samples\HelloTexture\HelloTexture.vcxproj", "{04317966-4851-42F7-88DD-304259775507}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BDBD9457-DC7A-43E3-AD77-C005ED27CFFF} = {BDBD9457-DC7A-43E3-AD77-C005ED27CFFF}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
