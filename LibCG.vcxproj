@@ -179,6 +179,7 @@
     <ClInclude Include="Source\Gfx\Core\CMesh.hpp" />
     <ClInclude Include="Source\Gfx\Core\CRendererState.hpp" />
     <ClInclude Include="Source\Gfx\Core\CSwapChain.hpp" />
+    <ClInclude Include="Source\Gfx\Core\CTexture.hpp" />
     <ClInclude Include="Source\Gfx\Core\CVertexBuffer.hpp" />
     <ClInclude Include="Source\Gfx\Core\EnumTranslator.hpp" />
     <ClInclude Include="Source\Math\CMath.hpp" />
@@ -197,6 +198,7 @@
     <ClCompile Include="Source\Gfx\Core\CMesh.cpp" />
     <ClCompile Include="Source\Gfx\Core\CRendererState.cpp" />
     <ClCompile Include="Source\Gfx\Core\CSwapChain.cpp" />
+    <ClCompile Include="Source\Gfx\Core\CTexture.cpp" />
     <ClCompile Include="Source\Gfx\Core\CVertexBuffer.cpp" />
     <ClCompile Include="Source\Gfx\Core\EnumTranslator.cpp" />
     <ClCompile Include="Source\Math\CMath.cpp" />

@@ -89,6 +89,9 @@
     <ClInclude Include="Source\System\CConsole.hpp">
       <Filter>Source Files\System</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\CTexture.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Cg.cpp">
@@ -138,6 +141,9 @@
     </ClCompile>
     <ClCompile Include="Source\System\CConsole.cpp">
       <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\CTexture.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
