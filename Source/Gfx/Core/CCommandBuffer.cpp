@@ -167,6 +167,7 @@ void CCommandBuffer::ProgramPipeline(IRendererState* pIRendererState)
 			m_pID3D12CommandList->SetGraphicsRootSignature(pRendererState->GetD3D12RootSignature());
 			m_pID3D12CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // TODO: Remove this hard coded primitive type
 			m_pID3D12CommandList->SetDescriptorHeaps(_countof(pHeaps), pHeaps); // TODO: Perhaps remove this unnecessary call - its only needed once
+			m_pID3D12CommandList->SetGraphicsRootDescriptorTable(1, pRendererState->GetShaderResourceHeap()->GetGPUDescriptorHandleForHeapStart());
 		}
 		else
 		{

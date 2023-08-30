@@ -5,12 +5,12 @@
 
 #include <vector>
 
-const wchar_t* WINDOW_CLASS = L"HelloTriangle";
-const wchar_t* WINDOW_TITLE = L"Hello Triangle";
+const wchar_t* WINDOW_CLASS = L"HelloTexture";
+const wchar_t* WINDOW_TITLE = L"Hello Texture";
 const uint32_t WINDOW_HEIGHT  = 512;
 const uint32_t WINDOW_WIDTH   = 512;
 
-class HelloTriangle
+class HelloTexture
 {
 private:
 	IWindow*        m_pIWindow;
@@ -18,17 +18,19 @@ private:
 	IRendererState* m_pIRendererState;
 	IMesh*          m_pIMesh;
 	ICommandBuffer* m_pIGraphicsCommandBuffer;
+	ITexture*       m_pITexture;
 
 	const float     m_ClearColor[4] = { 0, 0, 0, 0 };
 
 public:
-	HelloTriangle()
+	HelloTexture()
 	{
 		m_pIWindow = nullptr;
 		m_pIGfxContext = nullptr;
 		m_pIRendererState = nullptr;
 		m_pIMesh = nullptr;
 		m_pIGraphicsCommandBuffer = nullptr;
+		m_pITexture = nullptr;
 	}
 
 	bool Initialize(void)
@@ -142,6 +144,35 @@ public:
 			}
 		}
 
+		if (status)
+		{
+			byte TextureData[256][256][4];
+			for (uint32_t x = 0; x < 256; x++)
+			{
+				for (uint32_t y = 0; y < 256; y++)
+				{
+					TextureData[x][y][0] = 255;
+					TextureData[x][y][1] =   0;
+					TextureData[x][y][2] =   0;
+					TextureData[x][y][3] = 255;
+				}
+			}
+
+			TEXTURE_DESC TextureDesc = {};
+			TextureDesc.Width = 256;
+			TextureDesc.Height = 256;
+			TextureDesc.pTextureData = &TextureData[0][0][0];
+			TextureDesc.TextureDataSize = sizeof(TextureData);
+
+			m_pITexture = m_pIGfxContext->CreateTexture(TextureDesc);
+
+			if (m_pITexture == nullptr)
+			{
+				status = false;
+				Console::Write(L"Error: could not create texture\n");
+			}
+		}
+
 		if (!status)
 		{
 			Uninitialize();
@@ -152,6 +183,12 @@ public:
 
 	void Uninitialize(void)
 	{
+		if (m_pITexture != nullptr)
+		{
+			m_pIGfxContext->DestroyTexture(m_pITexture);
+			m_pITexture = nullptr;
+		}
+
 		if (m_pIMesh != nullptr)
 		{
 			m_pIGfxContext->DestroyMesh(m_pIMesh);
@@ -255,22 +292,22 @@ int32_t CgMain(int32_t argc, const wchar_t* argv[])
 
 	Console::Write(L"Hello Triangle!\n");
 
-	HelloTriangle hello_triangle;
+	HelloTexture hello_texture;
 
-	if (!hello_triangle.Initialize())
+	if (!hello_texture.Initialize())
 	{
 		status = STATUS::UNSUCCESSFUL;
 	}
 
 	if (status == STATUS::SUCCESS)
 	{
-		if (!hello_triangle.Run())
+		if (!hello_texture.Run())
 		{
 			status = STATUS::UNSUCCESSFUL;
 		}
 	}
 
-	hello_triangle.Uninitialize();
+	hello_texture.Uninitialize();
 
 	if (status == STATUS::SUCCESS)
 	{

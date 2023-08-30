@@ -14,6 +14,7 @@
 #include "CMesh.hpp"
 #include "CRendererState.hpp"
 #include "CSwapChain.hpp"
+#include "CTexture.hpp"
 #include "CVertexBuffer.hpp"
 #include "CWindow.hpp"
 
@@ -907,17 +908,45 @@ IRendererState* CGfxContext::CreateRendererState(const RENDERER_STATE_DESC& rDes
 		Flags |= D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS;
 		Flags |= D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS;
 
-		D3D12_ROOT_PARAMETER RootParameter = {};
-		RootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-		RootParameter.Descriptor.RegisterSpace = 0;
-		RootParameter.Descriptor.ShaderRegister = 0;
-		RootParameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+		D3D12_DESCRIPTOR_RANGE DescriptorTable0 = {};
+		DescriptorTable0.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		DescriptorTable0.NumDescriptors = 1;
+		DescriptorTable0.BaseShaderRegister = 0;
+		DescriptorTable0.RegisterSpace = 0;
+		DescriptorTable0.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+		D3D12_ROOT_PARAMETER RootParameters[2] = {};
+
+		RootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+		RootParameters[0].Descriptor.RegisterSpace = 0;
+		RootParameters[0].Descriptor.ShaderRegister = 0;
+		RootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
+		RootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		RootParameters[1].DescriptorTable.NumDescriptorRanges = 1;
+		RootParameters[1].DescriptorTable.pDescriptorRanges = &DescriptorTable0;
+		RootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+		D3D12_STATIC_SAMPLER_DESC TextureSampler = {};
+        TextureSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+        TextureSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        TextureSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        TextureSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        TextureSampler.MipLODBias = 0;
+        TextureSampler.MaxAnisotropy = 0;
+        TextureSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+        TextureSampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+        TextureSampler.MinLOD = 0.0f;
+        TextureSampler.MaxLOD = D3D12_FLOAT32_MAX;
+        TextureSampler.ShaderRegister = 0;
+        TextureSampler.RegisterSpace = 0;
+        TextureSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 		D3D12_ROOT_SIGNATURE_DESC Desc = { };
-		Desc.NumParameters = 1;
-		Desc.pParameters = &RootParameter;
-		Desc.NumStaticSamplers = 0;
-		Desc.pStaticSamplers = nullptr;
+		Desc.NumParameters = 2;
+		Desc.pParameters = RootParameters;
+		Desc.NumStaticSamplers = 1;
+		Desc.pStaticSamplers = &TextureSampler;
 		Desc.Flags = Flags;
 
 		ID3DBlob* pSignature = nullptr;
