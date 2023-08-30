@@ -73,6 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)\Build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)\Build\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>CG.lib</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

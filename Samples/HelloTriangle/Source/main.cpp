@@ -1,7 +1,7 @@
 
-#include <Wdk.hpp>
-#include <WdkGfx.hpp>
-#include <WdkSystem.hpp>
+#include <Cg.hpp>
+#include <CgGfx.hpp>
+#include <CgSystem.hpp>
 
 #include <vector>
 

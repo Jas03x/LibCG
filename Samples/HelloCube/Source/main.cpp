@@ -1,8 +1,8 @@
 
-#include <Wdk.hpp>
-#include <WdkGfx.hpp>
-#include "WdkMath.hpp"
-#include <WdkSystem.hpp>
+#include <Cg.hpp>
+#include <CgGfx.hpp>
+#include "CgMath.hpp"
+#include <CgSystem.hpp>
 
 #include "Windows.h"
 
