@@ -1517,12 +1517,25 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 		TextureBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
         TextureBufferDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
+		D3D12_RESOURCE_DESC TextureBufferUploadDesc = {};
+		TextureBufferUploadDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+		TextureBufferUploadDesc.Alignment = 0;
+		TextureBufferUploadDesc.Width = rDesc.Width;
+		TextureBufferUploadDesc.Height = 1;
+		TextureBufferUploadDesc.DepthOrArraySize = 1;
+		TextureBufferUploadDesc.MipLevels = 1;
+		TextureBufferUploadDesc.Format = DXGI_FORMAT_UNKNOWN;
+		TextureBufferUploadDesc.SampleDesc.Count = 1;
+		TextureBufferUploadDesc.SampleDesc.Quality = 0;
+		TextureBufferUploadDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+		TextureBufferUploadDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
 		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12PrimaryHeap, 0, &TextureBufferDesc, D3D12_RESOURCE_STATE_COPY_DEST, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12TextureBuffer)) != S_OK)
 		{
 			status = false;
 		}
 
-		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12UploadHeap, 0, &TextureBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12TextureDataUploadBuffer)) != S_OK)
+		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12UploadHeap, 0, &TextureBufferUploadDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12TextureDataUploadBuffer)) != S_OK)
 		{
 			status = false;
 		}
