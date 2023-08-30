@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{bdbd9457-dc7a-43e3-ad77-c005ed27cfff}</ProjectGuid>
-    <RootNamespace>LibCG</RootNamespace>
+    <ProjectGuid>{04317966-4851-42f7-88dd-304259775507}</ProjectGuid>
+    <RootNamespace>HelloTexture</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -40,7 +40,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -109,7 +109,6 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Include;$(SolutionDir)\Source\Gfx\2D;$(SolutionDir)\Source\Gfx\3D;$(SolutionDir)\Source\Gfx\Core;$(SolutionDir)\Source\Math;$(SolutionDir)\Source\System;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,44 +132,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Cg.hpp" />
-    <ClInclude Include="Include\CgDef.hpp" />
-    <ClInclude Include="Include\CgGfx.hpp" />
-    <ClInclude Include="Include\CgMath.hpp" />
-    <ClInclude Include="Include\CgSystem.hpp" />
-    <ClInclude Include="Source\Gfx\Core\CCommandBuffer.hpp" />
-    <ClInclude Include="Source\Gfx\Core\CCommandQueue.hpp" />
-    <ClInclude Include="Source\Gfx\Core\CConstantBuffer.hpp" />
-    <ClInclude Include="Source\Gfx\Core\CGfxDevice.hpp" />
-    <ClInclude Include="Source\Gfx\Core\CMesh.hpp" />
-    <ClInclude Include="Source\Gfx\Core\CRendererState.hpp" />
-    <ClInclude Include="Source\Gfx\Core\CSwapChain.hpp" />
-    <ClInclude Include="Source\Gfx\Core\CVertexBuffer.hpp" />
-    <ClInclude Include="Source\Gfx\Core\EnumTranslator.hpp" />
-    <ClInclude Include="Source\Math\CMath.hpp" />
-    <ClInclude Include="Source\System\CConsole.hpp" />
-    <ClInclude Include="Source\System\CFile.hpp" />
-    <ClInclude Include="Source\System\CMemory.hpp" />
-    <ClInclude Include="Source\System\CSystem.hpp" />
-    <ClInclude Include="Source\System\CWindow.hpp" />
+    <ClCompile Include="Source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Cg.cpp" />
-    <ClCompile Include="Source\Gfx\Core\CCommandBuffer.cpp" />
-    <ClCompile Include="Source\Gfx\Core\CCommandQueue.cpp" />
-    <ClCompile Include="Source\Gfx\Core\CConstantBuffer.cpp" />
-    <ClCompile Include="Source\Gfx\Core\CGfxDevice.cpp" />
-    <ClCompile Include="Source\Gfx\Core\CMesh.cpp" />
-    <ClCompile Include="Source\Gfx\Core\CRendererState.cpp" />
-    <ClCompile Include="Source\Gfx\Core\CSwapChain.cpp" />
-    <ClCompile Include="Source\Gfx\Core\CVertexBuffer.cpp" />
-    <ClCompile Include="Source\Gfx\Core\EnumTranslator.cpp" />
-    <ClCompile Include="Source\Math\CMath.cpp" />
-    <ClCompile Include="Source\System\CConsole.cpp" />
-    <ClCompile Include="Source\System\CFile.cpp" />
-    <ClCompile Include="Source\System\CMemory.cpp" />
-    <ClCompile Include="Source\System\CSystem.cpp" />
-    <ClCompile Include="Source\System\CWindow.cpp" />
+    <FxCompile Include="Shaders\PixelShader.hlsl" />
+    <FxCompile Include="Shaders\VertexShader.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
