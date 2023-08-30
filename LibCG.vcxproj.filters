@@ -50,7 +50,7 @@
     <ClInclude Include="Source\Gfx\Core\CConstantBuffer.hpp">
       <Filter>Source Files\Gfx\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Gfx\Core\CGfxDevice.hpp">
+    <ClInclude Include="Source\Gfx\Core\CGfxContext.hpp">
       <Filter>Source Files\Gfx\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Gfx\Core\CMesh.hpp">
@@ -100,7 +100,7 @@
     <ClCompile Include="Source\Gfx\Core\CConstantBuffer.cpp">
       <Filter>Source Files\Gfx\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Gfx\Core\CGfxDevice.cpp">
+    <ClCompile Include="Source\Gfx\Core\CGfxContext.cpp">
       <Filter>Source Files\Gfx\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Gfx\Core\CMesh.cpp">

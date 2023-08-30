@@ -1,4 +1,4 @@
-#include "CGfxDevice.hpp"
+#include "CGfxContext.hpp"
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -19,35 +19,35 @@
 
 #include "EnumTranslator.hpp"
 
-IGfxDevice* DeviceFactory::CreateInstance(IWindow* pIWindow, const DeviceFactory::Descriptor& rDesc)
+IGfxContext* ContextFactory::CreateInstance(IWindow* pIWindow, const ContextFactory::Descriptor& rDesc)
 {
-	CGfxDevice* pDevice = new CGfxDevice();
+	CGfxContext* pContext = new CGfxContext();
 
-	if (pDevice != NULL)
+	if (pContext != NULL)
 	{
-		if (!pDevice->Initialize(pIWindow, rDesc))
+		if (!pContext->Initialize(pIWindow, rDesc))
 		{
-			DeviceFactory::DestroyInstance(pDevice);
-			pDevice = NULL;
+			ContextFactory::DestroyInstance(pContext);
+			pContext = NULL;
 		}
 	}
 
-	return pDevice;
+	return pContext;
 }
 
-void DeviceFactory::DestroyInstance(IGfxDevice* pIDevice)
+void ContextFactory::DestroyInstance(IGfxContext* pIContext)
 {
-	CGfxDevice* pDevice = static_cast<CGfxDevice*>(pIDevice);
+	CGfxContext* pContext = static_cast<CGfxContext*>(pIContext);
 
-	if (pDevice != NULL)
+	if (pContext != NULL)
 	{
-		pDevice->Uninitialize();
-		delete pDevice;
-		pDevice = NULL;
+		pContext->Uninitialize();
+		delete pContext;
+		pContext = NULL;
 	}
 }
 
-CGfxDevice::CGfxDevice(void)
+CGfxContext::CGfxContext(void)
 {
 #if _DEBUG
 	m_hDxgiDebugModule = NULL;
@@ -74,12 +74,12 @@ CGfxDevice::CGfxDevice(void)
 	m_pICopyCommandBuffer = NULL;
 }
 
-CGfxDevice::~CGfxDevice(void)
+CGfxContext::~CGfxContext(void)
 {
 
 }
 
-bool CGfxDevice::Initialize(IWindow* pIWindow, const DeviceFactory::Descriptor& rDesc)
+bool CGfxContext::Initialize(IWindow* pIWindow, const ContextFactory::Descriptor& rDesc)
 {
 	bool status = true;
 
@@ -233,7 +233,7 @@ bool CGfxDevice::Initialize(IWindow* pIWindow, const DeviceFactory::Descriptor& 
 	return status;
 }
 
-void CGfxDevice::Uninitialize(void)
+void CGfxContext::Uninitialize(void)
 {
 	if (m_pIWindow != NULL)
 	{
@@ -326,7 +326,7 @@ void CGfxDevice::Uninitialize(void)
 	m_pIWindow = NULL;
 }
 
-bool CGfxDevice::EnumerateDxgiAdapters(void)
+bool CGfxContext::EnumerateDxgiAdapters(void)
 {
 	bool status = true;
 	uint32_t uIndex = 0;
@@ -385,7 +385,7 @@ bool CGfxDevice::EnumerateDxgiAdapters(void)
 	return status;
 }
 
-bool CGfxDevice::PrintAdapterProperties(uint32_t uIndex, IDXGIAdapter4* pIAdapter)
+bool CGfxContext::PrintAdapterProperties(uint32_t uIndex, IDXGIAdapter4* pIAdapter)
 {
 	bool status = true;
 	DXGI_ADAPTER_DESC3 Desc = { 0 };
@@ -490,7 +490,7 @@ bool CGfxDevice::PrintAdapterProperties(uint32_t uIndex, IDXGIAdapter4* pIAdapte
 	return status;
 }
 
-bool CGfxDevice::PrintDeviceProperties(void)
+bool CGfxContext::PrintDeviceProperties(void)
 {
 	bool status = true;
 
@@ -555,7 +555,7 @@ bool CGfxDevice::PrintDeviceProperties(void)
 	return status;
 }
 
-bool CGfxDevice::InitializeHeaps(const DeviceFactory::Descriptor& rDesc)
+bool CGfxContext::InitializeHeaps(const ContextFactory::Descriptor& rDesc)
 {
 	bool status = true;
 
@@ -626,7 +626,7 @@ bool CGfxDevice::InitializeHeaps(const DeviceFactory::Descriptor& rDesc)
 	return status;
 }
 
-bool CGfxDevice::InitializeDescriptorHeaps(void)
+bool CGfxContext::InitializeDescriptorHeaps(void)
 {
 	bool status = true;
 
@@ -650,7 +650,7 @@ bool CGfxDevice::InitializeDescriptorHeaps(void)
 	return status;
 }
 
-bool CGfxDevice::InitializeSwapChain(void)
+bool CGfxContext::InitializeSwapChain(void)
 {
 	bool status = true;
 	IDXGISwapChain4* pIDxgiSwapChain = NULL;
@@ -778,7 +778,7 @@ bool CGfxDevice::InitializeSwapChain(void)
 	return status;
 }
 
-ICommandQueue* CGfxDevice::CreateCommandQueue(COMMAND_QUEUE_TYPE Type)
+ICommandQueue* CGfxContext::CreateCommandQueue(COMMAND_QUEUE_TYPE Type)
 {
 	bool status = true;
 	ICommandQueue* pICommandQueue = NULL;
@@ -843,7 +843,7 @@ ICommandQueue* CGfxDevice::CreateCommandQueue(COMMAND_QUEUE_TYPE Type)
 	return pICommandQueue;
 }
 
-void CGfxDevice::DestroyCommandQueue(ICommandQueue* pICommandQueue)
+void CGfxContext::DestroyCommandQueue(ICommandQueue* pICommandQueue)
 {
 	CCommandQueue* pCommandQueue = static_cast<CCommandQueue*>(pICommandQueue);
 	if (pCommandQueue != NULL)
@@ -854,7 +854,7 @@ void CGfxDevice::DestroyCommandQueue(ICommandQueue* pICommandQueue)
 	}
 }
 
-IRendererState* CGfxDevice::CreateRendererState(const RENDERER_STATE_DESC& rDesc)
+IRendererState* CGfxContext::CreateRendererState(const RENDERER_STATE_DESC& rDesc)
 {
 	bool status = true;
 
@@ -1100,7 +1100,7 @@ IRendererState* CGfxDevice::CreateRendererState(const RENDERER_STATE_DESC& rDesc
 	return pIRendererState;
 }
 
-void CGfxDevice::DestroyRendererState(IRendererState* pIRendererState)
+void CGfxContext::DestroyRendererState(IRendererState* pIRendererState)
 {
 	CRendererState* pRendererState = static_cast<CRendererState*>(pIRendererState);
 	if (pRendererState != NULL)
@@ -1111,7 +1111,7 @@ void CGfxDevice::DestroyRendererState(IRendererState* pIRendererState)
 	}
 }
 
-IConstantBuffer* CGfxDevice::CreateConstantBuffer(const CONSTANT_BUFFER_DESC& rDesc)
+IConstantBuffer* CGfxContext::CreateConstantBuffer(const CONSTANT_BUFFER_DESC& rDesc)
 {
 	bool status = true;
 	IConstantBuffer* pIConstantBuffer = NULL;
@@ -1198,7 +1198,7 @@ IConstantBuffer* CGfxDevice::CreateConstantBuffer(const CONSTANT_BUFFER_DESC& rD
 	return pIConstantBuffer;
 }
 
-void CGfxDevice::DestroyConstantBuffer(IConstantBuffer* pIConstantBuffer)
+void CGfxContext::DestroyConstantBuffer(IConstantBuffer* pIConstantBuffer)
 {
 	CConstantBuffer* pConstantBuffer = reinterpret_cast<CConstantBuffer*>(pIConstantBuffer);
 	if (pConstantBuffer != NULL)
@@ -1209,7 +1209,7 @@ void CGfxDevice::DestroyConstantBuffer(IConstantBuffer* pIConstantBuffer)
 	}
 }
 
-ICommandBuffer* CGfxDevice::CreateCommandBuffer(COMMAND_BUFFER_TYPE Type)
+ICommandBuffer* CGfxContext::CreateCommandBuffer(COMMAND_BUFFER_TYPE Type)
 {
 	bool status = true;
 	D3D12_COMMAND_LIST_TYPE CommandListType = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -1268,7 +1268,7 @@ ICommandBuffer* CGfxDevice::CreateCommandBuffer(COMMAND_BUFFER_TYPE Type)
 	return pICommandBuffer;
 }
 
-void CGfxDevice::DestroyCommandBuffer(ICommandBuffer* pICommandBuffer)
+void CGfxContext::DestroyCommandBuffer(ICommandBuffer* pICommandBuffer)
 {
 	CCommandBuffer* pCommandBuffer = static_cast<CCommandBuffer*>(pICommandBuffer);
 	if (pCommandBuffer != NULL)
@@ -1279,7 +1279,7 @@ void CGfxDevice::DestroyCommandBuffer(ICommandBuffer* pICommandBuffer)
 	}
 }
 
-IVertexBuffer* CGfxDevice::CreateVertexBuffer(const void* pVertexData, UINT Size, UINT Stride)
+IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, UINT Size, UINT Stride)
 {
 	bool status = true;
 	IVertexBuffer* pIVertexBuffer = NULL;
@@ -1400,7 +1400,7 @@ IVertexBuffer* CGfxDevice::CreateVertexBuffer(const void* pVertexData, UINT Size
 	return pIVertexBuffer;
 }
 
-void CGfxDevice::DestroyVertexBuffer(IVertexBuffer* pIVertexBuffer)
+void CGfxContext::DestroyVertexBuffer(IVertexBuffer* pIVertexBuffer)
 {
 	CVertexBuffer* pVertexBuffer = static_cast<CVertexBuffer*>(pIVertexBuffer);
 	if (pVertexBuffer != NULL)
@@ -1411,7 +1411,7 @@ void CGfxDevice::DestroyVertexBuffer(IVertexBuffer* pIVertexBuffer)
 	}
 }
 
-IMesh* CGfxDevice::CreateMesh(const MESH_DESC& rDesc)
+IMesh* CGfxContext::CreateMesh(const MESH_DESC& rDesc)
 {
 	bool status = true;
 	IMesh* pIMesh = NULL;
@@ -1454,7 +1454,7 @@ IMesh* CGfxDevice::CreateMesh(const MESH_DESC& rDesc)
 	return pIMesh;
 }
 
-void CGfxDevice::DestroyMesh(IMesh* pIMesh)
+void CGfxContext::DestroyMesh(IMesh* pIMesh)
 {
 	CMesh* pMesh = static_cast<CMesh*>(pIMesh);
 	if (pMesh != NULL)
@@ -1465,7 +1465,7 @@ void CGfxDevice::DestroyMesh(IMesh* pIMesh)
 	}
 }
 
-bool CGfxDevice::SubmitCommandBuffer(ICommandBuffer* pICommandBuffer)
+bool CGfxContext::SubmitCommandBuffer(ICommandBuffer* pICommandBuffer)
 {
 	bool status = true;
 
@@ -1497,7 +1497,7 @@ bool CGfxDevice::SubmitCommandBuffer(ICommandBuffer* pICommandBuffer)
 	return status;
 }
 
-bool CGfxDevice::SyncQueue(COMMAND_QUEUE_TYPE Type)
+bool CGfxContext::SyncQueue(COMMAND_QUEUE_TYPE Type)
 {
 	bool status = true;
 

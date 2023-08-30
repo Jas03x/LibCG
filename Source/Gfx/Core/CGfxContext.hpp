@@ -19,7 +19,7 @@ class CSwapChain;
 
 typedef struct HINSTANCE__* HMODULE;
 
-class CGfxDevice : public IGfxDevice
+class CGfxContext : public IGfxContext
 {
 private:
 	enum : uint32_t { ADAPTER_INDEX__INVALID = 0xFFFFFFFF };
@@ -52,10 +52,10 @@ private:
 	ICommandBuffer*            m_pICopyCommandBuffer;
 
 public:
-	CGfxDevice(void);
-	virtual ~CGfxDevice(void);
+	CGfxContext(void);
+	virtual ~CGfxContext(void);
 
-	bool				       Initialize(IWindow* pIWindow, const DeviceFactory::Descriptor& rDesc);
+	bool				       Initialize(IWindow* pIWindow, const ContextFactory::Descriptor& rDesc);
 	void				       Uninitialize(void);
 
 private:
@@ -63,7 +63,7 @@ private:
 	bool				       PrintAdapterProperties(uint32_t uIndex, IDXGIAdapter4* pIAdapter);
 	bool				       PrintDeviceProperties(void);
 
-	bool                       InitializeHeaps(const DeviceFactory::Descriptor& rDesc);
+	bool                       InitializeHeaps(const ContextFactory::Descriptor& rDesc);
 	bool                       InitializeDescriptorHeaps(void);
 	bool                       InitializeSwapChain(void);
 

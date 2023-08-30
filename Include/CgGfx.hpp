@@ -167,8 +167,8 @@ class __declspec(novtable) ICommandQueue
 public:
 };
 
-// IGfxDevice
-class __declspec(novtable) IGfxDevice
+// IGfxContext
+class __declspec(novtable) IGfxContext
 {
 public:
 	virtual ICommandBuffer*  CreateCommandBuffer(COMMAND_BUFFER_TYPE Type) = 0;
@@ -190,8 +190,8 @@ public:
 	virtual bool             SyncQueue(COMMAND_QUEUE_TYPE Type) = 0;
 };
 
-// Device Factory
-class __declspec(novtable) DeviceFactory
+// Context Factory
+class __declspec(novtable) ContextFactory
 {
 public:
 	struct Descriptor
@@ -200,8 +200,8 @@ public:
 		uint64_t PrimaryHeapSize;
 	};
 
-	static IGfxDevice* CreateInstance(IWindow* pIWindow, const Descriptor& rDesc);
-	static void        DestroyInstance(IGfxDevice* pIDevice);
+	static IGfxContext* CreateInstance(IWindow* pIWindow, const Descriptor& rDesc);
+	static void         DestroyInstance(IGfxContext* pIContext);
 };
 
 #endif // CG_GFX__HPP

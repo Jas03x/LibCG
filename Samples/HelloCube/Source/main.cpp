@@ -34,7 +34,7 @@ private:
 	} m_ConstantBuffer;
 
 	IWindow*         m_pIWindow;
-	IGfxDevice*      m_pIGfxDevice;
+	IGfxContext*     m_pIGfxContext;
 
 	IConstantBuffer* m_pIConstantBuffer;
 	IRendererState*  m_pIRendererState;
@@ -48,7 +48,7 @@ public:
 	HelloCube()
 	{
 		m_pIWindow = NULL;
-		m_pIGfxDevice = NULL;
+		m_pIGfxContext = NULL;
 		m_pIRendererState = NULL;
 		m_pIMesh = NULL;
 		m_pIGraphicsCommandBuffer = NULL;
@@ -72,15 +72,15 @@ public:
 
 		if (status)
 		{
-			DeviceFactory::Descriptor GfxDeviceDesc = {};
-			GfxDeviceDesc.UploadHeapSize = static_cast<UINT64>(64U * MB);
-			GfxDeviceDesc.PrimaryHeapSize = static_cast<UINT64>(64U * MB);
+			ContextFactory::Descriptor GfxContextDesc = {};
+			GfxContextDesc.UploadHeapSize = static_cast<UINT64>(64U * MB);
+			GfxContextDesc.PrimaryHeapSize = static_cast<UINT64>(64U * MB);
 
-			m_pIGfxDevice = DeviceFactory::CreateInstance(m_pIWindow, GfxDeviceDesc);
-			if (m_pIGfxDevice == NULL)
+			m_pIGfxContext = ContextFactory::CreateInstance(m_pIWindow, GfxContextDesc);
+			if (m_pIGfxContext == NULL)
 			{
 				status = false;
-				Console::Write(L"Error: Could not initialize graphics device\n");
+				Console::Write(L"Error: Could not initialize graphics context\n");
 			}
 		}
 		
@@ -106,7 +106,7 @@ public:
 			Desc.InputLayout.pInputElements = InputElements;
 			Desc.InputLayout.NumInputs = sizeof(InputElements) / sizeof(INPUT_ELEMENT_DESC);
 
-			m_pIRendererState = m_pIGfxDevice->CreateRendererState(Desc);
+			m_pIRendererState = m_pIGfxContext->CreateRendererState(Desc);
 			if (m_pIRendererState == NULL)
 			{
 				status = false;
@@ -119,7 +119,7 @@ public:
 
 		if (status)
 		{
-			m_pIGraphicsCommandBuffer = m_pIGfxDevice->CreateCommandBuffer(COMMAND_BUFFER_TYPE_GRAPHICS);
+			m_pIGraphicsCommandBuffer = m_pIGfxContext->CreateCommandBuffer(COMMAND_BUFFER_TYPE_GRAPHICS);
 
 			if (m_pIGraphicsCommandBuffer == NULL)
 			{
@@ -133,7 +133,7 @@ public:
 			CONSTANT_BUFFER_DESC Desc = {};
 			Desc.Size = sizeof(ConstantBuffer);
 
-			m_pIConstantBuffer = m_pIGfxDevice->CreateConstantBuffer(Desc);
+			m_pIConstantBuffer = m_pIGfxContext->CreateConstantBuffer(Desc);
 
 			if (m_pIConstantBuffer == NULL)
 			{
@@ -280,7 +280,7 @@ public:
 			MeshDesc.VertexStride = sizeof(Vertex);
 			MeshDesc.NumVertices = sizeof(VertexArray) / sizeof(Vertex);
 
-			m_pIMesh = m_pIGfxDevice->CreateMesh(MeshDesc);
+			m_pIMesh = m_pIGfxContext->CreateMesh(MeshDesc);
 
 			if (m_pIMesh == NULL)
 			{
@@ -301,32 +301,32 @@ public:
 	{
 		if (m_pIMesh != NULL)
 		{
-			m_pIGfxDevice->DestroyMesh(m_pIMesh);
+			m_pIGfxContext->DestroyMesh(m_pIMesh);
 			m_pIMesh = NULL;
 		}
 
 		if (m_pIConstantBuffer != NULL)
 		{
-			m_pIGfxDevice->DestroyConstantBuffer(m_pIConstantBuffer);
+			m_pIGfxContext->DestroyConstantBuffer(m_pIConstantBuffer);
 			m_pIConstantBuffer = NULL;
 		}
 
 		if (m_pIGraphicsCommandBuffer != NULL)
 		{
-			m_pIGfxDevice->DestroyCommandBuffer(m_pIGraphicsCommandBuffer);
+			m_pIGfxContext->DestroyCommandBuffer(m_pIGraphicsCommandBuffer);
 			m_pIGraphicsCommandBuffer = NULL;
 		}
 
 		if (m_pIRendererState != NULL)
 		{
-			m_pIGfxDevice->DestroyRendererState(m_pIRendererState);
+			m_pIGfxContext->DestroyRendererState(m_pIRendererState);
 			m_pIRendererState = NULL;
 		}
 
-		if (m_pIGfxDevice != NULL)
+		if (m_pIGfxContext != NULL)
 		{
-			DeviceFactory::DestroyInstance(m_pIGfxDevice);
-			m_pIGfxDevice = NULL;
+			ContextFactory::DestroyInstance(m_pIGfxContext);
+			m_pIGfxContext = NULL;
 		}
 
 		if (m_pIWindow != NULL)
@@ -372,7 +372,7 @@ private:
 
 		if (status)
 		{
-			m_pIGfxDevice->SubmitCommandBuffer(m_pIGraphicsCommandBuffer);
+			m_pIGfxContext->SubmitCommandBuffer(m_pIGraphicsCommandBuffer);
 		}
 
 		if (status)
@@ -382,7 +382,7 @@ private:
 
 		if (status)
 		{
-			status = m_pIGfxDevice->SyncQueue(COMMAND_QUEUE_TYPE_GRAPHICS);
+			status = m_pIGfxContext->SyncQueue(COMMAND_QUEUE_TYPE_GRAPHICS);
 		}
 
 		return status;
