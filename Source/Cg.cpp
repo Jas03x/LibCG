@@ -23,28 +23,28 @@ void CgAssert(bool b, const wchar_t* error, ...)
 	}
 }
 
-INT main(INT argc, const wchar_t* argv[])
+int32_t main(int32_t argc, const wchar_t* argv[])
 {
-	INT Status = STATUS::SUCCESS;
+	int32_t status = STATUS::SUCCESS;
 
 	if (CgInitialize(argc, argv))
 	{
-		Status = CgMain(argc, argv);
+		status = CgMain(argc, argv);
 	}
 	else
 	{
-		Status = STATUS::UNSUCCESSFUL;
+		status = STATUS::UNSUCCESSFUL;
 	}
 
 	if (!CgUninitialize())
 	{
-		if (Status == STATUS::SUCCESS)
+		if (status == STATUS::SUCCESS)
 		{
-			Status = STATUS::UNSUCCESSFUL;
+			status = STATUS::UNSUCCESSFUL;
 		}
 	}
 
-	return Status;
+	return status;
 }
 
 bool CgInitialize(int32_t argc, const wchar_t* argv[])
