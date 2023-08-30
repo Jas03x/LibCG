@@ -418,7 +418,7 @@ public:
 	}
 };
 
-int32_t WdkMain(int32_t argc, const wchar_t* argv[])
+int32_t CgMain(int32_t argc, const wchar_t* argv[])
 {
 	int32_t status = STATUS::SUCCESS;
 
