@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Gfx">
+      <UniqueIdentifier>{92906c77-42f7-4219-9757-24e3538e536b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Math">
+      <UniqueIdentifier>{7f108d87-a9ea-4abe-94a7-65bd247fa4d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\System">
+      <UniqueIdentifier>{c477e1c6-cd5d-496b-9363-80da82967d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gfx\2D">
+      <UniqueIdentifier>{c7fe6255-5d0f-4f2f-b124-7cb0ea4842e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gfx\3D">
+      <UniqueIdentifier>{e55e6304-97e6-496a-9f20-657efbd1301e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Gfx\Core">
+      <UniqueIdentifier>{f05d337c-2d75-4850-9211-db52be001f7b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\Cg.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CgDef.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CgGfx.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CgMath.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CgSystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\CCommandQueue.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\CConstantBuffer.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\CGfxDevice.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\CMesh.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\CRendererState.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\CSwapChain.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\CVertexBuffer.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\EnumTranslator.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\CCommandBuffer.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\CMath.hpp">
+      <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\System\CFile.hpp">
+      <Filter>Source Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\System\CMemory.hpp">
+      <Filter>Source Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\System\CSystem.hpp">
+      <Filter>Source Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\System\CWindow.hpp">
+      <Filter>Source Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\System\CConsole.hpp">
+      <Filter>Source Files\System</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Cg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\CCommandQueue.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\CConstantBuffer.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\CGfxDevice.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\CMesh.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\CRendererState.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\CSwapChain.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\CVertexBuffer.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\EnumTranslator.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\CCommandBuffer.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\CMath.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\System\CFile.cpp">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\System\CMemory.cpp">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\System\CSystem.cpp">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\System\CWindow.cpp">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\System\CConsole.cpp">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
