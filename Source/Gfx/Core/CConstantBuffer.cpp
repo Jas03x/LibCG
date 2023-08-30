@@ -6,9 +6,9 @@
 
 CConstantBuffer::CConstantBuffer(void)
 {
-	m_CpuVA = NULL;
+	m_CpuVA = nullptr;
 	m_GpuVA = 0;
-	m_pID3D12Resource = NULL;
+	m_pID3D12Resource = nullptr;
 }
 
 CConstantBuffer::~CConstantBuffer(void)
@@ -20,7 +20,7 @@ bool CConstantBuffer::Initialize(ID3D12Resource* pID3D12ConstantBufferResource, 
 {
 	bool status = true;
 
-	if (pID3D12ConstantBufferResource != NULL)
+	if (pID3D12ConstantBufferResource != nullptr)
 	{
 		m_CpuVA = CpuVA;
 		m_GpuVA = pID3D12ConstantBufferResource->GetGPUVirtualAddress();
@@ -37,10 +37,10 @@ bool CConstantBuffer::Initialize(ID3D12Resource* pID3D12ConstantBufferResource, 
 
 void CConstantBuffer::Uninitialize(void)
 {
-	if (m_pID3D12Resource != NULL)
+	if (m_pID3D12Resource != nullptr)
 	{
 		m_pID3D12Resource->Release();
-		m_pID3D12Resource = NULL;
+		m_pID3D12Resource = nullptr;
 	}
 }
 

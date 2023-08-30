@@ -34,13 +34,13 @@ enum INPUT_ELEMENT
 
 enum INPUT_ELEMENT_FORMAT
 {
-	INPUT_ELEMENT_FORMAT_INVALID  = 0,
-	INPUT_ELEMENT_FORMAT_XYZ_8F   = 1, INPUT_ELEMENT_FORMAT_RGB_8F   = 1,
-	INPUT_ELEMENT_FORMAT_XYZ_16F  = 2, INPUT_ELEMENT_FORMAT_RGB_16F  = 2,
-	INPUT_ELEMENT_FORMAT_XYZ_32F  = 3, INPUT_ELEMENT_FORMAT_RGB_32F  = 3,
-	INPUT_ELEMENT_FORMAT_XYZW_8F  = 4, INPUT_ELEMENT_FORMAT_RGBA_8F  = 4,
-	INPUT_ELEMENT_FORMAT_XYZW_16F = 5, INPUT_ELEMENT_FORMAT_RGBA_16F = 5,
-	INPUT_ELEMENT_FORMAT_XYZW_32F = 6, INPUT_ELEMENT_FORMAT_RGBA_32F = 6,
+	INPUT_ELEMENT_FORMAT_INVALID = 0,
+		INPUT_ELEMENT_FORMAT_XYZ_8F = 1, INPUT_ELEMENT_FORMAT_RGB_8F = 1,
+		INPUT_ELEMENT_FORMAT_XYZ_16F = 2, INPUT_ELEMENT_FORMAT_RGB_16F = 2,
+		INPUT_ELEMENT_FORMAT_XYZ_32F = 3, INPUT_ELEMENT_FORMAT_RGB_32F = 3,
+		INPUT_ELEMENT_FORMAT_XYZW_8F = 4, INPUT_ELEMENT_FORMAT_RGBA_8F = 4,
+		INPUT_ELEMENT_FORMAT_XYZW_16F = 5, INPUT_ELEMENT_FORMAT_RGBA_16F = 5,
+		INPUT_ELEMENT_FORMAT_XYZW_32F = 6, INPUT_ELEMENT_FORMAT_RGBA_32F = 6,
 };
 
 enum INPUT_ELEMENT_TYPE
@@ -126,6 +126,20 @@ public:
 	virtual IVertexBuffer* GetVertexBuffer(void) = 0;
 };
 
+// ITexture
+struct TEXTURE_DESC
+{
+	uint32_t Width;
+	uint32_t Height;
+	byte*    pTextureData;
+	uint32_t TextureDataSize;
+};
+
+class __declspec(novtable) ITexture
+{
+public:
+};
+
 // ICommandBuffer
 enum COMMAND_BUFFER_TYPE
 {
@@ -185,6 +199,9 @@ public:
 
 	virtual IMesh*           CreateMesh(const MESH_DESC& rDesc) = 0;
 	virtual void             DestroyMesh(IMesh* pIMesh) = 0;
+
+	virtual ITexture*        CreateTexture(const TEXTURE_DESC& rDesc) = 0;
+	virtual void             DestroyTexture(ITexture* pITexture) = 0;
 
 	virtual bool             SubmitCommandBuffer(ICommandBuffer* pICommandBuffer) = 0;
 	virtual bool             SyncQueue(COMMAND_QUEUE_TYPE Type) = 0;

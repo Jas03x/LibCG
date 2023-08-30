@@ -10,10 +10,10 @@ CCommandQueue::CCommandQueue(void)
 {
 	m_Type = COMMAND_QUEUE_TYPE_INVALID;
 
-	m_pID3D12CommandQueue = NULL;
-	m_pID3D12Fence = NULL;
+	m_pID3D12CommandQueue = nullptr;
+	m_pID3D12Fence = nullptr;
 
-	m_hFenceEvent = NULL;
+	m_hFenceEvent = nullptr;
 	m_FenceValue = 0;
 }
 
@@ -28,7 +28,7 @@ bool CCommandQueue::Initialize(COMMAND_QUEUE_TYPE Type, ID3D12CommandQueue* pICo
 	m_Type = Type;
 	m_hFenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 
-	if (m_hFenceEvent != NULL)
+	if (m_hFenceEvent != nullptr)
 	{
 		m_FenceValue = 1;
 	}
@@ -40,7 +40,7 @@ bool CCommandQueue::Initialize(COMMAND_QUEUE_TYPE Type, ID3D12CommandQueue* pICo
 
 	if (status)
 	{
-		if ((pICommandQueue != NULL) && (pIFence != NULL))
+		if ((pICommandQueue != nullptr) && (pIFence != nullptr))
 		{
 			m_pID3D12CommandQueue = pICommandQueue;
 			m_pID3D12Fence = pIFence;
@@ -57,22 +57,22 @@ bool CCommandQueue::Initialize(COMMAND_QUEUE_TYPE Type, ID3D12CommandQueue* pICo
 
 void CCommandQueue::Uninitialize(void)
 {
-	if (m_pID3D12CommandQueue != NULL)
+	if (m_pID3D12CommandQueue != nullptr)
 	{
 		m_pID3D12CommandQueue->Release();
-		m_pID3D12CommandQueue = NULL;
+		m_pID3D12CommandQueue = nullptr;
 	}
 
-	if (m_pID3D12Fence != NULL)
+	if (m_pID3D12Fence != nullptr)
 	{
 		m_pID3D12Fence->Release();
-		m_pID3D12Fence = NULL;
+		m_pID3D12Fence = nullptr;
 	}
 
-	if (m_hFenceEvent != NULL)
+	if (m_hFenceEvent != nullptr)
 	{
 		CloseHandle(m_hFenceEvent);
-		m_hFenceEvent = NULL;
+		m_hFenceEvent = nullptr;
 	}
 }
 
@@ -85,7 +85,7 @@ bool CCommandQueue::SubmitCommandBuffer(ICommandBuffer* pICommandBuffer)
 {
 	bool status = true;
 
-	if (pICommandBuffer == NULL)
+	if (pICommandBuffer == nullptr)
 	{
 		status = false;
 	}

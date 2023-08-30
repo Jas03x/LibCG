@@ -5,7 +5,7 @@
 
 #include <windows.h>
 
-HANDLE   CMemory::m_hHeap = NULL;
+HANDLE   CMemory::m_hHeap = nullptr;
 uint64_t CMemory::m_nBytesAllocated = 0;
 
 PVOID Memory::Allocate(size_t nBytes, bool bClear)
@@ -26,7 +26,7 @@ bool CMemory::Initialize(void)
 
 	m_hHeap = GetProcessHeap();
 
-	if (m_hHeap == NULL)
+	if (m_hHeap == nullptr)
 	{
 		status = false;
 	}
@@ -38,7 +38,7 @@ bool CMemory::Uninitialize(void)
 {
 	bool status = true;
 
-	m_hHeap = NULL;
+	m_hHeap = nullptr;
 
 	if (m_nBytesAllocated != 0)
 	{
@@ -46,7 +46,7 @@ bool CMemory::Uninitialize(void)
 
 		HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
-		if (hStdOut != NULL)
+		if (hStdOut != nullptr)
 		{
 			WriteConsole(hStdOut, ErrorMsg, _countof(ErrorMsg), NULL, NULL);
 			status = false;
@@ -58,7 +58,7 @@ bool CMemory::Uninitialize(void)
 
 PVOID CMemory::Allocate(size_t nBytes, bool bClear)
 {
-	PVOID pAlloc = NULL;
+	PVOID pAlloc = nullptr;
 	DWORD Flags = 0;
 
 	if (bClear)
@@ -68,7 +68,7 @@ PVOID CMemory::Allocate(size_t nBytes, bool bClear)
 
 	pAlloc = HeapAlloc(m_hHeap, Flags, nBytes);
 
-	if (pAlloc != NULL)
+	if (pAlloc != nullptr)
 	{
 		m_nBytesAllocated += nBytes;
 	}
@@ -80,7 +80,7 @@ bool CMemory::Release(void* pMemory)
 {
 	bool status = true;
 
-	if (pMemory != NULL)
+	if (pMemory != nullptr)
 	{
 		size_t nBytes = HeapSize(m_hHeap, 0, pMemory);
 

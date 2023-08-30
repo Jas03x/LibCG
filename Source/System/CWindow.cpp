@@ -10,12 +10,12 @@ IWindow* WindowFactory::CreateInstance(const wchar_t* ClassName, const wchar_t* 
 {
 	CWindow* pWindow = new CWindow();
 
-	if (pWindow != NULL)
+	if (pWindow != nullptr)
 	{
 		if (!pWindow->Initialize(ClassName, WindowName, ClientWidth, ClientHeight))
 		{
 			WindowFactory::DestroyInstance(pWindow);
-			pWindow = NULL;
+			pWindow = nullptr;
 		}
 	}
 
@@ -25,12 +25,12 @@ IWindow* WindowFactory::CreateInstance(const wchar_t* ClassName, const wchar_t* 
 void WindowFactory::DestroyInstance(IWindow* pIWindow)
 {
 	CWindow* pWindow = static_cast<CWindow*>(pIWindow);
-	if (pWindow != NULL)
+	if (pWindow != nullptr)
 	{
 		pWindow->Uninitialize();
 
 		delete pWindow;
-		pWindow = NULL;
+		pWindow = nullptr;
 	}
 }
 
@@ -38,8 +38,8 @@ CWindow::CWindow(void)
 {
 	m_hCID = 0;
 	m_bOpen = false;
-	m_hWnd = NULL;
-	m_hInstance = NULL;
+	m_hWnd = nullptr;
+	m_hInstance = nullptr;
 	
 	ZeroMemory(m_ClassName, sizeof(m_ClassName));
 }
@@ -102,7 +102,7 @@ bool CWindow::Initialize(const wchar_t* ClassName, const wchar_t* WindowName, ui
 	{
 		m_hWnd = CreateWindowEx(0, ClassName, WindowName, WS_OVERLAPPEDWINDOW, wndRect.left, wndRect.top, wndRect.right - wndRect.left, wndRect.bottom - wndRect.top, NULL, NULL, m_hInstance, NULL);
 
-		if (m_hWnd == NULL)
+		if (m_hWnd == nullptr)
 		{
 			status = false;
 			Console::Write(L"Error: Could not create window\n");
@@ -125,15 +125,15 @@ bool CWindow::Initialize(const wchar_t* ClassName, const wchar_t* WindowName, ui
 
 void CWindow::Uninitialize(void)
 {
-	if (m_pSwapChain != NULL)
+	if (m_pSwapChain != nullptr)
 	{
 		Console::Write(L"Warning: Window being uninitialized but swap chain not released\n");
 	}
 
-	if (m_hWnd != NULL)
+	if (m_hWnd != nullptr)
 	{
 		DestroyWindow(m_hWnd);
-		m_hWnd = NULL;
+		m_hWnd = nullptr;
 	}
 
 	UnregisterClass(m_ClassName, m_hInstance);
@@ -242,7 +242,7 @@ bool CWindow::SwapChainNotification(SWAPCHAIN_NOTIFICATION Notification, HANDLE 
 		}
 		case SWAPCHAIN_DESTROYED:
 		{
-			m_pSwapChain = NULL;
+			m_pSwapChain = nullptr;
 			break;
 		}
 		default:

@@ -23,12 +23,12 @@ IGfxContext* ContextFactory::CreateInstance(IWindow* pIWindow, const ContextFact
 {
 	CGfxContext* pContext = new CGfxContext();
 
-	if (pContext != NULL)
+	if (pContext != nullptr)
 	{
 		if (!pContext->Initialize(pIWindow, rDesc))
 		{
 			ContextFactory::DestroyInstance(pContext);
-			pContext = NULL;
+			pContext = nullptr;
 		}
 	}
 
@@ -39,39 +39,39 @@ void ContextFactory::DestroyInstance(IGfxContext* pIContext)
 {
 	CGfxContext* pContext = static_cast<CGfxContext*>(pIContext);
 
-	if (pContext != NULL)
+	if (pContext != nullptr)
 	{
 		pContext->Uninitialize();
 		delete pContext;
-		pContext = NULL;
+		pContext = nullptr;
 	}
 }
 
 CGfxContext::CGfxContext(void)
 {
 #if _DEBUG
-	m_hDxgiDebugModule = NULL;
+	m_hDxgiDebugModule = nullptr;
 
-	m_pIDxgiDebugInterface = NULL;
-	m_pID3D12DebugInterface = NULL;
+	m_pIDxgiDebugInterface = nullptr;
+	m_pID3D12DebugInterface = nullptr;
 #endif
 
-	m_pIDxgiFactory = NULL;
-	m_pIDxgiAdapter = NULL;
+	m_pIDxgiFactory = nullptr;
+	m_pIDxgiAdapter = nullptr;
 
-	m_pIWindow = NULL;
-	m_pSwapChain = NULL;
+	m_pIWindow = nullptr;
+	m_pSwapChain = nullptr;
 
-	m_pID3D12Device = NULL;
+	m_pID3D12Device = nullptr;
 
-	m_pID3D12UploadHeap = NULL;
-	m_pID3D12PrimaryHeap = NULL;
-	m_pID3D12ShaderResourceHeap = NULL;
+	m_pID3D12UploadHeap = nullptr;
+	m_pID3D12PrimaryHeap = nullptr;
+	m_pID3D12ShaderResourceHeap = nullptr;
 
-	m_pCopyQueue = NULL;
-	m_pGraphicsQueue = NULL;
+	m_pCopyQueue = nullptr;
+	m_pGraphicsQueue = nullptr;
 
-	m_pICopyCommandBuffer = NULL;
+	m_pICopyCommandBuffer = nullptr;
 }
 
 CGfxContext::~CGfxContext(void)
@@ -83,7 +83,7 @@ bool CGfxContext::Initialize(IWindow* pIWindow, const ContextFactory::Descriptor
 {
 	bool status = true;
 
-	if (pIWindow != NULL)
+	if (pIWindow != nullptr)
 	{
 		m_pIWindow = pIWindow;
 	}
@@ -109,13 +109,13 @@ bool CGfxContext::Initialize(IWindow* pIWindow, const ContextFactory::Descriptor
 	if (status)
 	{
 		m_hDxgiDebugModule = GetModuleHandle(L"dxgidebug.dll");
-		HRESULT (*pfnDxgiGetDebugInterface)(REFIID, void**) = NULL;
+		HRESULT (*pfnDxgiGetDebugInterface)(REFIID, void**) = nullptr;
 
-		if (m_hDxgiDebugModule != NULL)
+		if (m_hDxgiDebugModule != nullptr)
 		{
 			pfnDxgiGetDebugInterface = reinterpret_cast<HRESULT(*)(REFIID, void**)>(GetProcAddress(m_hDxgiDebugModule, "DXGIGetDebugInterface"));
 
-			if (pfnDxgiGetDebugInterface == NULL)
+			if (pfnDxgiGetDebugInterface == nullptr)
 			{
 				Console::Write(L"Error: Could not find function DXGIGetDebugInterface in the dxgi debug module\n");
 				status = false;
@@ -171,7 +171,7 @@ bool CGfxContext::Initialize(IWindow* pIWindow, const ContextFactory::Descriptor
 			status = false;
 		}
 
-		if (m_pID3D12Device != NULL)
+		if (m_pID3D12Device != nullptr)
 		{
 			PrintDeviceProperties();
 		}
@@ -186,7 +186,7 @@ bool CGfxContext::Initialize(IWindow* pIWindow, const ContextFactory::Descriptor
 	{
 		m_pCopyQueue = static_cast<CCommandQueue*>(CreateCommandQueue(COMMAND_QUEUE_TYPE_COPY));
 
-		if (m_pCopyQueue == NULL)
+		if (m_pCopyQueue == nullptr)
 		{
 			status = false;
 			Console::Write(L"Error: Failed to create copy command queue\n");
@@ -197,7 +197,7 @@ bool CGfxContext::Initialize(IWindow* pIWindow, const ContextFactory::Descriptor
 	{
 		m_pGraphicsQueue = static_cast<CCommandQueue*>(CreateCommandQueue(COMMAND_QUEUE_TYPE_GRAPHICS));
 
-		if (m_pGraphicsQueue == NULL)
+		if (m_pGraphicsQueue == nullptr)
 		{
 			status = false;
 			Console::Write(L"Error: Failed to create graphics command queue\n");
@@ -223,7 +223,7 @@ bool CGfxContext::Initialize(IWindow* pIWindow, const ContextFactory::Descriptor
 	{
 		m_pICopyCommandBuffer = CreateCommandBuffer(COMMAND_BUFFER_TYPE_COPY);
 
-		if (m_pICopyCommandBuffer == NULL)
+		if (m_pICopyCommandBuffer == nullptr)
 		{
 			status = false;
 			Console::Write(L"Error: Failed to create copy command buffer\n");
@@ -235,102 +235,102 @@ bool CGfxContext::Initialize(IWindow* pIWindow, const ContextFactory::Descriptor
 
 void CGfxContext::Uninitialize(void)
 {
-	if (m_pIWindow != NULL)
+	if (m_pIWindow != nullptr)
 	{
 		static_cast<CWindow*>(m_pIWindow)->SwapChainNotification(CWindow::SWAPCHAIN_DESTROYED, NULL);
 	}
 
-	if (m_pICopyCommandBuffer != NULL)
+	if (m_pICopyCommandBuffer != nullptr)
 	{
 		DestroyCommandBuffer(m_pICopyCommandBuffer);
-		m_pICopyCommandBuffer = NULL;
+		m_pICopyCommandBuffer = nullptr;
 	}
 
-	if (m_pID3D12ShaderResourceHeap != NULL)
+	if (m_pID3D12ShaderResourceHeap != nullptr)
 	{
 		m_pID3D12ShaderResourceHeap->Release();
-		m_pID3D12ShaderResourceHeap = NULL;
+		m_pID3D12ShaderResourceHeap = nullptr;
 	}
 
-	if (m_pID3D12PrimaryHeap != NULL)
+	if (m_pID3D12PrimaryHeap != nullptr)
 	{
 		m_pID3D12PrimaryHeap->Release();
-		m_pID3D12PrimaryHeap = NULL;
+		m_pID3D12PrimaryHeap = nullptr;
 	}
 
-	if (m_pID3D12UploadHeap != NULL)
+	if (m_pID3D12UploadHeap != nullptr)
 	{
 		m_pID3D12UploadHeap->Release();
-		m_pID3D12UploadHeap = NULL;
+		m_pID3D12UploadHeap = nullptr;
 	}
 
-	if (m_pCopyQueue != NULL)
+	if (m_pCopyQueue != nullptr)
 	{
 		DestroyCommandQueue(m_pCopyQueue);
-		m_pCopyQueue = NULL;
+		m_pCopyQueue = nullptr;
 	}
 
-	if (m_pGraphicsQueue != NULL)
+	if (m_pGraphicsQueue != nullptr)
 	{
 		DestroyCommandQueue(m_pGraphicsQueue);
-		m_pGraphicsQueue = NULL;
+		m_pGraphicsQueue = nullptr;
 	}
 
-	if (m_pSwapChain != NULL)
+	if (m_pSwapChain != nullptr)
 	{
 		m_pSwapChain->Uninitialize();
 		delete m_pSwapChain;
-		m_pSwapChain = NULL;
+		m_pSwapChain = nullptr;
 	}
 
-	if (m_pID3D12Device != NULL)
+	if (m_pID3D12Device != nullptr)
 	{
 		m_pID3D12Device->Release();
-		m_pID3D12Device = NULL;
+		m_pID3D12Device = nullptr;
 	}
 
-	if (m_pIDxgiAdapter != NULL)
+	if (m_pIDxgiAdapter != nullptr)
 	{
 		m_pIDxgiAdapter->Release();
-		m_pIDxgiAdapter = NULL;
+		m_pIDxgiAdapter = nullptr;
 	}
 
-	if (m_pIDxgiFactory != NULL)
+	if (m_pIDxgiFactory != nullptr)
 	{
 		m_pIDxgiFactory->Release();
-		m_pIDxgiFactory = NULL;
+		m_pIDxgiFactory = nullptr;
 	}
 
 #if _DEBUG
-	if (m_pIDxgiDebugInterface != NULL)
+	if (m_pIDxgiDebugInterface != nullptr)
 	{
 		m_pIDxgiDebugInterface->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
 
 		m_pIDxgiDebugInterface->Release();
-		m_pIDxgiDebugInterface = NULL;
+		m_pIDxgiDebugInterface = nullptr;
 	}
 
-	if (m_hDxgiDebugModule != NULL)
+	if (m_hDxgiDebugModule != nullptr)
 	{
 		FreeLibrary(m_hDxgiDebugModule);
-		m_hDxgiDebugModule = NULL;
+		m_hDxgiDebugModule = nullptr;
 	}
 
-	if (m_pID3D12DebugInterface != NULL)
+	if (m_pID3D12DebugInterface != nullptr)
 	{
 		m_pID3D12DebugInterface->Release();
-		m_pID3D12DebugInterface = NULL;
+		m_pID3D12DebugInterface = nullptr;
 	}
 #endif
 
-	m_pIWindow = NULL;
+	m_pIWindow = nullptr;
 }
 
 bool CGfxContext::EnumerateDxgiAdapters(void)
 {
 	bool status = true;
 	uint32_t uIndex = 0;
-	IDXGIAdapter4* pIAdapter = NULL;
+	IDXGIAdapter4* pIAdapter = nullptr;
 	int32_t AdapterIndex = -1;
 
 	while (status)
@@ -356,7 +356,7 @@ bool CGfxContext::EnumerateDxgiAdapters(void)
 				if (AdapterIndex == -1)
 				{
 					// Check if the adapter supports D3D12 - the result is S_FALSE if the function succeeds but ppDevice is NULL
-					if (D3D12CreateDevice(pIAdapter, D3D_FEATURE_LEVEL_12_0, __uuidof(ID3D12Device), NULL) == S_FALSE)
+					if (D3D12CreateDevice(pIAdapter, D3D_FEATURE_LEVEL_12_0, __uuidof(ID3D12Device), nullptr) == S_FALSE)
 					{
 						AdapterIndex = uIndex;
 						m_pIDxgiAdapter = pIAdapter;
@@ -373,7 +373,7 @@ bool CGfxContext::EnumerateDxgiAdapters(void)
 		}
 	}
 
-	if (m_pIDxgiAdapter != NULL)
+	if (m_pIDxgiAdapter != nullptr)
 	{
 		Console::Write(L"Using adapter %u\n", AdapterIndex);
 	}
@@ -640,7 +640,7 @@ bool CGfxContext::InitializeDescriptorHeaps(void)
 
 		m_pID3D12Device->CreateDescriptorHeap(&cbvHeapDesc, __uuidof(ID3D12DescriptorHeap), reinterpret_cast<void**>(&m_pID3D12ShaderResourceHeap));
 
-		if (m_pID3D12ShaderResourceHeap == NULL)
+		if (m_pID3D12ShaderResourceHeap == nullptr)
 		{
 			status = false;
 			Console::Write(L"Error: Failed to create constant buffer descriptor heap\n");
@@ -653,8 +653,8 @@ bool CGfxContext::InitializeDescriptorHeaps(void)
 bool CGfxContext::InitializeSwapChain(void)
 {
 	bool status = true;
-	IDXGISwapChain4* pIDxgiSwapChain = NULL;
-	ID3D12DescriptorHeap* pIRtvDescriptorHeap = NULL;
+	IDXGISwapChain4* pIDxgiSwapChain = nullptr;
+	ID3D12DescriptorHeap* pIRtvDescriptorHeap = nullptr;
 
 	UINT RtvDescriptorIncrement = 0;
 	CSwapChain::Descriptor Descriptor = {};
@@ -700,7 +700,7 @@ bool CGfxContext::InitializeSwapChain(void)
 			SwapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
 			SwapChainDesc.Flags = 0;
 
-			IDXGISwapChain1* pISwapChain1 = NULL;
+			IDXGISwapChain1* pISwapChain1 = nullptr;
 
 			if (m_pIDxgiFactory->CreateSwapChainForHwnd(m_pGraphicsQueue->GetD3D12CommandQueue(), m_pIWindow->GetHandle(), &SwapChainDesc, NULL, NULL, &pISwapChain1) == S_OK)
 			{
@@ -725,7 +725,7 @@ bool CGfxContext::InitializeSwapChain(void)
 
 		for (UINT i = 0; status && (i < CSwapChain::NUM_BUFFERS); i++)
 		{
-			ID3D12Resource* pIRenderBuffer = NULL;
+			ID3D12Resource* pIRenderBuffer = nullptr;
 
 			if (pIDxgiSwapChain->GetBuffer(i, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pIRenderBuffer)) != S_OK)
 			{
@@ -733,8 +733,8 @@ bool CGfxContext::InitializeSwapChain(void)
 				Console::Write(L"Error: Could not get swap chain buffer %u\n", i);
 			}
 
-			m_pID3D12Device->CreateRenderTargetView(pIRenderBuffer, NULL, CpuDescriptor);
 			
+			m_pID3D12Device->CreateRenderTargetView(pIRenderBuffer, NULL, CpuDescriptor);
 			Descriptor.RenderBuffers[i].hResource = pIRenderBuffer;
 			Descriptor.RenderBuffers[i].CpuDescriptor = CpuDescriptor.ptr;
 			CpuDescriptor.ptr += RtvDescriptorIncrement;
@@ -745,7 +745,7 @@ bool CGfxContext::InitializeSwapChain(void)
 	{
 		m_pSwapChain = new CSwapChain();
 
-		if (m_pSwapChain != NULL)
+		if (m_pSwapChain != nullptr)
 		{
 			if (m_pSwapChain->Initialize(pIDxgiSwapChain, pIRtvDescriptorHeap, Descriptor))
 			{
@@ -755,23 +755,23 @@ bool CGfxContext::InitializeSwapChain(void)
 			{
 				m_pSwapChain->Uninitialize();
 				delete m_pSwapChain;
-				m_pSwapChain = NULL;
+				m_pSwapChain = nullptr;
 			}
 		}
 	}
 
 	if (!status)
 	{
-		if (pIDxgiSwapChain != NULL)
+		if (pIDxgiSwapChain != nullptr)
 		{
 			pIDxgiSwapChain->Release();
-			pIDxgiSwapChain = NULL;
+			pIDxgiSwapChain = nullptr;
 		}
 
-		if (pIRtvDescriptorHeap != NULL)
+		if (pIRtvDescriptorHeap != nullptr)
 		{
 			pIRtvDescriptorHeap->Release();
-			pIRtvDescriptorHeap = NULL;
+			pIRtvDescriptorHeap = nullptr;
 		}
 	}
 
@@ -781,10 +781,10 @@ bool CGfxContext::InitializeSwapChain(void)
 ICommandQueue* CGfxContext::CreateCommandQueue(COMMAND_QUEUE_TYPE Type)
 {
 	bool status = true;
-	ICommandQueue* pICommandQueue = NULL;
+	ICommandQueue* pICommandQueue = nullptr;
 	D3D12_COMMAND_LIST_TYPE CmdListType = D3D12_COMMAND_LIST_TYPE_DIRECT;
-	ID3D12Fence* pID3D12Fence = NULL;
-	ID3D12CommandQueue* pID3D12CommandQueue = NULL;
+	ID3D12Fence* pID3D12Fence = nullptr;
+	ID3D12CommandQueue* pID3D12CommandQueue = nullptr;
 
 	status = EnumTranslator::CommandQueueType_To_CommandListType(Type, CmdListType);
 
@@ -815,28 +815,28 @@ ICommandQueue* CGfxContext::CreateCommandQueue(COMMAND_QUEUE_TYPE Type)
 	if (status)
 	{
 		pICommandQueue = new CCommandQueue();
-		if (pICommandQueue != NULL)
+		if (pICommandQueue != nullptr)
 		{
 			if (!static_cast<CCommandQueue*>(pICommandQueue)->Initialize(Type, pID3D12CommandQueue, pID3D12Fence))
 			{
 				DestroyCommandQueue(pICommandQueue);
-				pICommandQueue = NULL;
+				pICommandQueue = nullptr;
 			}
 		}
 	}
 
 	if (!status)
 	{
-		if (pID3D12CommandQueue != NULL)
+		if (pID3D12CommandQueue != nullptr)
 		{
 			pID3D12CommandQueue->Release();
-			pID3D12CommandQueue = NULL;
+			pID3D12CommandQueue = nullptr;
 		}
 
-		if (pID3D12Fence != NULL)
+		if (pID3D12Fence != nullptr)
 		{
 			pID3D12Fence->Release();
-			pID3D12Fence = NULL;
+			pID3D12Fence = nullptr;
 		}
 	}
 
@@ -846,11 +846,11 @@ ICommandQueue* CGfxContext::CreateCommandQueue(COMMAND_QUEUE_TYPE Type)
 void CGfxContext::DestroyCommandQueue(ICommandQueue* pICommandQueue)
 {
 	CCommandQueue* pCommandQueue = static_cast<CCommandQueue*>(pICommandQueue);
-	if (pCommandQueue != NULL)
+	if (pCommandQueue != nullptr)
 	{
 		pCommandQueue->Uninitialize();
 		delete pCommandQueue;
-		pCommandQueue = NULL;
+		pCommandQueue = nullptr;
 	}
 }
 
@@ -858,9 +858,9 @@ IRendererState* CGfxContext::CreateRendererState(const RENDERER_STATE_DESC& rDes
 {
 	bool status = true;
 
-	IRendererState* pIRendererState = NULL;
-	ID3D12PipelineState* pID3D12PipelineState = NULL;
-	ID3D12RootSignature* pID3D12RootSignature = NULL;
+	IRendererState* pIRendererState = nullptr;
+	ID3D12PipelineState* pID3D12PipelineState = nullptr;
+	ID3D12RootSignature* pID3D12RootSignature = nullptr;
 	D3D12_INPUT_ELEMENT_DESC InputElementDescs[MAX_INPUT_ELEMENTS] = {};
 	
 	if (rDesc.InputLayout.NumInputs <= MAX_INPUT_ELEMENTS)
@@ -917,11 +917,11 @@ IRendererState* CGfxContext::CreateRendererState(const RENDERER_STATE_DESC& rDes
 		Desc.NumParameters = 1;
 		Desc.pParameters = &RootParameter;
 		Desc.NumStaticSamplers = 0;
-		Desc.pStaticSamplers = NULL;
+		Desc.pStaticSamplers = nullptr;
 		Desc.Flags = Flags;
 
-		ID3DBlob* pSignature = NULL;
-		ID3DBlob* pError = NULL;
+		ID3DBlob* pSignature = nullptr;
+		ID3DBlob* pError = nullptr;
 
 		if (D3D12SerializeRootSignature(&Desc, D3D_ROOT_SIGNATURE_VERSION_1, &pSignature, &pError) == S_OK)
 		{
@@ -936,22 +936,22 @@ IRendererState* CGfxContext::CreateRendererState(const RENDERER_STATE_DESC& rDes
 			Console::Write(L"Error: Could not initialize root signature\n");
 			status = false;
 
-			if (pError != NULL)
+			if (pError != nullptr)
 			{
 				Console::Write(L"Error Info: %s\n", pError->GetBufferPointer());
 			}
 		}
 
-		if (pSignature != NULL)
+		if (pSignature != nullptr)
 		{
 			pSignature->Release();
-			pSignature = NULL;
+			pSignature = nullptr;
 		}
 
-		if (pError != NULL)
+		if (pError != nullptr)
 		{
 			pError->Release();
-			pError = NULL;
+			pError = nullptr;
 		}
 	}
 
@@ -973,21 +973,21 @@ IRendererState* CGfxContext::CreateRendererState(const RENDERER_STATE_DESC& rDes
 		Desc.PS.BytecodeLength  = rDesc.PixelShader.Size;
 
 		// Domain Shader
-		Desc.DS.pShaderBytecode = NULL;
+		Desc.DS.pShaderBytecode = nullptr;
 		Desc.DS.BytecodeLength  = 0;
 
 		// Hull Shader
-		Desc.HS.pShaderBytecode = NULL;
+		Desc.HS.pShaderBytecode = nullptr;
 		Desc.HS.BytecodeLength  = 0;
 
 		// Geometry Shader
-		Desc.GS.pShaderBytecode = NULL;
+		Desc.GS.pShaderBytecode = nullptr;
 		Desc.GS.BytecodeLength  = 0;
 	
 		// Stream Output
-		Desc.StreamOutput.pSODeclaration   = NULL;
+		Desc.StreamOutput.pSODeclaration   = nullptr;
 		Desc.StreamOutput.NumEntries       = 0;
-		Desc.StreamOutput.pBufferStrides   = NULL;
+		Desc.StreamOutput.pBufferStrides   = nullptr;
 		Desc.StreamOutput.NumStrides       = 0;
 		Desc.StreamOutput.RasterizedStream = 0;
 
@@ -1082,12 +1082,12 @@ IRendererState* CGfxContext::CreateRendererState(const RENDERER_STATE_DESC& rDes
 	if (status)
 	{
 		pIRendererState = new CRendererState();
-		if (pIRendererState != NULL)
+		if (pIRendererState != nullptr)
 		{
 			if (!static_cast<CRendererState*>(pIRendererState)->Initialize(pID3D12RootSignature, pID3D12PipelineState, m_pID3D12ShaderResourceHeap))
 			{
 				DestroyRendererState(pIRendererState);
-				pIRendererState = NULL;
+				pIRendererState = nullptr;
 			}
 		}
 		else
@@ -1103,19 +1103,19 @@ IRendererState* CGfxContext::CreateRendererState(const RENDERER_STATE_DESC& rDes
 void CGfxContext::DestroyRendererState(IRendererState* pIRendererState)
 {
 	CRendererState* pRendererState = static_cast<CRendererState*>(pIRendererState);
-	if (pRendererState != NULL)
+	if (pRendererState != nullptr)
 	{
 		pRendererState->Uninitialize();
 		delete pRendererState;
-		pRendererState = NULL;
+		pRendererState = nullptr;
 	}
 }
 
 IConstantBuffer* CGfxContext::CreateConstantBuffer(const CONSTANT_BUFFER_DESC& rDesc)
 {
 	bool status = true;
-	IConstantBuffer* pIConstantBuffer = NULL;
-	ID3D12Resource* pID3D12ConstantBufferResource = NULL;
+	IConstantBuffer* pIConstantBuffer = nullptr;
+	ID3D12Resource* pID3D12ConstantBufferResource = nullptr;
 	void* CpuVa = 0;
 
 	if (rDesc.Size % 256 != 0)
@@ -1174,24 +1174,24 @@ IConstantBuffer* CGfxContext::CreateConstantBuffer(const CONSTANT_BUFFER_DESC& r
 	if (status)
 	{
 		pIConstantBuffer = new CConstantBuffer();
-		if (pIConstantBuffer != NULL)
+		if (pIConstantBuffer != nullptr)
 		{
 			if (!static_cast<CConstantBuffer*>(pIConstantBuffer)->Initialize(pID3D12ConstantBufferResource, CpuVa))
 			{
 				DestroyConstantBuffer(pIConstantBuffer);
-				pIConstantBuffer = NULL;
+				pIConstantBuffer = nullptr;
 			}
 		}
 	}
 
 	if (!status)
 	{
-		if (pID3D12ConstantBufferResource != NULL)
+		if (pID3D12ConstantBufferResource != nullptr)
 		{
 			pID3D12ConstantBufferResource->Unmap(0, NULL);
 
 			pID3D12ConstantBufferResource->Release();
-			pID3D12ConstantBufferResource = NULL;
+			pID3D12ConstantBufferResource = nullptr;
 		}
 	}
 
@@ -1201,11 +1201,11 @@ IConstantBuffer* CGfxContext::CreateConstantBuffer(const CONSTANT_BUFFER_DESC& r
 void CGfxContext::DestroyConstantBuffer(IConstantBuffer* pIConstantBuffer)
 {
 	CConstantBuffer* pConstantBuffer = reinterpret_cast<CConstantBuffer*>(pIConstantBuffer);
-	if (pConstantBuffer != NULL)
+	if (pConstantBuffer != nullptr)
 	{
 		pConstantBuffer->Uninitialize();
 		delete pConstantBuffer;
-		pConstantBuffer = NULL;
+		pConstantBuffer = nullptr;
 	}
 }
 
@@ -1213,9 +1213,9 @@ ICommandBuffer* CGfxContext::CreateCommandBuffer(COMMAND_BUFFER_TYPE Type)
 {
 	bool status = true;
 	D3D12_COMMAND_LIST_TYPE CommandListType = D3D12_COMMAND_LIST_TYPE_DIRECT;
-	ICommandBuffer* pICommandBuffer = NULL;
-	ID3D12CommandAllocator* pID3D12CommandAllocator = NULL;
-	ID3D12GraphicsCommandList* pID3D12GraphicsCommandList = NULL;
+	ICommandBuffer* pICommandBuffer = nullptr;
+	ID3D12CommandAllocator* pID3D12CommandAllocator = nullptr;
+	ID3D12GraphicsCommandList* pID3D12GraphicsCommandList = nullptr;
 
 	status = EnumTranslator::CommandBufferType_To_CommandListType(Type, CommandListType);
 
@@ -1240,28 +1240,28 @@ ICommandBuffer* CGfxContext::CreateCommandBuffer(COMMAND_BUFFER_TYPE Type)
 	if (status)
 	{
 		pICommandBuffer = new CCommandBuffer();
-		if (pICommandBuffer != NULL)
+		if (pICommandBuffer != nullptr)
 		{
 			if (!static_cast<CCommandBuffer*>(pICommandBuffer)->Initialize(Type, pID3D12CommandAllocator, pID3D12GraphicsCommandList))
 			{
 				DestroyCommandBuffer(pICommandBuffer);
-				pICommandBuffer = NULL;
+				pICommandBuffer = nullptr;
 			}
 		}
 	}
 
 	if (!status)
 	{
-		if (pID3D12GraphicsCommandList == NULL)
+		if (pID3D12GraphicsCommandList == nullptr)
 		{
 			pID3D12GraphicsCommandList->Release();
-			pID3D12GraphicsCommandList = NULL;
+			pID3D12GraphicsCommandList = nullptr;
 		}
 
-		if (pID3D12CommandAllocator == NULL)
+		if (pID3D12CommandAllocator == nullptr)
 		{
 			pID3D12CommandAllocator->Release();
-			pID3D12CommandAllocator = NULL;
+			pID3D12CommandAllocator = nullptr;
 		}
 	}
 
@@ -1271,20 +1271,20 @@ ICommandBuffer* CGfxContext::CreateCommandBuffer(COMMAND_BUFFER_TYPE Type)
 void CGfxContext::DestroyCommandBuffer(ICommandBuffer* pICommandBuffer)
 {
 	CCommandBuffer* pCommandBuffer = static_cast<CCommandBuffer*>(pICommandBuffer);
-	if (pCommandBuffer != NULL)
+	if (pCommandBuffer != nullptr)
 	{
 		pCommandBuffer->Uninitialize();
 		delete pCommandBuffer;
-		pCommandBuffer = NULL;
+		pCommandBuffer = nullptr;
 	}
 }
 
 IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, UINT Size, UINT Stride)
 {
 	bool status = true;
-	IVertexBuffer* pIVertexBuffer = NULL;
-	ID3D12Resource* pID3D12VertexBuffer = NULL;
-	ID3D12Resource* pID3D12VertexDataUploadBuffer = NULL;
+	IVertexBuffer* pIVertexBuffer = nullptr;
+	ID3D12Resource* pID3D12VertexBuffer = nullptr;
+	ID3D12Resource* pID3D12VertexDataUploadBuffer = nullptr;
 	ID3D12GraphicsCommandList* pICommandList = static_cast<CCommandBuffer*>(m_pICopyCommandBuffer)->GetD3D12Interface();
 
 	if (status)
@@ -1315,7 +1315,7 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, UINT Siz
 
 	if (status)
 	{
-		BYTE* VertexBufferCpuVa = NULL;
+		byte* VertexBufferCpuVa = nullptr;
 
 		D3D12_RANGE CpuReadRange = {};
 		CpuReadRange.Begin = 0;
@@ -1365,7 +1365,7 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, UINT Siz
 	{
 		pIVertexBuffer = new CVertexBuffer();
 
-		if (pIVertexBuffer != NULL)
+		if (pIVertexBuffer != nullptr)
 		{
 			VERTEX_BUFFER_DESC Descriptor = {};
 			Descriptor.GpuVA = pID3D12VertexBuffer->GetGPUVirtualAddress();
@@ -1376,7 +1376,7 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, UINT Siz
 			{
 				status = false;
 				DestroyVertexBuffer(pIVertexBuffer);
-				pIVertexBuffer = NULL;
+				pIVertexBuffer = nullptr;
 			}
 		}
 		else
@@ -1385,16 +1385,16 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, UINT Siz
 		}
 	}
 
-	if (pID3D12VertexDataUploadBuffer != NULL)
+	if (pID3D12VertexDataUploadBuffer != nullptr)
 	{
 		pID3D12VertexDataUploadBuffer->Release();
-		pID3D12VertexDataUploadBuffer = NULL;
+		pID3D12VertexDataUploadBuffer = nullptr;
 	}
 
-	if (!status && (pID3D12VertexBuffer != NULL))
+	if (!status && (pID3D12VertexBuffer != nullptr))
 	{
 		pID3D12VertexBuffer->Release();
-		pID3D12VertexBuffer = NULL;
+		pID3D12VertexBuffer = nullptr;
 	}
 
 	return pIVertexBuffer;
@@ -1403,25 +1403,25 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, UINT Siz
 void CGfxContext::DestroyVertexBuffer(IVertexBuffer* pIVertexBuffer)
 {
 	CVertexBuffer* pVertexBuffer = static_cast<CVertexBuffer*>(pIVertexBuffer);
-	if (pVertexBuffer != NULL)
+	if (pVertexBuffer != nullptr)
 	{
 		pVertexBuffer->Uninitialize();
 		delete pVertexBuffer;
-		pVertexBuffer = NULL;
+		pVertexBuffer = nullptr;
 	}
 }
 
 IMesh* CGfxContext::CreateMesh(const MESH_DESC& rDesc)
 {
 	bool status = true;
-	IMesh* pIMesh = NULL;
-	IVertexBuffer* pIVertexBuffer = NULL;
+	IMesh* pIMesh = nullptr;
+	IVertexBuffer* pIVertexBuffer = nullptr;
 
 	if (status)
 	{
 		pIVertexBuffer = CreateVertexBuffer(rDesc.pVertexData, rDesc.VertexBufferSize, rDesc.VertexStride);
 
-		if (pIVertexBuffer == NULL)
+		if (pIVertexBuffer == nullptr)
 		{
 			status = false;
 		}
@@ -1430,13 +1430,13 @@ IMesh* CGfxContext::CreateMesh(const MESH_DESC& rDesc)
 	if (status)
 	{
 		pIMesh = new CMesh();
-		if (pIMesh != NULL)
+		if (pIMesh != nullptr)
 		{
 			if (!static_cast<CMesh*>(pIMesh)->Initialize(rDesc.NumVertices, pIVertexBuffer))
 			{
 				status = false;
 				DestroyMesh(pIMesh);
-				pIMesh = NULL;
+				pIMesh = nullptr;
 			}
 		}
 		else
@@ -1445,10 +1445,10 @@ IMesh* CGfxContext::CreateMesh(const MESH_DESC& rDesc)
 		}
 	}
 
-	if (!status && (pIVertexBuffer != NULL))
+	if (!status && (pIVertexBuffer != nullptr))
 	{
 		DestroyVertexBuffer(pIVertexBuffer);
-		pIVertexBuffer = NULL;
+		pIVertexBuffer = nullptr;
 	}
 
 	return pIMesh;
@@ -1457,11 +1457,143 @@ IMesh* CGfxContext::CreateMesh(const MESH_DESC& rDesc)
 void CGfxContext::DestroyMesh(IMesh* pIMesh)
 {
 	CMesh* pMesh = static_cast<CMesh*>(pIMesh);
-	if (pMesh != NULL)
+	if (pMesh != nullptr)
 	{
 		pMesh->Uninitialize();
 		delete pMesh;
-		pMesh = NULL;
+		pMesh = nullptr;
+	}
+}
+
+ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
+{
+	bool status = true;
+	ITexture* pITexture = nullptr;
+	ID3D12Resource* pID3D12TextureBuffer = nullptr;
+	ID3D12Resource* pID3D12TextureDataUploadBuffer = nullptr;
+	ID3D12GraphicsCommandList* pICommandList = static_cast<CCommandBuffer*>(m_pICopyCommandBuffer)->GetD3D12Interface();
+
+	if (status)
+	{
+		D3D12_RESOURCE_DESC TextureBufferDesc = {};
+		TextureBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		TextureBufferDesc.Alignment = 0;
+		TextureBufferDesc.Width = rDesc.Width;
+        TextureBufferDesc.Height = rDesc.Height;
+		TextureBufferDesc.DepthOrArraySize = 1;
+        TextureBufferDesc.MipLevels = 1;
+        TextureBufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		TextureBufferDesc.SampleDesc.Count = 1;
+        TextureBufferDesc.SampleDesc.Quality = 0;
+		TextureBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+        TextureBufferDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12PrimaryHeap, 0, &TextureBufferDesc, D3D12_RESOURCE_STATE_COPY_DEST, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12TextureBuffer)) != S_OK)
+		{
+			status = false;
+		}
+
+		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12UploadHeap, 0, &TextureBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12TextureDataUploadBuffer)) != S_OK)
+		{
+			status = false;
+		}
+	}
+
+	if (status)
+	{
+		byte* TextureBufferCpuVa = nullptr;
+
+		D3D12_RANGE CpuReadRange = {};
+		CpuReadRange.Begin = 0;
+		CpuReadRange.End = 0;
+
+		if (pID3D12TextureDataUploadBuffer->Map(0, &CpuReadRange, reinterpret_cast<void**>(&TextureBufferCpuVa)) == S_OK)
+		{
+			CopyMemory(TextureBufferCpuVa, rDesc.pTextureData, rDesc.TextureDataSize);
+			pID3D12TextureDataUploadBuffer->Unmap(0, NULL);
+		}
+		else
+		{
+			status = false;
+			Console::Write(L"Error: Failed to map texture buffer allocation\n");
+		}
+	}
+
+	if (status)
+	{
+		D3D12_RESOURCE_BARRIER Barrier = {};
+		Barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		Barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		Barrier.Transition.pResource = pID3D12TextureBuffer;
+		Barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		Barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+		Barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE; //D3D12_RESOURCE_STATE_COMMON; // Resources decay to the common state when accessed from a copy queue in commmand lists
+
+		pICommandList->CopyResource(pID3D12TextureBuffer, pID3D12TextureDataUploadBuffer);
+		pICommandList->ResourceBarrier(1, &Barrier);
+		if (pICommandList->Close() != S_OK)
+		{
+			status = false;
+			Console::Write(L"Error: Could not finalize command buffer\n");
+		}
+	}
+
+	if (status)
+	{
+        D3D12_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
+		SrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		SrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        SrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		SrvDesc.Texture2D.MostDetailedMip = 0;
+        SrvDesc.Texture2D.MipLevels = 1;
+		SrvDesc.Texture2D.PlaneSlice = 0;
+		SrvDesc.Texture2D.ResourceMinLODClamp = 0;
+
+        m_pID3D12Device->CreateShaderResourceView(pID3D12TextureBuffer, &SrvDesc, m_pID3D12ShaderResourceHeap->GetCPUDescriptorHandleForHeapStart());
+	}
+
+	if (status)
+	{
+		pITexture = new CTexture();
+
+		if (pITexture != nullptr)
+		{
+			if (!static_cast<CTexture*>(pITexture)->Initialize(pID3D12TextureBuffer))
+			{
+				status = false;
+				DestroyTexture(pITexture);
+				pITexture = nullptr;
+			}
+		}
+		else
+		{
+			status = false;
+		}
+	}
+
+	if (pID3D12TextureDataUploadBuffer != nullptr)
+	{
+		pID3D12TextureDataUploadBuffer->Release();
+		pID3D12TextureDataUploadBuffer = nullptr;
+	}
+
+	if (!status && (pID3D12TextureBuffer != nullptr))
+	{
+		pID3D12TextureBuffer->Release();
+		pID3D12TextureBuffer = nullptr;
+	}
+
+	return pITexture;
+}
+
+void CGfxContext::DestroyTexture(ITexture* pITexture)
+{
+	CTexture* pTexture = static_cast<CTexture*>(pITexture);
+	if (pTexture != nullptr)
+	{
+		pTexture->Uninitialize();
+		delete pTexture;
+		pTexture = nullptr;
 	}
 }
 
@@ -1469,7 +1601,7 @@ bool CGfxContext::SubmitCommandBuffer(ICommandBuffer* pICommandBuffer)
 {
 	bool status = true;
 
-	if (pICommandBuffer == NULL)
+	if (pICommandBuffer == nullptr)
 	{
 		status = false;
 	}

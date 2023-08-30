@@ -10,12 +10,12 @@ CSwapChain::CSwapChain(void)
 	m_FrameIndex = 0;
 	m_RtvDescriptorIncrement = 0;
 
-	m_pIDxgiSwapChain = NULL;
-	m_pID3D12DescriptorHeap = NULL;
+	m_pIDxgiSwapChain = nullptr;
+	m_pID3D12DescriptorHeap = nullptr;
 
 	for (uint32_t i = 0; i < NUM_BUFFERS; i++)
 	{
-		m_pID3D12RenderBuffers[i] = NULL;
+		m_pID3D12RenderBuffers[i] = nullptr;
 		m_RenderBufferCpuDescriptors[i] = 0;
 	}
 }
@@ -29,7 +29,7 @@ bool CSwapChain::Initialize(IDXGISwapChain4* pIDxgiSwapChain, ID3D12DescriptorHe
 {
 	bool status = true;
 
-	if ((pIDxgiSwapChain != NULL) && (pIRtvDescriptorHeap != NULL))
+	if ((pIDxgiSwapChain != nullptr) && (pIRtvDescriptorHeap != nullptr))
 	{
 		m_pIDxgiSwapChain = pIDxgiSwapChain;
 		m_pID3D12DescriptorHeap = pIRtvDescriptorHeap;
@@ -56,23 +56,23 @@ void CSwapChain::Uninitialize(void)
 {
 	for (uint32_t i = 0; i < NUM_BUFFERS; i++)
 	{
-		if (m_pID3D12RenderBuffers[i] != NULL)
+		if (m_pID3D12RenderBuffers[i] != nullptr)
 		{
 			m_pID3D12RenderBuffers[i]->Release();
-			m_pID3D12RenderBuffers[i] = NULL;
+			m_pID3D12RenderBuffers[i] = nullptr;
 		}
 	}
 
-	if (m_pID3D12DescriptorHeap != NULL)
+	if (m_pID3D12DescriptorHeap != nullptr)
 	{
 		m_pID3D12DescriptorHeap->Release();
-		m_pID3D12DescriptorHeap = NULL;
+		m_pID3D12DescriptorHeap = nullptr;
 	}
 
-	if (m_pIDxgiSwapChain != NULL)
+	if (m_pIDxgiSwapChain != nullptr)
 	{
 		m_pIDxgiSwapChain->Release();
-		m_pIDxgiSwapChain = NULL;
+		m_pIDxgiSwapChain = nullptr;
 	}
 }
 

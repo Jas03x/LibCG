@@ -8,7 +8,7 @@ bool System::GetModulePath(wchar_t* pPath, uint32_t nSize)
 {
 	bool status = true;
 
-	if (pPath == NULL)
+	if (pPath == nullptr)
 	{
 		status = false;
 		Console::Write(L"Error: Null path string buffer\n");

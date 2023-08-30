@@ -9,7 +9,7 @@ bool ReadShaderBytecode(const FILE_PATH& Path, SHADER_BYTECODE& rDesc)
 	bool status = true;
 
 	File* pFile = File::Open(Path);
-	if (pFile == NULL)
+	if (pFile == nullptr)
 	{
 		status = false;
 		Console::Write(L"Error: Failed to open shader file %s for reading\n", Path.FileName);
@@ -24,10 +24,10 @@ bool ReadShaderBytecode(const FILE_PATH& Path, SHADER_BYTECODE& rDesc)
 		}
 	}
 
-	if (pFile != NULL)
+	if (pFile != nullptr)
 	{
 		File::Close(pFile);
-		pFile = NULL;
+		pFile = nullptr;
 	}
 
 	return status;
@@ -35,10 +35,10 @@ bool ReadShaderBytecode(const FILE_PATH& Path, SHADER_BYTECODE& rDesc)
 
 void ReleaseShaderBytecode(SHADER_BYTECODE& rDesc)
 {
-	if (rDesc.pCode != NULL)
+	if (rDesc.pCode != nullptr)
 	{
 		Memory::Release(rDesc.pCode);
-		rDesc.pCode = NULL;
+		rDesc.pCode = nullptr;
 	}
 
 	rDesc.Size = 0;
@@ -46,9 +46,9 @@ void ReleaseShaderBytecode(SHADER_BYTECODE& rDesc)
 
 CRendererState::CRendererState(void)
 {
-	m_pID3D12PipelineState = NULL;
-	m_pID3D12RootSignature = NULL;
-	m_pShaderResourceHeap  = NULL;
+	m_pID3D12PipelineState = nullptr;
+	m_pID3D12RootSignature = nullptr;
+	m_pShaderResourceHeap  = nullptr;
 }
 
 CRendererState::~CRendererState(void)
@@ -59,7 +59,7 @@ bool CRendererState::Initialize(ID3D12RootSignature* pIRootSignature, ID3D12Pipe
 {
 	bool status = true;
 
-	if ((pIRootSignature != NULL) && (pIPipelineState != NULL) && (pShaderResourceHeap != NULL))
+	if ((pIRootSignature != nullptr) && (pIPipelineState != nullptr) && (pShaderResourceHeap != nullptr))
 	{
 		m_pID3D12PipelineState = pIPipelineState;
 		m_pID3D12RootSignature = pIRootSignature;
@@ -78,22 +78,22 @@ bool CRendererState::Initialize(ID3D12RootSignature* pIRootSignature, ID3D12Pipe
 
 void CRendererState::Uninitialize(void)
 {
-	if (m_pShaderResourceHeap != NULL)
+	if (m_pShaderResourceHeap != nullptr)
 	{
 		m_pShaderResourceHeap->Release();
-		m_pShaderResourceHeap = NULL;
+		m_pShaderResourceHeap = nullptr;
 	}
 
-	if (m_pID3D12PipelineState != NULL)
+	if (m_pID3D12PipelineState != nullptr)
 	{
 		m_pID3D12PipelineState->Release();
-		m_pID3D12PipelineState = NULL;
+		m_pID3D12PipelineState = nullptr;
 	}
 
-	if (m_pID3D12RootSignature != NULL)
+	if (m_pID3D12RootSignature != nullptr)
 	{
 		m_pID3D12RootSignature->Release();
-		m_pID3D12RootSignature = NULL;
+		m_pID3D12RootSignature = nullptr;
 	}
 }
 

@@ -11,7 +11,7 @@ File* File::Open(const wchar_t* Path)
 File* File::Open(const FILE_PATH& Path)
 {
 	bool status = true;
-	File* pFile = NULL;
+	File* pFile = nullptr;
 	wchar_t Buffer[1024] = {0};
 
 	if (StringCchCatEx(Buffer, _countof(Buffer), Path.Directory, NULL, NULL, 0) == S_OK)
@@ -38,7 +38,7 @@ void File::Close(File* pIFile)
 
 CFile::CFile()
 {
-	hFile = NULL;
+	hFile = nullptr;
 }
 
 CFile::~CFile()
@@ -54,7 +54,7 @@ CFile* CFile::Open(const wchar_t* Path)
 	if (pCFile->hFile == INVALID_HANDLE_VALUE)
 	{
 		delete pCFile;
-		pCFile = NULL;
+		pCFile = nullptr;
 
 		Console::Write(L"Error: Could not open file %s for reading\n", Path);
 	}
@@ -67,7 +67,7 @@ void CFile::Close(CFile* pCFile)
 	if ((pCFile->hFile != 0) && (pCFile->hFile != INVALID_HANDLE_VALUE))
 	{
 		CloseHandle(pCFile->hFile);
-		pCFile->hFile = NULL;
+		pCFile->hFile = nullptr;
 	}
 
 	delete pCFile;
@@ -78,7 +78,7 @@ bool CFile::Read(byte** ppBuffer, uint32_t* pSize)
 	bool status = true;
 	LARGE_INTEGER lpFileSize = {};
 
-	if ((ppBuffer == NULL) || (pSize == NULL))
+	if ((ppBuffer == nullptr) || (pSize == nullptr))
 	{
 		status = false;
 		Console::Write(L"Error: Invalid or null buffer/size parameters\n");
@@ -96,7 +96,7 @@ bool CFile::Read(byte** ppBuffer, uint32_t* pSize)
 	if (status)
 	{
 		*ppBuffer = reinterpret_cast<BYTE*>(Memory::Allocate(lpFileSize.QuadPart, true));
-		if (*ppBuffer == NULL)
+		if (*ppBuffer == nullptr)
 		{
 			status = false;
 			Console::Write(L"Error: Could not allocate buffer to read file\n");

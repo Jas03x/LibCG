@@ -47,12 +47,12 @@ private:
 public:
 	HelloCube()
 	{
-		m_pIWindow = NULL;
-		m_pIGfxContext = NULL;
-		m_pIRendererState = NULL;
-		m_pIMesh = NULL;
-		m_pIGraphicsCommandBuffer = NULL;
-		m_pIConstantBuffer = NULL;
+		m_pIWindow = nullptr;
+		m_pIGfxContext = nullptr;
+		m_pIRendererState = nullptr;
+		m_pIMesh = nullptr;
+		m_pIGraphicsCommandBuffer = nullptr;
+		m_pIConstantBuffer = nullptr;
 	}
 
 	bool Initialize(void)
@@ -63,7 +63,7 @@ public:
 		if (status)
 		{
 			m_pIWindow = WindowFactory::CreateInstance(WINDOW_CLASS, WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
-			if (m_pIWindow == NULL)
+			if (m_pIWindow == nullptr)
 			{
 				status = false;
 				Console::Write(L"Error: Could not initialize window\n");
@@ -77,7 +77,7 @@ public:
 			GfxContextDesc.PrimaryHeapSize = static_cast<UINT64>(64U * MB);
 
 			m_pIGfxContext = ContextFactory::CreateInstance(m_pIWindow, GfxContextDesc);
-			if (m_pIGfxContext == NULL)
+			if (m_pIGfxContext == nullptr)
 			{
 				status = false;
 				Console::Write(L"Error: Could not initialize graphics context\n");
@@ -107,7 +107,7 @@ public:
 			Desc.InputLayout.NumInputs = sizeof(InputElements) / sizeof(INPUT_ELEMENT_DESC);
 
 			m_pIRendererState = m_pIGfxContext->CreateRendererState(Desc);
-			if (m_pIRendererState == NULL)
+			if (m_pIRendererState == nullptr)
 			{
 				status = false;
 				Console::Write(L"Error: Could not initialize renderer\n");
@@ -121,7 +121,7 @@ public:
 		{
 			m_pIGraphicsCommandBuffer = m_pIGfxContext->CreateCommandBuffer(COMMAND_BUFFER_TYPE_GRAPHICS);
 
-			if (m_pIGraphicsCommandBuffer == NULL)
+			if (m_pIGraphicsCommandBuffer == nullptr)
 			{
 				status = false;
 				Console::Write(L"Error: could not create graphics command buffer\n");
@@ -135,7 +135,7 @@ public:
 
 			m_pIConstantBuffer = m_pIGfxContext->CreateConstantBuffer(Desc);
 
-			if (m_pIConstantBuffer == NULL)
+			if (m_pIConstantBuffer == nullptr)
 			{
 				status = false;
 				Console::Write(L"Error: could not create constant buffer\n");
@@ -282,7 +282,7 @@ public:
 
 			m_pIMesh = m_pIGfxContext->CreateMesh(MeshDesc);
 
-			if (m_pIMesh == NULL)
+			if (m_pIMesh == nullptr)
 			{
 				status = false;
 				Console::Write(L"Error: could not create mesh\n");
@@ -299,40 +299,40 @@ public:
 
 	void Uninitialize(void)
 	{
-		if (m_pIMesh != NULL)
+		if (m_pIMesh != nullptr)
 		{
 			m_pIGfxContext->DestroyMesh(m_pIMesh);
-			m_pIMesh = NULL;
+			m_pIMesh = nullptr;
 		}
 
-		if (m_pIConstantBuffer != NULL)
+		if (m_pIConstantBuffer != nullptr)
 		{
 			m_pIGfxContext->DestroyConstantBuffer(m_pIConstantBuffer);
-			m_pIConstantBuffer = NULL;
+			m_pIConstantBuffer = nullptr;
 		}
 
-		if (m_pIGraphicsCommandBuffer != NULL)
+		if (m_pIGraphicsCommandBuffer != nullptr)
 		{
 			m_pIGfxContext->DestroyCommandBuffer(m_pIGraphicsCommandBuffer);
-			m_pIGraphicsCommandBuffer = NULL;
+			m_pIGraphicsCommandBuffer = nullptr;
 		}
 
-		if (m_pIRendererState != NULL)
+		if (m_pIRendererState != nullptr)
 		{
 			m_pIGfxContext->DestroyRendererState(m_pIRendererState);
-			m_pIRendererState = NULL;
+			m_pIRendererState = nullptr;
 		}
 
-		if (m_pIGfxContext != NULL)
+		if (m_pIGfxContext != nullptr)
 		{
 			ContextFactory::DestroyInstance(m_pIGfxContext);
-			m_pIGfxContext = NULL;
+			m_pIGfxContext = nullptr;
 		}
 
-		if (m_pIWindow != NULL)
+		if (m_pIWindow != nullptr)
 		{
 			WindowFactory::DestroyInstance(m_pIWindow);
-			m_pIWindow = NULL;
+			m_pIWindow = nullptr;
 		}
 	}
 

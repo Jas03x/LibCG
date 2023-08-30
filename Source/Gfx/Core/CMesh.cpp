@@ -8,7 +8,7 @@
 
 CMesh::CMesh(void)
 {
-	m_pIVertexBuffer = NULL;
+	m_pIVertexBuffer = nullptr;
 }
 
 CMesh::~CMesh(void)
@@ -28,13 +28,13 @@ bool CMesh::Initialize(uint32_t NumVertices, IVertexBuffer* pIVertexBuffer)
 
 void CMesh::Uninitialize(void)
 {
-	if (m_pIVertexBuffer != NULL)
+	if (m_pIVertexBuffer != nullptr)
 	{
 		CVertexBuffer* pVertexBuffer = static_cast<CVertexBuffer*>(m_pIVertexBuffer);
 		pVertexBuffer->Uninitialize();
 		delete pVertexBuffer;
 
-		m_pIVertexBuffer = NULL;
+		m_pIVertexBuffer = nullptr;
 	}
 }
 

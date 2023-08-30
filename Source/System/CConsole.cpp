@@ -38,7 +38,7 @@ bool CConsole::Initialize(void)
 
 	m_hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
-	if ((m_hStdOut == NULL) || (m_hStdOut == INVALID_HANDLE_VALUE))
+	if ((m_hStdOut == nullptr) || (m_hStdOut == INVALID_HANDLE_VALUE))
 	{
 		status = false;
 	}
@@ -55,12 +55,12 @@ bool CConsole::Uninitialize(void)
 {
 	bool status = true;
 
-	m_hStdOut = NULL;
+	m_hStdOut = nullptr;
 
-	if (m_pBuffer != NULL)
+	if (m_pBuffer != nullptr)
 	{
 		Memory::Release(m_pBuffer);
-		m_pBuffer = NULL;
+		m_pBuffer = nullptr;
 	}
 
 	return status;

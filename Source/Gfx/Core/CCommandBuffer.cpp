@@ -11,8 +11,8 @@
 CCommandBuffer::CCommandBuffer(void)
 {
 	m_Type = COMMAND_BUFFER_TYPE_INVALID;
-	m_pID3D12CommandAllocator = NULL;
-	m_pID3D12CommandList = NULL;
+	m_pID3D12CommandAllocator = nullptr;
+	m_pID3D12CommandList = nullptr;
 	m_State = STATE_ERROR;
 }
 
@@ -28,7 +28,7 @@ bool CCommandBuffer::Initialize(COMMAND_BUFFER_TYPE Type, ID3D12CommandAllocator
 	m_Type = Type;
 	m_State = STATE_RESET;
 
-	if ((pICommandAllocator != NULL) && (pICommandList != NULL))
+	if ((pICommandAllocator != nullptr) && (pICommandList != nullptr))
 	{
 		m_pID3D12CommandAllocator = pICommandAllocator;
 		m_pID3D12CommandList = pICommandList;
@@ -44,16 +44,16 @@ bool CCommandBuffer::Initialize(COMMAND_BUFFER_TYPE Type, ID3D12CommandAllocator
 
 void CCommandBuffer::Uninitialize(void)
 {
-	if (m_pID3D12CommandList != NULL)
+	if (m_pID3D12CommandList != nullptr)
 	{
 		m_pID3D12CommandList->Release();
-		m_pID3D12CommandList = NULL;
+		m_pID3D12CommandList = nullptr;
 	}
 
-	if (m_pID3D12CommandAllocator != NULL)
+	if (m_pID3D12CommandAllocator != nullptr)
 	{
 		m_pID3D12CommandAllocator->Release();
-		m_pID3D12CommandAllocator = NULL;
+		m_pID3D12CommandAllocator = nullptr;
 	}
 }
 
@@ -108,7 +108,7 @@ bool CCommandBuffer::Reset(void)
 
 			if (status)
 			{
-				if (m_pID3D12CommandList->Reset(m_pID3D12CommandAllocator, NULL) == S_OK)
+				if (m_pID3D12CommandList->Reset(m_pID3D12CommandAllocator, nullptr) == S_OK)
 				{
 					m_State = STATE_RESET;
 				}
@@ -157,7 +157,7 @@ void CCommandBuffer::ProgramPipeline(IRendererState* pIRendererState)
 {
 	if ((m_State != STATE_CLOSED) && (m_State != STATE_ERROR))
 	{
-		if (pIRendererState != NULL)
+		if (pIRendererState != nullptr)
 		{
 			CRendererState* pRendererState = static_cast<CRendererState*>(pIRendererState);
 			ID3D12DescriptorHeap* pHeaps[] = { pRendererState->GetShaderResourceHeap() };
@@ -180,7 +180,7 @@ void CCommandBuffer::SetConstantBuffer(uint32_t Index, IConstantBuffer* pIConsta
 {
 	if ((m_State != STATE_CLOSED) && (m_State != STATE_ERROR))
 	{
-		if (pIConstantBuffer != NULL)
+		if (pIConstantBuffer != nullptr)
 		{
 			CConstantBuffer* pConstantBuffer = static_cast<CConstantBuffer*>(pIConstantBuffer);
 
@@ -199,7 +199,7 @@ void CCommandBuffer::SetRenderTarget(const RenderBuffer& rBuffer)
 {
 	if ((m_State != STATE_CLOSED) && (m_State != STATE_ERROR))
 	{
-		if ((rBuffer.hResource != NULL) && (rBuffer.CpuDescriptor != 0))
+		if ((rBuffer.hResource != nullptr) && (rBuffer.CpuDescriptor != 0))
 		{
 			D3D12_CPU_DESCRIPTOR_HANDLE CpuDescHandle = { rBuffer.CpuDescriptor };
 			ID3D12Resource* pIRenderBuffer = reinterpret_cast<ID3D12Resource*>(rBuffer.hResource);
@@ -228,7 +228,7 @@ void CCommandBuffer::Present(const RenderBuffer& rBuffer)
 {
 	if ((m_State != STATE_CLOSED) && (m_State != STATE_ERROR))
 	{
-		if (rBuffer.hResource != NULL)
+		if (rBuffer.hResource != nullptr)
 		{
 			ID3D12Resource* pIRenderBuffer = reinterpret_cast<ID3D12Resource*>(rBuffer.hResource);
 
@@ -255,12 +255,12 @@ void CCommandBuffer::ClearRenderBuffer(const RenderBuffer& rBuffer, const float 
 {
 	if ((m_State != STATE_CLOSED) && (m_State != STATE_ERROR))
 	{
-		if ((rBuffer.CpuDescriptor != 0) && (RGBA != NULL))
+		if ((rBuffer.CpuDescriptor != 0) && (RGBA != nullptr))
 		{
 			D3D12_CPU_DESCRIPTOR_HANDLE CpuDescHandle = { rBuffer.CpuDescriptor };
 
 			m_State = STATE_RECORDING;
-			m_pID3D12CommandList->ClearRenderTargetView(CpuDescHandle, RGBA, 0, NULL);
+			m_pID3D12CommandList->ClearRenderTargetView(CpuDescHandle, RGBA, 0, nullptr);
 		}
 		else
 		{
@@ -278,7 +278,7 @@ void CCommandBuffer::SetVertexBuffers(uint32_t NumBuffers, const IVertexBuffer* 
 	{
 		bool status = true;
 
-		if (pIVertexBuffers == NULL)
+		if (pIVertexBuffers == nullptr)
 		{
 			Console::Write(L"Error: Null descriptors\n");
 			status = false;

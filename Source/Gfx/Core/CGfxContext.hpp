@@ -86,6 +86,9 @@ public:
 	virtual IMesh*             CreateMesh(const MESH_DESC& rDesc);
 	virtual void               DestroyMesh(IMesh* pIMesh);
 
+	virtual ITexture*          CreateTexture(const TEXTURE_DESC& rDesc);
+	virtual void               DestroyTexture(ITexture* pITexture);
+
 	virtual bool               SubmitCommandBuffer(ICommandBuffer* pICommandBuffer);
 	virtual bool               SyncQueue(COMMAND_QUEUE_TYPE Type);
 };
