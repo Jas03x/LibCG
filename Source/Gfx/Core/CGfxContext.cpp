@@ -1497,10 +1497,15 @@ void CGfxContext::DestroyMesh(IMesh* pIMesh)
 ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 {
 	bool status = true;
+	
 	ITexture* pITexture = nullptr;
+
 	ID3D12Resource* pID3D12TextureBuffer = nullptr;
 	ID3D12Resource* pID3D12TextureDataUploadBuffer = nullptr;
 	ID3D12GraphicsCommandList* pICommandList = static_cast<CCommandBuffer*>(m_pICopyCommandBuffer)->GetD3D12Interface();
+
+	uint64_t TextureBufferSizeInBytes = 0;
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT TextureBufferFootprint = {};
 
 	if (status)
 	{
@@ -1517,10 +1522,12 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 		TextureBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
         TextureBufferDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
+		m_pID3D12Device->GetCopyableFootprints(&TextureBufferDesc, 0, 1, 0, &TextureBufferFootprint, NULL, NULL, &TextureBufferSizeInBytes);
+
 		D3D12_RESOURCE_DESC TextureBufferUploadDesc = {};
 		TextureBufferUploadDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
 		TextureBufferUploadDesc.Alignment = 0;
-		TextureBufferUploadDesc.Width = rDesc.Width;
+		TextureBufferUploadDesc.Width = TextureBufferSizeInBytes;
 		TextureBufferUploadDesc.Height = 1;
 		TextureBufferUploadDesc.DepthOrArraySize = 1;
 		TextureBufferUploadDesc.MipLevels = 1;
@@ -1551,7 +1558,7 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 
 		if (pID3D12TextureDataUploadBuffer->Map(0, &CpuReadRange, reinterpret_cast<void**>(&TextureBufferCpuVa)) == S_OK)
 		{
-			CopyMemory(TextureBufferCpuVa, rDesc.pTextureData, rDesc.TextureDataSize);
+			CopyMemory(TextureBufferCpuVa, rDesc.pTextureData, TextureBufferSizeInBytes);
 			pID3D12TextureDataUploadBuffer->Unmap(0, NULL);
 		}
 		else
@@ -1571,7 +1578,17 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 		Barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 		Barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE; //D3D12_RESOURCE_STATE_COMMON; // Resources decay to the common state when accessed from a copy queue in commmand lists
 
-		pICommandList->CopyResource(pID3D12TextureBuffer, pID3D12TextureDataUploadBuffer);
+		D3D12_TEXTURE_COPY_LOCATION Dst = {};
+		Dst.pResource = pID3D12TextureBuffer;
+		Dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+		Dst.SubresourceIndex = 0;
+
+		D3D12_TEXTURE_COPY_LOCATION Src = {};
+		Src.pResource = pID3D12TextureDataUploadBuffer;
+		Src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+		Src.PlacedFootprint = TextureBufferFootprint;
+
+		pICommandList->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
 		pICommandList->ResourceBarrier(1, &Barrier);
 		if (pICommandList->Close() != S_OK)
 		{

@@ -162,7 +162,6 @@ public:
 			TextureDesc.Width = 256;
 			TextureDesc.Height = 256;
 			TextureDesc.pTextureData = &TextureData[0][0][0];
-			TextureDesc.TextureDataSize = sizeof(TextureData);
 
 			m_pITexture = m_pIGfxContext->CreateTexture(TextureDesc);
 

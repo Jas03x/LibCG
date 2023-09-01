@@ -132,7 +132,6 @@ struct TEXTURE_DESC
 	uint32_t Width;
 	uint32_t Height;
 	byte*    pTextureData;
-	uint32_t TextureDataSize;
 };
 
 class __declspec(novtable) ITexture
