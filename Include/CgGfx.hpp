@@ -35,12 +35,12 @@ enum INPUT_ELEMENT
 enum INPUT_ELEMENT_FORMAT
 {
 	INPUT_ELEMENT_FORMAT_INVALID = 0,
-		INPUT_ELEMENT_FORMAT_XYZ_8F = 1, INPUT_ELEMENT_FORMAT_RGB_8F = 1,
-		INPUT_ELEMENT_FORMAT_XYZ_16F = 2, INPUT_ELEMENT_FORMAT_RGB_16F = 2,
-		INPUT_ELEMENT_FORMAT_XYZ_32F = 3, INPUT_ELEMENT_FORMAT_RGB_32F = 3,
-		INPUT_ELEMENT_FORMAT_XYZW_8F = 4, INPUT_ELEMENT_FORMAT_RGBA_8F = 4,
-		INPUT_ELEMENT_FORMAT_XYZW_16F = 5, INPUT_ELEMENT_FORMAT_RGBA_16F = 5,
-		INPUT_ELEMENT_FORMAT_XYZW_32F = 6, INPUT_ELEMENT_FORMAT_RGBA_32F = 6,
+	INPUT_ELEMENT_FORMAT_XYZ_8F = 1, INPUT_ELEMENT_FORMAT_RGB_8F = 1,
+	INPUT_ELEMENT_FORMAT_XYZ_16F = 2, INPUT_ELEMENT_FORMAT_RGB_16F = 2,
+	INPUT_ELEMENT_FORMAT_XYZ_32F = 3, INPUT_ELEMENT_FORMAT_RGB_32F = 3,
+	INPUT_ELEMENT_FORMAT_XYZW_8F = 4, INPUT_ELEMENT_FORMAT_RGBA_8F = 4,
+	INPUT_ELEMENT_FORMAT_XYZW_16F = 5, INPUT_ELEMENT_FORMAT_RGBA_16F = 5,
+	INPUT_ELEMENT_FORMAT_XYZW_32F = 6, INPUT_ELEMENT_FORMAT_RGBA_32F = 6,
 };
 
 enum INPUT_ELEMENT_TYPE
@@ -152,6 +152,7 @@ enum COMMAND_BUFFER_TYPE
 class __declspec(novtable) ICommandBuffer
 {
 public:
+	// Graphics command buffer commands
 	virtual void ClearRenderBuffer(const RenderBuffer& rBuffer, const float RGBA[]) = 0;
 	virtual void Present(const RenderBuffer& rBuffer) = 0;
 	virtual void SetVertexBuffers(uint32_t NumBuffers, const IVertexBuffer* pIVertexBuffers) = 0;
@@ -161,6 +162,7 @@ public:
 	virtual void ProgramPipeline(IRendererState* pIRendererState) = 0;
 	virtual void SetRenderTarget(const RenderBuffer& rBuffer) = 0;
 
+	// Generic commands
 	virtual bool Finalize(void) = 0;
 	virtual bool Reset(void) = 0;
 };

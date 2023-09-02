@@ -8,7 +8,7 @@ struct ID3D12GraphicsCommandList;
 
 class CCommandBuffer : public ICommandBuffer
 {
-private:
+protected:
 	enum STATE
 	{
 		STATE_ERROR     = 0,
@@ -28,17 +28,8 @@ public:
 	CCommandBuffer(void);
 	~CCommandBuffer(void);
 
-	bool                       Initialize(COMMAND_BUFFER_TYPE Type, ID3D12CommandAllocator* pICommandAllocator, ID3D12GraphicsCommandList* pICommandList);
+	bool                       Initialize(ID3D12CommandAllocator* pICommandAllocator, ID3D12GraphicsCommandList* pICommandList);
 	void                       Uninitialize(void);
-
-	virtual void               ClearRenderBuffer(const RenderBuffer& rBuffer, const float RGBA[]);
-	virtual void               Present(const RenderBuffer& rBuffer);
-	virtual void               SetVertexBuffers(uint32_t NumBuffers, const IVertexBuffer* pIVertexBuffers);
-	virtual void               SetConstantBuffer(uint32_t Index, IConstantBuffer* pIConstantBuffer);
-	virtual void			   Draw(uint32_t NumVertices);
-	virtual void               SetViewport(uint32_t x, uint32_t y, uint32_t w, uint32_t h, float min_depth, float max_depth);
-	virtual void               ProgramPipeline(IRendererState* pIRendererState);
-	virtual void               SetRenderTarget(const RenderBuffer& rBuffer);
 
 	virtual bool               Finalize(void);
 	virtual bool               Reset(void);

@@ -92,6 +92,12 @@
     <ClInclude Include="Source\Gfx\Core\CTexture.hpp">
       <Filter>Source Files\Gfx\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\CCopyCommandBuffer.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\CGfxCommandBuffer.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Cg.cpp">
@@ -143,6 +149,12 @@
       <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="Source\Gfx\Core\CTexture.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\CCopyCommandBuffer.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\CGfxCommandBuffer.cpp">
       <Filter>Source Files\Gfx\Core</Filter>
     </ClCompile>
   </ItemGroup>

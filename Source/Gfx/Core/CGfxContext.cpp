@@ -8,7 +8,8 @@
 
 #include "CgSystem.hpp"
 
-#include "CCommandBuffer.hpp"
+#include "CGfxCommandBuffer.hpp"
+#include "CCopyCommandBuffer.hpp"
 #include "CCommandQueue.hpp"
 #include "CConstantBuffer.hpp"
 #include "CMesh.hpp"
@@ -1268,10 +1269,29 @@ ICommandBuffer* CGfxContext::CreateCommandBuffer(COMMAND_BUFFER_TYPE Type)
 
 	if (status)
 	{
-		pICommandBuffer = new CCommandBuffer();
+		switch (Type)
+		{
+			case COMMAND_BUFFER_TYPE_GRAPHICS:
+			{
+				pICommandBuffer = new CGfxCommandBuffer();
+				break;
+			}
+			case COMMAND_BUFFER_TYPE_COPY:
+			{
+				pICommandBuffer = new CCopyCommandBuffer();
+				break;
+			}
+			default:
+			{
+				status = false;
+				Console::Write(L"Error: Invalid command buffer type\n");
+				break;
+			}
+		}
+		
 		if (pICommandBuffer != nullptr)
 		{
-			if (!static_cast<CCommandBuffer*>(pICommandBuffer)->Initialize(Type, pID3D12CommandAllocator, pID3D12GraphicsCommandList))
+			if (!static_cast<CCommandBuffer*>(pICommandBuffer)->Initialize(pID3D12CommandAllocator, pID3D12GraphicsCommandList))
 			{
 				DestroyCommandBuffer(pICommandBuffer);
 				pICommandBuffer = nullptr;
