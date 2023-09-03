@@ -86,6 +86,11 @@ bool EnumTranslator::InputElement_To_SemanticName(INPUT_ELEMENT Element, const c
 			rSemanticName = "COLOR";
 			break;
 		}
+		case INPUT_ELEMENT_UV:
+		{
+			rSemanticName = "TEXCOORD";
+			break;
+		}
 		default:
 		{
 			status = false;
@@ -104,6 +109,11 @@ bool EnumTranslator::InputElementFormat_To_DxgiFormat(INPUT_ELEMENT_FORMAT Eleme
 
 	switch (ElementFormat)
 	{
+		case INPUT_ELEMENT_FORMAT_XY_32F:
+		{
+			rDxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
+			break;
+		}
 		case INPUT_ELEMENT_FORMAT_RGB_32F:
 		{
 			rDxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;

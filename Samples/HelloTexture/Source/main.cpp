@@ -74,7 +74,7 @@ public:
 			INPUT_ELEMENT_DESC InputElements[] =
 			{
 				{ INPUT_ELEMENT_POSITION, 0, INPUT_ELEMENT_FORMAT_XYZ_32F, 0, sizeof(float) * 0, INPUT_ELEMENT_TYPE_PER_VERTEX, 0 },
-				{ INPUT_ELEMENT_COLOR,    0, INPUT_ELEMENT_FORMAT_RGB_32F, 0, sizeof(float) * 3, INPUT_ELEMENT_TYPE_PER_VERTEX, 0 },
+				{ INPUT_ELEMENT_UV,       0, INPUT_ELEMENT_FORMAT_XY_32F,  0, sizeof(float) * 3, INPUT_ELEMENT_TYPE_PER_VERTEX, 0 },
 			};
 
 			ReadShaderBytecode(FILE_PATH(module_directory.data(), L"/VertexShader.cso"), Desc.VertexShader);
