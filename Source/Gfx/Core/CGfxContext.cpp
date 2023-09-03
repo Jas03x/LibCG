@@ -12,6 +12,7 @@
 #include "CCopyCommandBuffer.hpp"
 #include "CCommandQueue.hpp"
 #include "CConstantBuffer.hpp"
+#include "CHeap.hpp"
 #include "CMesh.hpp"
 #include "CRendererState.hpp"
 #include "CSwapChain.hpp"
@@ -66,8 +67,8 @@ CGfxContext::CGfxContext(void)
 
 	m_pID3D12Device = nullptr;
 
-	m_pID3D12UploadHeap = nullptr;
-	m_pID3D12PrimaryHeap = nullptr;
+	m_pUploadHeap = nullptr;
+	m_pPrimaryHeap = nullptr;
 	m_pID3D12ShaderResourceHeap = nullptr;
 
 	m_pCopyQueue = nullptr;
@@ -254,16 +255,16 @@ void CGfxContext::Uninitialize(void)
 		m_pID3D12ShaderResourceHeap = nullptr;
 	}
 
-	if (m_pID3D12PrimaryHeap != nullptr)
+	if (m_pPrimaryHeap != nullptr)
 	{
-		m_pID3D12PrimaryHeap->Release();
-		m_pID3D12PrimaryHeap = nullptr;
+		delete m_pPrimaryHeap;
+		m_pPrimaryHeap = nullptr;
 	}
 
-	if (m_pID3D12UploadHeap != nullptr)
+	if (m_pUploadHeap != nullptr)
 	{
-		m_pID3D12UploadHeap->Release();
-		m_pID3D12UploadHeap = nullptr;
+		delete m_pUploadHeap;
+		m_pUploadHeap = nullptr;
 	}
 
 	if (m_pCopyQueue != nullptr)
@@ -561,32 +562,37 @@ bool CGfxContext::InitializeHeaps(const ContextFactory::Descriptor& rDesc)
 {
 	bool status = true;
 
+	ID3D12Heap* pID3D12UploadHeap = nullptr;
+	ID3D12Heap* pID3D12PrimaryHeap = nullptr;
+
+	D3D12_RESOURCE_DESC HeapResourceDesc = { };
+	HeapResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	HeapResourceDesc.Alignment = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
+	HeapResourceDesc.Height = 1;
+	HeapResourceDesc.DepthOrArraySize = 1;
+	HeapResourceDesc.MipLevels = 1;
+	HeapResourceDesc.Format = DXGI_FORMAT_UNKNOWN;
+	HeapResourceDesc.SampleDesc.Count = 1;
+	HeapResourceDesc.SampleDesc.Quality = 0;
+	HeapResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	HeapResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+	D3D12_HEAP_DESC HeapDesc = { };
+	HeapDesc.Properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+	HeapDesc.Properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+	HeapDesc.Properties.CreationNodeMask = 1;
+	HeapDesc.Properties.VisibleNodeMask = 1;
+
 	if (status)
 	{
-		D3D12_RESOURCE_DESC UploadHeapResourceDesc = { };
-		UploadHeapResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-		UploadHeapResourceDesc.Alignment = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
-		UploadHeapResourceDesc.Width = rDesc.UploadHeapSize;
-		UploadHeapResourceDesc.Height = 1;
-		UploadHeapResourceDesc.DepthOrArraySize = 1;
-		UploadHeapResourceDesc.MipLevels = 1;
-		UploadHeapResourceDesc.Format = DXGI_FORMAT_UNKNOWN;
-		UploadHeapResourceDesc.SampleDesc.Count = 1;
-		UploadHeapResourceDesc.SampleDesc.Quality = 0;
-		UploadHeapResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-		UploadHeapResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+		HeapResourceDesc.Width = rDesc.UploadHeapSize;
 
-		D3D12_RESOURCE_ALLOCATION_INFO UploadHeapAllocationInfo = m_pID3D12Device->GetResourceAllocationInfo(0, 1, &UploadHeapResourceDesc);
+		D3D12_RESOURCE_ALLOCATION_INFO UploadHeapAllocationInfo = m_pID3D12Device->GetResourceAllocationInfo(0, 1, &HeapResourceDesc);
 
-		D3D12_HEAP_DESC UploadHeapDesc = { };
-		UploadHeapDesc.SizeInBytes = UploadHeapAllocationInfo.SizeInBytes;
-		UploadHeapDesc.Properties.Type = D3D12_HEAP_TYPE_UPLOAD;
-		UploadHeapDesc.Properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-		UploadHeapDesc.Properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-		UploadHeapDesc.Properties.CreationNodeMask = 1;
-		UploadHeapDesc.Properties.VisibleNodeMask = 1;
+		HeapDesc.SizeInBytes = UploadHeapAllocationInfo.SizeInBytes;
+		HeapDesc.Properties.Type = D3D12_HEAP_TYPE_UPLOAD;
 
-		if (m_pID3D12Device->CreateHeap(&UploadHeapDesc, __uuidof(ID3D12Heap), reinterpret_cast<void**>(&m_pID3D12UploadHeap)) != S_OK)
+		if (m_pID3D12Device->CreateHeap(&HeapDesc, __uuidof(ID3D12Heap), reinterpret_cast<void**>(&pID3D12UploadHeap)) != S_OK)
 		{
 			status = false;
 			Console::Write(L"Error: Failed to create upload heap\n");
@@ -595,33 +601,80 @@ bool CGfxContext::InitializeHeaps(const ContextFactory::Descriptor& rDesc)
 
 	if (status)
 	{
-		D3D12_RESOURCE_DESC PrimaryHeapResourceDesc = { };
-		PrimaryHeapResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-		PrimaryHeapResourceDesc.Alignment = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
-		PrimaryHeapResourceDesc.Width = rDesc.PrimaryHeapSize;
-		PrimaryHeapResourceDesc.Height = 1;
-		PrimaryHeapResourceDesc.DepthOrArraySize = 1;
-		PrimaryHeapResourceDesc.MipLevels = 1;
-		PrimaryHeapResourceDesc.Format = DXGI_FORMAT_UNKNOWN;
-		PrimaryHeapResourceDesc.SampleDesc.Count = 1;
-		PrimaryHeapResourceDesc.SampleDesc.Quality = 0;
-		PrimaryHeapResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-		PrimaryHeapResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+		HeapResourceDesc.Width = rDesc.PrimaryHeapSize;
 
-		D3D12_RESOURCE_ALLOCATION_INFO PrimaryHeapAllocationInfo = m_pID3D12Device->GetResourceAllocationInfo(0, 1, &PrimaryHeapResourceDesc);
+		D3D12_RESOURCE_ALLOCATION_INFO PrimaryHeapAllocationInfo = m_pID3D12Device->GetResourceAllocationInfo(0, 1, &HeapResourceDesc);
 
-		D3D12_HEAP_DESC PrimaryHeapDesc = { };
-		PrimaryHeapDesc.SizeInBytes = PrimaryHeapAllocationInfo.SizeInBytes;
-		PrimaryHeapDesc.Properties.Type = D3D12_HEAP_TYPE_DEFAULT;
-		PrimaryHeapDesc.Properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-		PrimaryHeapDesc.Properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-		PrimaryHeapDesc.Properties.CreationNodeMask = 1;
-		PrimaryHeapDesc.Properties.VisibleNodeMask = 1;
+		HeapDesc.SizeInBytes = PrimaryHeapAllocationInfo.SizeInBytes;
+		HeapDesc.Properties.Type = D3D12_HEAP_TYPE_DEFAULT;
 
-		if (m_pID3D12Device->CreateHeap(&PrimaryHeapDesc, __uuidof(ID3D12Heap), reinterpret_cast<void**>(&m_pID3D12PrimaryHeap)) != S_OK)
+		if (m_pID3D12Device->CreateHeap(&HeapDesc, __uuidof(ID3D12Heap), reinterpret_cast<void**>(&pID3D12PrimaryHeap)) != S_OK)
 		{
 			status = false;
 			Console::Write(L"Error: Failed to create upload heap\n");
+		}
+	}
+
+	if (status)
+	{
+		m_pUploadHeap = new CHeap();
+		if (m_pUploadHeap != nullptr)
+		{
+			if (!m_pUploadHeap->Initialize(m_pID3D12Device, pID3D12UploadHeap))
+			{
+				status = false;
+				delete m_pUploadHeap;
+				m_pUploadHeap = nullptr;
+			}
+		}
+		else
+		{
+			status = false;
+			Console::Write(L"Error: Failed to allocate upload heap\n");
+		}
+	}
+
+	if (status)
+	{
+		m_pPrimaryHeap = new CHeap();
+		if (m_pPrimaryHeap != nullptr)
+		{
+			if (!m_pPrimaryHeap->Initialize(m_pID3D12Device, pID3D12PrimaryHeap))
+			{
+				status = false;
+				delete m_pPrimaryHeap;
+				m_pPrimaryHeap = nullptr;
+			}
+		}
+		else
+		{
+			status = false;
+			Console::Write(L"Error: Failed to allocate primary heap\n");
+		}
+	}
+
+	if (!status)
+	{
+		if (m_pUploadHeap != nullptr)
+		{
+			delete m_pUploadHeap;
+			m_pUploadHeap = nullptr;
+		}
+		else if (pID3D12UploadHeap != nullptr)
+		{
+			pID3D12UploadHeap->Release();
+			pID3D12UploadHeap = nullptr;
+		}
+
+		if (m_pPrimaryHeap != nullptr)
+		{
+			delete m_pPrimaryHeap;
+			m_pPrimaryHeap = nullptr;
+		}
+		else if (pID3D12PrimaryHeap != nullptr)
+		{
+			pID3D12PrimaryHeap->Release();
+			pID3D12PrimaryHeap = nullptr;
 		}
 	}
 
@@ -1170,7 +1223,7 @@ IConstantBuffer* CGfxContext::CreateConstantBuffer(const CONSTANT_BUFFER_DESC& r
 		cbDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		cbDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12UploadHeap, 0, &cbDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12ConstantBufferResource)) != S_OK)
+		if (!m_pUploadHeap->AllocateResource(cbDesc, D3D12_RESOURCE_STATE_GENERIC_READ, &pID3D12ConstantBufferResource))
 		{
 			status = false;
 		}
@@ -1351,12 +1404,12 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, uint32_t
 		VertexBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		VertexBufferDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12PrimaryHeap, 0, &VertexBufferDesc, D3D12_RESOURCE_STATE_COPY_DEST, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12VertexBuffer)) != S_OK)
+		if (!m_pUploadHeap->AllocateResource(VertexBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, &pID3D12VertexDataUploadBuffer))
 		{
 			status = false;
 		}
 
-		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12UploadHeap, 0, &VertexBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12VertexDataUploadBuffer)) != S_OK)
+		if (!m_pPrimaryHeap->AllocateResource(VertexBufferDesc, D3D12_RESOURCE_STATE_COPY_DEST, &pID3D12VertexBuffer))
 		{
 			status = false;
 		}
@@ -1404,11 +1457,14 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, uint32_t
 
 	if (status)
 	{
-		ID3D12CommandList* pICommandLists[] = { pCopyCommandBuffer->GetD3D12Interface() };
-
-		m_pCopyQueue->GetD3D12CommandQueue()->ExecuteCommandLists(1, pICommandLists);
-
-		status = m_pCopyQueue->Sync();
+		if (SubmitCommandBuffer(pCopyCommandBuffer))
+		{
+			status = SyncQueue(COMMAND_QUEUE_TYPE_COPY);
+		}
+		else
+		{
+			status = false;
+		}
 	}
 
 	if (status)
@@ -1558,12 +1614,12 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 		TextureBufferUploadDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		TextureBufferUploadDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12PrimaryHeap, 0, &TextureBufferDesc, D3D12_RESOURCE_STATE_COPY_DEST, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12TextureBuffer)) != S_OK)
+		if (!m_pUploadHeap->AllocateResource(TextureBufferUploadDesc, D3D12_RESOURCE_STATE_GENERIC_READ, &pID3D12TextureDataUploadBuffer))
 		{
 			status = false;
 		}
 
-		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12UploadHeap, 0, &TextureBufferUploadDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12TextureDataUploadBuffer)) != S_OK)
+		if (!m_pPrimaryHeap->AllocateResource(TextureBufferDesc, D3D12_RESOURCE_STATE_COPY_DEST, &pID3D12TextureBuffer))
 		{
 			status = false;
 		}
@@ -1621,11 +1677,14 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 
 	if (status)
 	{
-		ID3D12CommandList* pICommandLists[] = { pCopyCommandBuffer->GetD3D12Interface() };
-
-		m_pCopyQueue->GetD3D12CommandQueue()->ExecuteCommandLists(1, pICommandLists);
-
-		status = m_pCopyQueue->Sync();
+		if (SubmitCommandBuffer(pCopyCommandBuffer))
+		{
+			status = SyncQueue(COMMAND_QUEUE_TYPE_COPY);
+		}
+		else
+		{
+			status = false;
+		}
 	}
 
 	if (status)
@@ -1705,6 +1764,11 @@ bool CGfxContext::SubmitCommandBuffer(ICommandBuffer* pICommandBuffer)
 			case COMMAND_BUFFER_TYPE_GRAPHICS:
 			{
 				m_pGraphicsQueue->SubmitCommandBuffer(pICommandBuffer);
+				break;
+			}
+			case COMMAND_BUFFER_TYPE_COPY:
+			{
+				m_pCopyQueue->SubmitCommandBuffer(pICommandBuffer);
 				break;
 			}
 			default:

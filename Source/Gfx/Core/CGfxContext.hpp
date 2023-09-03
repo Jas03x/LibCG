@@ -11,9 +11,9 @@ struct IDXGISwapChain4;
 struct ID3D12Debug;
 struct ID3D12Device4;
 struct ID3D12Resource;
-struct ID3D12Heap;
 struct ID3D12DescriptorHeap;
 
+class CHeap;
 class CCommandQueue;
 class CSwapChain;
 
@@ -39,8 +39,8 @@ private:
 
 	ID3D12Device4*			   m_pID3D12Device;
 	
-	ID3D12Heap*				   m_pID3D12UploadHeap;
-	ID3D12Heap*				   m_pID3D12PrimaryHeap;
+	CHeap*				       m_pUploadHeap;
+	CHeap*				       m_pPrimaryHeap;
 
 	ID3D12DescriptorHeap*      m_pID3D12ShaderResourceHeap;
 
