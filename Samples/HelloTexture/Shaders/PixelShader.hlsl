@@ -1,8 +1,11 @@
 
+Texture2D    g_Texture : register(t0);
+SamplerState g_Sampler : register(s0);
+
 struct PS_Input
 {
     float4 vertex : SV_POSITION;
-    float3 color  : COLOR;
+    float2 uv     : TEXCOORD;
 };
 
 struct PS_Output
@@ -13,7 +16,7 @@ struct PS_Output
 PS_Output main(PS_Input input)
 {
     PS_Output Output;
-    Output.color = float4(input.color, 1);
+    Output.color = g_Texture.Sample(g_Sampler, input.uv);
 
     return Output;
 }

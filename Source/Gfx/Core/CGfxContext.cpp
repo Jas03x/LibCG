@@ -1621,6 +1621,15 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 
 	if (status)
 	{
+		ID3D12CommandList* pICommandLists[] = { pCopyCommandBuffer->GetD3D12Interface() };
+
+		m_pCopyQueue->GetD3D12CommandQueue()->ExecuteCommandLists(1, pICommandLists);
+
+		status = m_pCopyQueue->Sync();
+	}
+
+	if (status)
+	{
         D3D12_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
 		SrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		SrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
