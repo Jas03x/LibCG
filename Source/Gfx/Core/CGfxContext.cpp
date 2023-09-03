@@ -1597,7 +1597,7 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 		Barrier.Transition.pResource = pID3D12TextureBuffer;
 		Barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		Barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-		Barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE; //D3D12_RESOURCE_STATE_COMMON; // Resources decay to the common state when accessed from a copy queue in commmand lists
+		Barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COMMON; // Resources decay to the common state when accessed from a copy queue in commmand lists
 
 		D3D12_TEXTURE_COPY_LOCATION Dst = {};
 		Dst.pResource = pID3D12TextureBuffer;
@@ -1612,7 +1612,7 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 		pCopyCommandBuffer->Reset(nullptr);
 		pCopyCommandBuffer->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
 		pCopyCommandBuffer->ResourceBarrier(1, &Barrier);
-		if (pCopyCommandBuffer->Finalize() != S_OK)
+		if (!pCopyCommandBuffer->Finalize())
 		{
 			status = false;
 			Console::Write(L"Error: Could not finalize command buffer\n");
