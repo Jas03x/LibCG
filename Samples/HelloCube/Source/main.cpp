@@ -174,8 +174,8 @@ public:
 
 			struct Face
 			{
-				UINT vertices[6];
-				UINT colour;
+				uint32_t vertices[6];
+				uint32_t colour;
 			};
 
 			static const float Vertices[][3] =
@@ -259,9 +259,9 @@ public:
 
 			Vertex VertexArray[_countof(Faces) * 6] = {};
 
-			for (UINT i = 0; i < _countof(Faces); i++)
+			for (uint32_t i = 0; i < _countof(Faces); i++)
 			{
-				for (UINT j = 0; j < 6; j++)
+				for (uint32_t j = 0; j < 6; j++)
 				{
 					Vertex& v = VertexArray[i * _countof(Faces) + j];
 

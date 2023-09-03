@@ -142,7 +142,7 @@ bool CGfxContext::Initialize(IWindow* pIWindow, const ContextFactory::Descriptor
 
 	if (status)
 	{
-		UINT Flags = 0;
+		uint32_t Flags = 0;
 
 #if _DEBUG
 		Flags |= DXGI_CREATE_FACTORY_DEBUG;
@@ -658,7 +658,7 @@ bool CGfxContext::InitializeSwapChain(void)
 	IDXGISwapChain4* pIDxgiSwapChain = nullptr;
 	ID3D12DescriptorHeap* pIRtvDescriptorHeap = nullptr;
 
-	UINT RtvDescriptorIncrement = 0;
+	uint32_t RtvDescriptorIncrement = 0;
 	CSwapChain::Descriptor Descriptor = {};
 
 	if (status)
@@ -725,7 +725,7 @@ bool CGfxContext::InitializeSwapChain(void)
 	{
 		D3D12_CPU_DESCRIPTOR_HANDLE CpuDescriptor = pIRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 
-		for (UINT i = 0; status && (i < CSwapChain::NUM_BUFFERS); i++)
+		for (uint32_t i = 0; status && (i < CSwapChain::NUM_BUFFERS); i++)
 		{
 			ID3D12Resource* pIRenderBuffer = nullptr;
 
@@ -867,7 +867,7 @@ IRendererState* CGfxContext::CreateRendererState(const RENDERER_STATE_DESC& rDes
 	
 	if (rDesc.InputLayout.NumInputs <= MAX_INPUT_ELEMENTS)
 	{
-		for (UINT i = 0; status && (i < rDesc.InputLayout.NumInputs); i++)
+		for (uint32_t i = 0; status && (i < rDesc.InputLayout.NumInputs); i++)
 		{
 			if (status)
 			{
@@ -1328,7 +1328,7 @@ void CGfxContext::DestroyCommandBuffer(ICommandBuffer* pICommandBuffer)
 	}
 }
 
-IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, UINT Size, UINT Stride)
+IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, uint32_t Size, uint32_t Stride)
 {
 	bool status = true;
 	IVertexBuffer* pIVertexBuffer = nullptr;
@@ -1404,7 +1404,7 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, UINT Siz
 
 	if (status)
 	{
-		ID3D12CommandList* pICommandLists[] = { pCopyCommandBuffer->GetD3D12Interface()};
+		ID3D12CommandList* pICommandLists[] = { pCopyCommandBuffer->GetD3D12Interface() };
 
 		m_pCopyQueue->GetD3D12CommandQueue()->ExecuteCommandLists(1, pICommandLists);
 

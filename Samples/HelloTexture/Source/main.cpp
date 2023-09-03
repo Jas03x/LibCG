@@ -110,22 +110,22 @@ public:
 			struct Vertex
 			{
 				float vertex[3];
-				float colour[3];
+				float uv[2];
 			};
 
 			static const Vertex Vertices[] =
 			{
 				{
 					{  1.0f, -1.0f,  0.0f }, // right
-					{  0.0f,  1.0f,  0.0f }  // green
+					{  0.0f,  0.0f }
 				},
 				{
 					{ -1.0f, -1.0f,  0.0f }, // left
-					{  0.0f,  0.0f,  1.0f }  // blue
+					{  1.0f,  0.0f }
 				},
 				{
 					{  0.0f,  1.0f,  0.0f }, // top
-					{  1.0f,  0.0f,  0.0f }  // red
+					{  0.0f,  1.0f }
 				}
 			};
 
