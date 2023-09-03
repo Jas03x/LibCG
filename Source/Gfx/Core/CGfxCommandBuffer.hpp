@@ -20,6 +20,8 @@ public:
 	virtual void SetViewport(uint32_t x, uint32_t y, uint32_t w, uint32_t h, float min_depth, float max_depth);
 	virtual void ProgramPipeline(IRendererState* pIRendererState);
 	virtual void SetRenderTarget(const RenderBuffer& rBuffer);
+
+	virtual bool Reset(IRendererState* pIRendererState) override;
 };
 
 #endif // CG_GFX_CCOMMAND_BUFFER_HPP

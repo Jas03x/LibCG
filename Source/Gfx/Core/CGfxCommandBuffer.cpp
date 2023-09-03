@@ -49,6 +49,7 @@ void CGfxCommandBuffer::ProgramPipeline(IRendererState* pIRendererState)
 			CRendererState* pRendererState = static_cast<CRendererState*>(pIRendererState);
 			ID3D12DescriptorHeap* pHeaps[] = { pRendererState->GetShaderResourceHeap() };
 
+			// TODO: REMOVE ALL THIS DUPLICATE CODE
 			m_State = STATE_RECORDING;
 			m_pID3D12CommandList->SetPipelineState(pRendererState->GetD3D12PipelineState());
 			m_pID3D12CommandList->SetGraphicsRootSignature(pRendererState->GetD3D12RootSignature());
@@ -209,4 +210,22 @@ void CGfxCommandBuffer::Draw(uint32_t NumVertices)
 		m_State = STATE_RECORDING;
 		m_pID3D12CommandList->DrawInstanced(NumVertices, 1, 0, 0);
 	}
+}
+
+bool CGfxCommandBuffer::Reset(IRendererState* pIRendererState)
+{
+	bool status = CCommandBuffer::Reset(pIRendererState);
+
+	if (status)
+	{
+		CRendererState* pRendererState = static_cast<CRendererState*>(pIRendererState);
+		ID3D12DescriptorHeap* pHeaps[] = { pRendererState->GetShaderResourceHeap() };
+
+		m_pID3D12CommandList->SetGraphicsRootSignature(pRendererState->GetD3D12RootSignature());
+		m_pID3D12CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // TODO: Remove this hard coded primitive type
+		m_pID3D12CommandList->SetDescriptorHeaps(_countof(pHeaps), pHeaps); // TODO: Perhaps remove this unnecessary call - its only needed once
+		m_pID3D12CommandList->SetGraphicsRootDescriptorTable(1, pRendererState->GetShaderResourceHeap()->GetGPUDescriptorHandleForHeapStart());
+	}
+
+	return status;
 }

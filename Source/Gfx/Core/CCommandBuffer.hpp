@@ -32,7 +32,7 @@ public:
 	void                       Uninitialize(void);
 
 	virtual bool               Finalize(void);
-	virtual bool               Reset(void);
+	virtual bool               Reset(IRendererState* pIRendererState);
 
 	COMMAND_BUFFER_TYPE        GetType(void);
 	ID3D12GraphicsCommandList* GetD3D12Interface(void);

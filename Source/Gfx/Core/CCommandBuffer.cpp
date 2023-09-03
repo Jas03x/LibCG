@@ -4,6 +4,8 @@
 
 #include "Cg.hpp"
 
+#include "CRendererState.hpp"
+
 CCommandBuffer::CCommandBuffer(void)
 {
 	m_Type = COMMAND_BUFFER_TYPE_INVALID;
@@ -21,7 +23,7 @@ bool CCommandBuffer::Initialize(ID3D12CommandAllocator* pICommandAllocator, ID3D
 {
 	bool status = true;
 
-	m_State = STATE_RESET;
+	m_State = STATE_CLOSED;
 
 	if ((pICommandAllocator != nullptr) && (pICommandList != nullptr))
 	{
@@ -87,13 +89,13 @@ bool CCommandBuffer::Finalize(void)
 	return status;
 }
 
-bool CCommandBuffer::Reset(void)
+bool CCommandBuffer::Reset(IRendererState* pIRendererState)
 {
 	bool status = true;
 
 	if (m_State != STATE_RESET)
 	{
-		if (m_State != STATE_ERROR)
+		if (m_State == STATE_CLOSED)
 		{
 			if (m_pID3D12CommandAllocator->Reset() != S_OK)
 			{
@@ -103,7 +105,14 @@ bool CCommandBuffer::Reset(void)
 
 			if (status)
 			{
-				if (m_pID3D12CommandList->Reset(m_pID3D12CommandAllocator, nullptr) == S_OK)
+				ID3D12PipelineState* pID3D12PipelineState = nullptr;
+
+				if (pIRendererState != nullptr)
+				{
+					pID3D12PipelineState = static_cast<CRendererState*>(pIRendererState)->GetD3D12PipelineState();
+				}
+
+				if (m_pID3D12CommandList->Reset(m_pID3D12CommandAllocator, pID3D12PipelineState) == S_OK)
 				{
 					m_State = STATE_RESET;
 				}
@@ -117,7 +126,7 @@ bool CCommandBuffer::Reset(void)
 		else
 		{
 			status = false;
-			Console::Write(L"Error: Cannot reset command buffer in error state\n");
+			Console::Write(L"Error: Command buffer to be reset needs to be in a closed state\n");
 		}
 	}
 

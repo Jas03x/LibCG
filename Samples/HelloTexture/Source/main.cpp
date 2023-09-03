@@ -224,7 +224,7 @@ private:
 	{
 		bool status = true;
 
-		status = m_pIGraphicsCommandBuffer->Reset();
+		status = m_pIGraphicsCommandBuffer->Reset(m_pIRendererState);
 
 		if (status)
 		{
@@ -234,7 +234,6 @@ private:
 			m_pIGraphicsCommandBuffer->SetRenderTarget(CurrentBuffer);
 			m_pIGraphicsCommandBuffer->ClearRenderBuffer(CurrentBuffer, m_ClearColor);
 			
-			m_pIGraphicsCommandBuffer->ProgramPipeline(m_pIRendererState);
 			m_pIGraphicsCommandBuffer->SetVertexBuffers(1, m_pIMesh->GetVertexBuffer());
 			m_pIGraphicsCommandBuffer->Draw(m_pIMesh->GetVertexCount());
 			m_pIGraphicsCommandBuffer->Present(CurrentBuffer);

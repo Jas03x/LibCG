@@ -168,7 +168,7 @@ bool CGfxContext::Initialize(IWindow* pIWindow, const ContextFactory::Descriptor
 
 	if (status)
 	{
-		if (D3D12CreateDevice(m_pIDxgiAdapter, D3D_FEATURE_LEVEL_12_0, __uuidof(ID3D12Device), reinterpret_cast<void**>(&m_pID3D12Device)) != S_OK)
+		if (D3D12CreateDevice(m_pIDxgiAdapter, D3D_FEATURE_LEVEL_12_0, __uuidof(ID3D12Device4), reinterpret_cast<void**>(&m_pID3D12Device)) != S_OK)
 		{
 			status = false;
 		}
@@ -1260,7 +1260,7 @@ ICommandBuffer* CGfxContext::CreateCommandBuffer(COMMAND_BUFFER_TYPE Type)
 
 	if (status)
 	{
-		if (m_pID3D12Device->CreateCommandList(0, CommandListType, pID3D12CommandAllocator, NULL, __uuidof(ID3D12GraphicsCommandList), reinterpret_cast<void**>(&pID3D12GraphicsCommandList)) != S_OK)
+		if (m_pID3D12Device->CreateCommandList1(0, CommandListType, D3D12_COMMAND_LIST_FLAG_NONE, __uuidof(ID3D12GraphicsCommandList), reinterpret_cast<void**>(&pID3D12GraphicsCommandList)) != S_OK)
 		{
 			status = false;
 			Console::Write(L"Error: Failed to create command list\n");
@@ -1334,7 +1334,7 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, UINT Siz
 	IVertexBuffer* pIVertexBuffer = nullptr;
 	ID3D12Resource* pID3D12VertexBuffer = nullptr;
 	ID3D12Resource* pID3D12VertexDataUploadBuffer = nullptr;
-	ID3D12GraphicsCommandList* pICommandList = static_cast<CCommandBuffer*>(m_pICopyCommandBuffer)->GetD3D12Interface();
+	CCopyCommandBuffer* pCopyCommandBuffer = static_cast<CCopyCommandBuffer*>(m_pICopyCommandBuffer);
 
 	if (status)
 	{
@@ -1392,9 +1392,10 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, UINT Siz
 		Barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 		Barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COMMON; // Resources decay to the common state when accessed from a copy queue in commmand lists
 
-		pICommandList->CopyResource(pID3D12VertexBuffer, pID3D12VertexDataUploadBuffer);
-		pICommandList->ResourceBarrier(1, &Barrier);
-		if (pICommandList->Close() != S_OK)
+		pCopyCommandBuffer->Reset(nullptr);
+		pCopyCommandBuffer->CopyResource(pID3D12VertexBuffer, pID3D12VertexDataUploadBuffer);
+		pCopyCommandBuffer->ResourceBarrier(1, &Barrier);
+		if (!pCopyCommandBuffer->Finalize())
 		{
 			status = false;
 			Console::Write(L"Error: Could not finalize command buffer\n");
@@ -1403,7 +1404,7 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, UINT Siz
 
 	if (status)
 	{
-		ID3D12CommandList* pICommandLists[] = { pICommandList };
+		ID3D12CommandList* pICommandLists[] = { pCopyCommandBuffer->GetD3D12Interface()};
 
 		m_pCopyQueue->GetD3D12CommandQueue()->ExecuteCommandLists(1, pICommandLists);
 
@@ -1522,7 +1523,7 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 
 	ID3D12Resource* pID3D12TextureBuffer = nullptr;
 	ID3D12Resource* pID3D12TextureDataUploadBuffer = nullptr;
-	ID3D12GraphicsCommandList* pICommandList = static_cast<CCommandBuffer*>(m_pICopyCommandBuffer)->GetD3D12Interface();
+	CCopyCommandBuffer* pCopyCommandBuffer = static_cast<CCopyCommandBuffer*>(m_pICopyCommandBuffer);
 
 	uint64_t TextureBufferSizeInBytes = 0;
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT TextureBufferFootprint = {};
@@ -1608,9 +1609,10 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 		Src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
 		Src.PlacedFootprint = TextureBufferFootprint;
 
-		pICommandList->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
-		pICommandList->ResourceBarrier(1, &Barrier);
-		if (pICommandList->Close() != S_OK)
+		pCopyCommandBuffer->Reset(nullptr);
+		pCopyCommandBuffer->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
+		pCopyCommandBuffer->ResourceBarrier(1, &Barrier);
+		if (pCopyCommandBuffer->Finalize() != S_OK)
 		{
 			status = false;
 			Console::Write(L"Error: Could not finalize command buffer\n");

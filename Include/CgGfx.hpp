@@ -164,7 +164,7 @@ public:
 
 	// Generic commands
 	virtual bool Finalize(void) = 0;
-	virtual bool Reset(void) = 0;
+	virtual bool Reset(IRendererState* pIRendererState) = 0;
 };
 
 // class IQueue

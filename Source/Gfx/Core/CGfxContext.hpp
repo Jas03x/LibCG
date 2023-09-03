@@ -9,7 +9,7 @@ struct IDXGIAdapter4;
 struct IDXGISwapChain4;
 
 struct ID3D12Debug;
-struct ID3D12Device;
+struct ID3D12Device4;
 struct ID3D12Resource;
 struct ID3D12Heap;
 struct ID3D12DescriptorHeap;
@@ -37,7 +37,7 @@ private:
 	IDXGIFactory7*			   m_pIDxgiFactory;
 	IDXGIAdapter4*			   m_pIDxgiAdapter;
 
-	ID3D12Device*			   m_pID3D12Device;
+	ID3D12Device4*			   m_pID3D12Device;
 	
 	ID3D12Heap*				   m_pID3D12UploadHeap;
 	ID3D12Heap*				   m_pID3D12PrimaryHeap;

@@ -61,3 +61,54 @@ void CCopyCommandBuffer::SetRenderTarget(const RenderBuffer& rBuffer)
 	m_State = STATE_ERROR;
 	Console::Write(L"Error: Invalid graphics command buffer call\n");
 }
+
+void CCopyCommandBuffer::CopyResource(ID3D12Resource* pDstResource, ID3D12Resource* pSrcResource)
+{
+	if ((m_State != STATE_CLOSED) && (m_State != STATE_ERROR))
+	{
+		if ((pDstResource != nullptr) && (pSrcResource != nullptr))
+		{
+			m_State = STATE_RECORDING;
+			m_pID3D12CommandList->CopyResource(pDstResource, pSrcResource);
+		}
+		else
+		{
+			Console::Write(L"Error: Invalid copy resource parameter(s)\n");
+			m_State = STATE_ERROR;
+		}
+	}
+}
+
+void CCopyCommandBuffer::ResourceBarrier(uint32_t NumBarriers, const D3D12_RESOURCE_BARRIER* pBarriers)
+{
+	if ((m_State != STATE_CLOSED) && (m_State != STATE_ERROR))
+	{
+		if ((NumBarriers > 0) && (pBarriers != nullptr))
+		{
+			m_State = STATE_RECORDING;
+			m_pID3D12CommandList->ResourceBarrier(NumBarriers, pBarriers);
+		}
+		else
+		{
+			Console::Write(L"Error: Invalid resource barrier parameter(s)\n");
+			m_State = STATE_ERROR;
+		}
+	}
+}
+
+void CCopyCommandBuffer::CopyTextureRegion(const D3D12_TEXTURE_COPY_LOCATION* pDst, uint32_t DstX, uint32_t DstY, uint32_t DstZ, const D3D12_TEXTURE_COPY_LOCATION* pSrc, const D3D12_BOX* pSrcBox)
+{
+	if ((m_State != STATE_CLOSED) && (m_State != STATE_ERROR))
+	{
+		if ((pDst != nullptr) && (pSrc != nullptr))
+		{
+			m_State = STATE_RECORDING;
+			m_pID3D12CommandList->CopyTextureRegion(pDst, DstX, DstY, DstZ, pSrc, pSrcBox);
+		}
+		else
+		{
+			Console::Write(L"Error: Invalid copy texture region parameter(s)\n");
+			m_State = STATE_ERROR;
+		}
+	}
+}
