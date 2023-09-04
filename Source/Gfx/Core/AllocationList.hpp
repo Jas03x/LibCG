@@ -5,7 +5,7 @@ struct ID3D12Resource;
 
 class AllocationList
 {
-public:
+private:
 	struct Entry
 	{
 		ID3D12Resource* pAllocation;
@@ -18,7 +18,6 @@ public:
 		Entry* pTail;
 	};
 
-private:
 	// TODO: Make this dynamic
 	enum { MAX_ENTRIES = 16 };
 

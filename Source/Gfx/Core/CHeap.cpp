@@ -50,7 +50,6 @@ bool CHeap::AllocateResource(const D3D12_RESOURCE_DESC& pDesc, D3D12_RESOURCE_ST
 	bool status = true;
 
 	uint64_t AllocationSize = pDesc.Width;
-	uint64_t AllocationOffset = (m_OffsetInBytes & ~(pDesc.Alignment - 1));
 
 	if (m_OffsetInBytes + AllocationSize >= m_SizeInBytes)
 	{

@@ -180,6 +180,7 @@
     <ClInclude Include="Source\Gfx\Core\CGfxCommandBuffer.hpp" />
     <ClInclude Include="Source\Gfx\Core\CGfxContext.hpp" />
     <ClInclude Include="Source\Gfx\Core\CHeap.hpp" />
+    <ClInclude Include="Source\Gfx\Core\CHeapAllocator.hpp" />
     <ClInclude Include="Source\Gfx\Core\CMesh.hpp" />
     <ClInclude Include="Source\Gfx\Core\CRendererState.hpp" />
     <ClInclude Include="Source\Gfx\Core\CSwapChain.hpp" />
@@ -203,6 +204,7 @@
     <ClCompile Include="Source\Gfx\Core\CGfxCommandBuffer.cpp" />
     <ClCompile Include="Source\Gfx\Core\CGfxContext.cpp" />
     <ClCompile Include="Source\Gfx\Core\CHeap.cpp" />
+    <ClCompile Include="Source\Gfx\Core\CHeapAllocator.cpp" />
     <ClCompile Include="Source\Gfx\Core\CMesh.cpp" />
     <ClCompile Include="Source\Gfx\Core\CRendererState.cpp" />
     <ClCompile Include="Source\Gfx\Core\CSwapChain.cpp" />

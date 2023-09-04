@@ -1,0 +1,78 @@
+#ifndef CG_HEAP_ALLOCATOR_HPP
+#define CG_HEAP_ALLOCATOR_HPP
+
+#include "CgDef.hpp"
+
+struct Page
+{
+	uint64_t Offset;
+};
+
+class CHeapAllocator
+{
+private:
+	enum PAGE_SIZE : uint32_t
+	{
+		PAGE_SIZE__256_BYTE = 0,
+		PAGE_SIZE__512_BYTE = 1,
+		PAGE_SIZE__1_KB = 2,
+		PAGE_SIZE__2_KB = 3,
+		PAGE_SIZE__4_KB = 4,
+		PAGE_SIZE__8_KB = 5,
+		PAGE_SIZE__16_KB = 6,
+		PAGE_SIZE__32_KB = 7,
+		PAGE_SIZE__64_KB = 8,
+		PAGE_SIZE__128_KB = 9,
+		PAGE_SIZE__COUNT = 10
+	};
+
+	static const uint64_t PAGE_SIZES[PAGE_SIZE__COUNT];
+
+	struct PAGE_ENTRY
+	{
+		uint64_t    Offset;
+		PAGE_ENTRY* pNext;
+	};
+
+	struct PAGE_CHUNK
+	{
+		PAGE_ENTRY* pEntries;
+		PAGE_CHUNK* pNext;
+	};
+
+	// A chunk should take about 4KB
+	enum { PAGE_ENTRIES_PER_CHUNK = (4 * KB - sizeof(PAGE_CHUNK)) / sizeof(PAGE_ENTRY) };
+
+	struct PAGE_ENTRY_LINKED_LIST
+	{
+		PAGE_ENTRY* pHead;
+		PAGE_ENTRY* pTail;
+	};
+
+	struct PAGE_CHUNK_LINKED_LIST
+	{
+		PAGE_CHUNK* pHead;
+		PAGE_CHUNK* pTail;
+	};
+
+	PAGE_ENTRY_LINKED_LIST m_UsedPages[PAGE_SIZE__COUNT]; // All pages in use (per block size)
+	PAGE_ENTRY_LINKED_LIST m_FreePages[PAGE_SIZE__COUNT]; // All pages avaiable to be used (per block size)
+
+	PAGE_CHUNK_LINKED_LIST m_Chunks;      // All page chunks
+	PAGE_ENTRY_LINKED_LIST m_PageEntries; // All available page entries
+
+public:
+	CHeapAllocator(void);
+	~CHeapAllocator(void);
+
+	bool Initialize(uint64_t HeapSizeInBytes);
+	void Uninitialize(void);
+
+private:
+	PAGE_CHUNK* AllocateChunk(void);
+	PAGE_ENTRY* AllocateEntry(void);
+
+	bool InsertEntry(PAGE_SIZE Size, uint64_t Offset, bool Allocated);
+};
+
+#endif // CG_HEAP_ALLOCATOR_HPP
