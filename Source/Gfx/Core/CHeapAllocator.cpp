@@ -61,7 +61,16 @@ bool CHeapAllocator::Initialize(uint64_t HeapSizeInBytes)
 
 void CHeapAllocator::Uninitialize(void)
 {
+	PAGE_CHUNK* pChunk = m_Chunks.pHead;
 
+	while (pChunk != nullptr)
+	{
+		PAGE_CHUNK* pTemp = pChunk;
+
+		pChunk = pChunk->pNext;
+
+		Memory::Release(pTemp);
+	}
 }
 
 CHeapAllocator::PAGE_CHUNK* CHeapAllocator::AllocateChunk(void)
@@ -100,6 +109,7 @@ CHeapAllocator::PAGE_CHUNK* CHeapAllocator::AllocateChunk(void)
 			else
 			{
 				m_PageEntries.pTail->pNext = pEntry;
+				pEntry->pPrev = m_PageEntries.pTail;
 				m_PageEntries.pTail = pEntry;
 			}
 		}
@@ -129,6 +139,7 @@ CHeapAllocator::PAGE_ENTRY* CHeapAllocator::AllocateEntry(void)
 		pEntry = m_PageEntries.pHead;
 
 		m_PageEntries.pHead = m_PageEntries.pHead->pNext;
+		m_PageEntries.pHead->pPrev = nullptr;
 		if (m_PageEntries.pHead == nullptr)
 		{
 			m_PageEntries.pTail = nullptr;
@@ -158,6 +169,7 @@ bool CHeapAllocator::InsertEntry(PAGE_SIZE Size, uint64_t Offset, bool Allocated
 			CgAssert(List.pTail != nullptr, L"Error: Page entry list tail is null\n");
 
 			List.pTail->pNext = pEntry;
+			pEntry->pPrev = List.pTail;
 			List.pTail = pEntry;
 		}
 	}

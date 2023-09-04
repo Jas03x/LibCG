@@ -32,6 +32,7 @@ private:
 	{
 		uint64_t    Offset;
 		PAGE_ENTRY* pNext;
+		PAGE_ENTRY* pPrev;
 	};
 
 	struct PAGE_CHUNK
