@@ -7,7 +7,6 @@
 CHeap::CHeap(void)
 {
 	m_SizeInBytes = 0;
-	m_OffsetInBytes = 0;
 
 	m_pID3D12Heap = nullptr;
 	m_pID3D12Device = nullptr;

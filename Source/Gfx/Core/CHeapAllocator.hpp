@@ -3,6 +3,8 @@
 
 #include "CgDef.hpp"
 
+#include <vector>
+
 class CHeapAllocator
 {
 private:
@@ -51,11 +53,18 @@ private:
 		PAGE_CHUNK* pTail;
 	};
 
-	PAGE_ENTRY_LINKED_LIST m_UsedPages[PAGE_SIZE__COUNT]; // All pages in use (per block size)
-	PAGE_ENTRY_LINKED_LIST m_FreePages[PAGE_SIZE__COUNT]; // All pages avaiable to be used (per block size)
+	struct ALLOCATION
+	{
+		uint64_t               Offset;
+		PAGE_ENTRY_LINKED_LIST Entries;
+	};
 
-	PAGE_CHUNK_LINKED_LIST m_Chunks;      // All page chunks
-	PAGE_ENTRY_LINKED_LIST m_PageEntries; // All available page entries
+	std::vector<ALLOCATION> m_Allocations;
+
+	PAGE_ENTRY_LINKED_LIST  m_FreePages[PAGE_SIZE__COUNT]; // All pages avaiable to be used (per block size)
+
+	PAGE_CHUNK_LINKED_LIST  m_Chunks;      // All page chunks
+	PAGE_ENTRY_LINKED_LIST  m_PageEntries; // All available page entries
 
 public:
 	CHeapAllocator(void);
@@ -70,9 +79,12 @@ private:
 	PAGE_CHUNK* AllocateChunk(void);
 	PAGE_ENTRY* AllocateEntry(void);
 
+	bool        AllocateOnePage(uint64_t Size, uint64_t& Offset);
+	bool        AllocateMultiplePages(uint64_t Size, uint64_t& Offset);
+
 	PAGE_SIZE   GetPageSize(uint64_t Size);
 
-	bool        InsertEntry(PAGE_SIZE Size, uint64_t Offset, bool Allocated);
+	bool        InsertEntry(PAGE_SIZE Size, uint64_t Offset, PAGE_ENTRY_LINKED_LIST& List);
 };
 
 #endif // CG_HEAP_ALLOCATOR_HPP

@@ -17,12 +17,9 @@ class CHeap
 {
 private:
 	uint64_t       m_SizeInBytes;
-	uint64_t       m_OffsetInBytes;
 
 	ID3D12Heap*    m_pID3D12Heap;
 	ID3D12Device4* m_pID3D12Device;
-
-	AllocationList m_AllocationList;
 
 public:
 	CHeap(void);

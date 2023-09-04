@@ -20,7 +20,6 @@ const uint64_t CHeapAllocator::PAGE_SIZES[CHeapAllocator::PAGE_SIZE__COUNT] =
 
 CHeapAllocator::CHeapAllocator(void)
 {
-	ZeroMemory(&m_UsedPages, sizeof(m_UsedPages));
 	ZeroMemory(&m_FreePages, sizeof(m_FreePages));
 	ZeroMemory(&m_Chunks, sizeof(m_Chunks));
 	ZeroMemory(&m_PageEntries, sizeof(m_PageEntries));
@@ -48,7 +47,7 @@ bool CHeapAllocator::Initialize(uint64_t HeapSizeInBytes)
 
 		for (uint64_t offset = 0; offset < HeapSizeInBytes; offset += PAGE_SIZES[page_size])
 		{
-			if (!InsertEntry(page_size, offset, false))
+			if (!InsertEntry(page_size, offset, m_FreePages[page_size]))
 			{
 				status = false;
 				break;
@@ -149,7 +148,7 @@ CHeapAllocator::PAGE_ENTRY* CHeapAllocator::AllocateEntry(void)
 	return pEntry;
 }
 
-bool CHeapAllocator::InsertEntry(PAGE_SIZE Size, uint64_t Offset, bool Allocated)
+bool CHeapAllocator::InsertEntry(PAGE_SIZE Size, uint64_t Offset, PAGE_ENTRY_LINKED_LIST& List)
 {
 	bool status = true;
 	PAGE_ENTRY* pEntry = AllocateEntry();
@@ -158,7 +157,6 @@ bool CHeapAllocator::InsertEntry(PAGE_SIZE Size, uint64_t Offset, bool Allocated
 	{
 		pEntry->Offset = Offset;
 
-		PAGE_ENTRY_LINKED_LIST& List = Allocated ? m_UsedPages[Size] : m_FreePages[Size];
 		if (List.pHead == nullptr)
 		{
 			List.pHead = pEntry;
@@ -207,26 +205,14 @@ CHeapAllocator::PAGE_SIZE CHeapAllocator::GetPageSize(uint64_t Size)
 bool CHeapAllocator::Allocate(uint64_t Size, uint64_t& Offset)
 {
 	bool status = true;
-	PAGE_ENTRY* pEntry = nullptr;
 
-	// Search for existing free entries of the required size
-	if (m_FreePages[Size].pHead != nullptr)
+	if (Size <= PAGE_SIZES[PAGE_SIZE__COUNT - 1])
 	{
-		pEntry = m_FreePages[Size].pHead;
-
-		m_FreePages[Size].pHead = pEntry->pNext;
-		pEntry->pNext = nullptr;
-
-		if (m_FreePages[Size].pHead != nullptr)
-		{
-			m_FreePages[Size].pHead->pPrev = nullptr;
-		}
+		status = AllocateOnePage(Size, Offset);
 	}
-
-	// Try to break apart larger pages
-	if (status && !pEntry)
+	else
 	{
-		// Find the next largest available page size
+		status = AllocateMultiplePages(Size, Offset);
 	}
 
 	return status;
