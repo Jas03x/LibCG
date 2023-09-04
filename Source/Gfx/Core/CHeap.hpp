@@ -1,7 +1,11 @@
 #ifndef CG_CHEAP_HPP
 #define CG_CHEAP_HPP
 
-enum D3D12_RESOURCE_STATES;
+#include "CgDef.hpp"
+
+#include "AllocationList.hpp"
+
+enum   D3D12_RESOURCE_STATES;
 
 struct D3D12_RESOURCE_DESC;
 
@@ -18,6 +22,8 @@ private:
 	ID3D12Heap*    m_pID3D12Heap;
 	ID3D12Device4* m_pID3D12Device;
 
+	AllocationList m_AllocationList;
+
 public:
 	CHeap(void);
 	~CHeap(void);
@@ -26,6 +32,7 @@ public:
 	void Uninitialize(void);
 
 	bool AllocateResource(const D3D12_RESOURCE_DESC& pDesc, D3D12_RESOURCE_STATES InitialState, ID3D12Resource** pResource);
+	void FreeResource(ID3D12Resource* pResource);
 };
 
 #endif // CG_CHEAP_HPP

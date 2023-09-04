@@ -172,6 +172,7 @@
     <ClInclude Include="Include\CgGfx.hpp" />
     <ClInclude Include="Include\CgMath.hpp" />
     <ClInclude Include="Include\CgSystem.hpp" />
+    <ClInclude Include="Source\Gfx\Core\AllocationList.hpp" />
     <ClInclude Include="Source\Gfx\Core\CCommandBuffer.hpp" />
     <ClInclude Include="Source\Gfx\Core\CCommandQueue.hpp" />
     <ClInclude Include="Source\Gfx\Core\CConstantBuffer.hpp" />
@@ -194,6 +195,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Cg.cpp" />
+    <ClCompile Include="Source\Gfx\Core\AllocationList.cpp" />
     <ClCompile Include="Source\Gfx\Core\CCommandBuffer.cpp" />
     <ClCompile Include="Source\Gfx\Core\CCommandQueue.cpp" />
     <ClCompile Include="Source\Gfx\Core\CConstantBuffer.cpp" />

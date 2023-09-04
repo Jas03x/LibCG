@@ -101,6 +101,9 @@
     <ClInclude Include="Source\Gfx\Core\CHeap.hpp">
       <Filter>Source Files\Gfx\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Gfx\Core\AllocationList.hpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Cg.cpp">
@@ -161,6 +164,9 @@
       <Filter>Source Files\Gfx\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Gfx\Core\CHeap.cpp">
+      <Filter>Source Files\Gfx\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gfx\Core\AllocationList.cpp">
       <Filter>Source Files\Gfx\Core</Filter>
     </ClCompile>
   </ItemGroup>
