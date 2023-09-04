@@ -180,3 +180,54 @@ bool CHeapAllocator::InsertEntry(PAGE_SIZE Size, uint64_t Offset, bool Allocated
 
 	return status;
 }
+
+CHeapAllocator::PAGE_SIZE CHeapAllocator::GetPageSize(uint64_t Size)
+{
+	PAGE_SIZE PageSize = PAGE_SIZE__COUNT;
+
+	if (Size > PAGE_SIZES[PAGE_SIZE__COUNT - 1])
+	{
+		PageSize = static_cast<PAGE_SIZE>(PAGE_SIZE__COUNT - 1);
+	}
+	else
+	{
+		for (uint32_t i = PAGE_SIZE__256_BYTE; i < PAGE_SIZE__COUNT; i++)
+		{
+			if (Size <= PAGE_SIZES[i])
+			{
+				PageSize = static_cast<PAGE_SIZE>(i);
+				break;
+			}
+		}
+	}
+
+	return PageSize;
+}
+
+bool CHeapAllocator::Allocate(uint64_t Size, uint64_t& Offset)
+{
+	bool status = true;
+	PAGE_ENTRY* pEntry = nullptr;
+
+	// Search for existing free entries of the required size
+	if (m_FreePages[Size].pHead != nullptr)
+	{
+		pEntry = m_FreePages[Size].pHead;
+
+		m_FreePages[Size].pHead = pEntry->pNext;
+		pEntry->pNext = nullptr;
+
+		if (m_FreePages[Size].pHead != nullptr)
+		{
+			m_FreePages[Size].pHead->pPrev = nullptr;
+		}
+	}
+
+	// Try to break apart larger pages
+	if (status && !pEntry)
+	{
+		// Find the next largest available page size
+	}
+
+	return status;
+}

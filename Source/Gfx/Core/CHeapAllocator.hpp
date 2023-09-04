@@ -3,11 +3,6 @@
 
 #include "CgDef.hpp"
 
-struct Page
-{
-	uint64_t Offset;
-};
-
 class CHeapAllocator
 {
 private:
@@ -66,14 +61,18 @@ public:
 	CHeapAllocator(void);
 	~CHeapAllocator(void);
 
-	bool Initialize(uint64_t HeapSizeInBytes);
-	void Uninitialize(void);
+	bool        Initialize(uint64_t HeapSizeInBytes);
+	void        Uninitialize(void);
+
+	bool        Allocate(uint64_t Size, uint64_t& Offset);
 
 private:
 	PAGE_CHUNK* AllocateChunk(void);
 	PAGE_ENTRY* AllocateEntry(void);
 
-	bool InsertEntry(PAGE_SIZE Size, uint64_t Offset, bool Allocated);
+	PAGE_SIZE   GetPageSize(uint64_t Size);
+
+	bool        InsertEntry(PAGE_SIZE Size, uint64_t Offset, bool Allocated);
 };
 
 #endif // CG_HEAP_ALLOCATOR_HPP
