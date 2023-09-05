@@ -82,9 +82,10 @@ private:
 	bool        AllocateOnePage(uint64_t Size, uint64_t& Offset);
 	bool        AllocateMultiplePages(uint64_t Size, uint64_t& Offset);
 
-	PAGE_SIZE   GetPageSize(uint64_t Size);
+	void        InsertTail(PAGE_ENTRY_LINKED_LIST& List, PAGE_ENTRY* pEntry);
+	void        InsertSequence(PAGE_ENTRY_LINKED_LIST& Dst, PAGE_ENTRY_LINKED_LIST& Src);
 
-	bool        InsertEntry(PAGE_SIZE Size, uint64_t Offset, PAGE_ENTRY_LINKED_LIST& List);
+	PAGE_SIZE   GetPageSize(uint64_t Size);
 };
 
 #endif // CG_HEAP_ALLOCATOR_HPP

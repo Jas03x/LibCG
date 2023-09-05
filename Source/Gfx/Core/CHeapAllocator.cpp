@@ -47,7 +47,13 @@ bool CHeapAllocator::Initialize(uint64_t HeapSizeInBytes)
 
 		for (uint64_t offset = 0; offset < HeapSizeInBytes; offset += PAGE_SIZES[page_size])
 		{
-			if (!InsertEntry(page_size, offset, m_FreePages[page_size]))
+			PAGE_ENTRY* pEntry = AllocateEntry();
+			if (pEntry != nullptr)
+			{
+				pEntry->Offset = offset;
+				InsertTail(m_FreePages[page_size], pEntry);
+			}
+			else
 			{
 				status = false;
 				break;
@@ -148,35 +154,49 @@ CHeapAllocator::PAGE_ENTRY* CHeapAllocator::AllocateEntry(void)
 	return pEntry;
 }
 
-bool CHeapAllocator::InsertEntry(PAGE_SIZE Size, uint64_t Offset, PAGE_ENTRY_LINKED_LIST& List)
+void CHeapAllocator::InsertTail(PAGE_ENTRY_LINKED_LIST& List, PAGE_ENTRY* pEntry)
 {
-	bool status = true;
-	PAGE_ENTRY* pEntry = AllocateEntry();
-
-	if (pEntry != nullptr)
+	if (List.pHead == nullptr)
 	{
-		pEntry->Offset = Offset;
-
-		if (List.pHead == nullptr)
-		{
-			List.pHead = pEntry;
-			List.pTail = pEntry;
-		}
-		else
-		{
-			CgAssert(List.pTail != nullptr, L"Error: Page entry list tail is null\n");
-
-			List.pTail->pNext = pEntry;
-			pEntry->pPrev = List.pTail;
-			List.pTail = pEntry;
-		}
+		List.pHead = pEntry;
+		List.pTail = pEntry;
 	}
 	else
 	{
-		status = false;
+		List.pTail->pNext = pEntry;
+		pEntry->pPrev = List.pTail;
+		List.pTail = pEntry;
 	}
+}
 
-	return status;
+void CHeapAllocator::InsertSequence(PAGE_ENTRY_LINKED_LIST& Dst, PAGE_ENTRY_LINKED_LIST& Src)
+{
+	if (Dst.pHead == nullptr)
+	{
+		Dst.pHead = Src.pHead;
+		Dst.pTail = Src.pHead;
+	}
+	else
+	{
+		for (PAGE_ENTRY* pEntry = Dst.pHead; pEntry != nullptr; pEntry = pEntry->pNext)
+		{
+			if (Src.pHead->Offset < pEntry->Offset)
+			{
+				if (pEntry == Dst.pHead)
+				{
+					pEntry->pPrev = Src.pTail;
+					Src.pTail->pNext = pEntry;
+					Dst.pHead = pEntry;
+				}
+				else
+				{
+
+				}
+
+				break;
+			}
+		}
+	}
 }
 
 CHeapAllocator::PAGE_SIZE CHeapAllocator::GetPageSize(uint64_t Size)
@@ -214,6 +234,110 @@ bool CHeapAllocator::Allocate(uint64_t Size, uint64_t& Offset)
 	{
 		status = AllocateMultiplePages(Size, Offset);
 	}
+
+	return status;
+}
+
+bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t& Offset)
+{
+	bool status = true;
+	PAGE_SIZE PageSize = GetPageSize(Size);
+	PAGE_ENTRY* pEntry = nullptr;
+
+	// Check if pages will need to be split up
+	if (m_FreePages[PageSize].pHead == nullptr)
+	{
+		// Break apart larger pages
+		uint32_t n = PageSize + 1;
+		while (n < PAGE_SIZE__COUNT)
+		{
+			if (m_FreePages[n].pHead != nullptr)
+			{
+				break;
+			}
+
+			n++;
+		}
+
+		if (n < PAGE_SIZE__COUNT)
+		{
+			while (n > PageSize)
+			{
+				PAGE_ENTRY* pLargePage = m_FreePages[n].pHead;
+				if (pLargePage == nullptr)
+				{
+					status = false;
+					break;
+				}
+
+				uint64_t Offset = pLargePage->Offset;
+				uint32_t NumSubPages = PAGE_SIZES[n] / PAGE_SIZES[n-1];
+
+				m_FreePages[n].pHead = pLargePage->pNext;
+				m_FreePages[n].pHead->pPrev = nullptr;
+				pLargePage->pNext = nullptr;
+
+				InsertTail(m_PageEntries, pLargePage);
+
+				PAGE_ENTRY_LINKED_LIST SmallPages = {};
+
+				for (uint32_t i = 0; i < NumSubPages; i++)
+				{
+					PAGE_ENTRY* small_page = AllocateEntry();
+					if (small_page != nullptr)
+					{
+						small_page->Offset = Offset + i * PAGE_SIZES[n-1];
+						InsertTail(SmallPages, small_page);
+					}
+					else
+					{
+						status = false;
+						break;
+					}
+				}
+
+				if (status)
+				{
+					InsertSequence(m_FreePages[n], SmallPages);
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			status = false;
+		}
+	}
+
+	if (status)
+	{
+		if (m_FreePages[PageSize].pHead != nullptr)
+		{
+			pEntry = m_FreePages[PageSize].pHead;
+			m_FreePages[PageSize].pHead = pEntry->pNext;
+			m_FreePages[PageSize].pHead->pPrev = nullptr;
+		}
+		else
+		{
+			status = false;
+		}
+	}
+
+	if (status)
+	{
+		ALLOCATION Allocation = {};
+		Allocation.Offset = pEntry->Offset;
+	}
+
+	return status;
+}
+
+bool CHeapAllocator::AllocateMultiplePages(uint64_t Size, uint64_t& Offset)
+{
+	bool status = true;
 
 	return status;
 }
