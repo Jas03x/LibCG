@@ -49,7 +49,7 @@ bool CHeapAllocator::Initialize(uint64_t HeapSizeInBytes)
 		// Initialize the heap with the biggest pages
 		PAGE_SIZE PageSize = static_cast<PAGE_SIZE>(PAGE_SIZE__COUNT - 1);
 
-		for (uint64_t offset = 0; offset < HeapSizeInBytes; offset += PAGE_SIZES[page_size])
+		for (uint64_t offset = 0; offset < HeapSizeInBytes; offset += PAGE_SIZES[PageSize])
 		{
 			PAGE_ENTRY* pEntry = AllocateEntry();
 			if (pEntry != nullptr)
@@ -57,6 +57,7 @@ bool CHeapAllocator::Initialize(uint64_t HeapSizeInBytes)
 				pEntry->Size = PageSize;
 				pEntry->Offset = offset;
 				InsertTail(m_SortedLists[PageSize], pEntry);
+				InsertTail(m_ContiguousList, pEntry);
 			}
 			else
 			{
