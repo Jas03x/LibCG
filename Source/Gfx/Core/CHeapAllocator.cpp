@@ -49,15 +49,20 @@ bool CHeapAllocator::Initialize(uint64_t HeapSizeInBytes)
 		// Initialize the heap with the biggest pages
 		PAGE_SIZE PageSize = static_cast<PAGE_SIZE>(PAGE_SIZE__COUNT - 1);
 
-		for (uint64_t offset = 0; offset < HeapSizeInBytes; offset += PAGE_SIZES[PageSize])
+		for (uint64_t Offset = 0; Offset < HeapSizeInBytes; Offset += PAGE_SIZES[PageSize])
 		{
-			PAGE_ENTRY* pEntry = AllocateEntry();
-			if (pEntry != nullptr)
+			PAGE_ENTRY* pEntry0 = AllocateEntry();
+			PAGE_ENTRY* pEntry1 = AllocateEntry();
+			if ((pEntry0 != nullptr) && (pEntry1 != nullptr))
 			{
-				pEntry->Size = PageSize;
-				pEntry->Offset = offset;
-				InsertTail(m_SortedLists[PageSize], pEntry);
-				InsertTail(m_ContiguousList, pEntry);
+				pEntry0->Size = PageSize;
+				pEntry0->Offset = Offset;
+
+				pEntry1->Size = PageSize;
+				pEntry1->Offset = Offset;
+
+				InsertTail(m_SortedLists[PageSize], pEntry0);
+				InsertTail(m_ContiguousList, pEntry1);
 			}
 			else
 			{
@@ -148,6 +153,7 @@ CHeapAllocator::PAGE_ENTRY* CHeapAllocator::AllocateEntry(void)
 		CgAssert(m_PageEntries.pHead != nullptr, L"Error: No more available entries");
 		
 		pEntry = m_PageEntries.pHead;
+		ZeroMemory(pEntry, sizeof(PAGE_ENTRY));
 
 		m_PageEntries.pHead = m_PageEntries.pHead->pNext;
 		m_PageEntries.pHead->pPrev = nullptr;
