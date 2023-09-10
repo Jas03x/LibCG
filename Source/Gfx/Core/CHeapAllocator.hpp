@@ -27,6 +27,7 @@ private:
 
 	struct PAGE_ENTRY
 	{
+		PAGE_SIZE   Size;
 		uint64_t    Offset;
 		PAGE_ENTRY* pNext;
 		PAGE_ENTRY* pPrev;
@@ -61,7 +62,8 @@ private:
 
 	std::vector<ALLOCATION> m_Allocations;
 
-	PAGE_ENTRY_LINKED_LIST  m_FreePages[PAGE_SIZE__COUNT]; // All pages avaiable to be used (per block size)
+	PAGE_ENTRY_LINKED_LIST  m_SortedLists[PAGE_SIZE__COUNT]; // All pages available to be used (per block size)
+	PAGE_CHUNK_LINKED_LIST  m_ContiguousList; // All available pages stored contiguously
 
 	PAGE_CHUNK_LINKED_LIST  m_Chunks;      // All page chunks
 	PAGE_ENTRY_LINKED_LIST  m_PageEntries; // All available page entries

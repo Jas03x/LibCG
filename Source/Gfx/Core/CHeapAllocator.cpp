@@ -23,7 +23,8 @@ const uint64_t CHeapAllocator::PAGE_SIZES[CHeapAllocator::PAGE_SIZE__COUNT] =
 
 CHeapAllocator::CHeapAllocator(void)
 {
-	ZeroMemory(&m_FreePages, sizeof(m_FreePages));
+	ZeroMemory(&m_SortedLists, sizeof(m_SortedLists));
+	ZeroMemory(&m_ContiguousList, sizeof(m_ContiguousList));
 	ZeroMemory(&m_Chunks, sizeof(m_Chunks));
 	ZeroMemory(&m_PageEntries, sizeof(m_PageEntries));
 }
@@ -46,15 +47,16 @@ bool CHeapAllocator::Initialize(uint64_t HeapSizeInBytes)
 	if (status)
 	{
 		// Initialize the heap with the biggest pages
-		PAGE_SIZE page_size = static_cast<PAGE_SIZE>(PAGE_SIZE__COUNT - 1);
+		PAGE_SIZE PageSize = static_cast<PAGE_SIZE>(PAGE_SIZE__COUNT - 1);
 
 		for (uint64_t offset = 0; offset < HeapSizeInBytes; offset += PAGE_SIZES[page_size])
 		{
 			PAGE_ENTRY* pEntry = AllocateEntry();
 			if (pEntry != nullptr)
 			{
+				pEntry->Size = PageSize;
 				pEntry->Offset = offset;
-				InsertTail(m_FreePages[page_size], pEntry);
+				InsertTail(m_SortedLists[PageSize], pEntry);
 			}
 			else
 			{
@@ -236,9 +238,9 @@ bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t Alignment, uint64_t
 	PAGE_SIZE PageSize = GetPageSize(Size);
 	PAGE_ENTRY* pEntry = nullptr;
 
-	if (m_FreePages[PageSize].pHead != nullptr)
+	if (m_SortedLists[PageSize].pHead != nullptr)
 	{
-		pEntry = PopHead(m_FreePages[PageSize]);
+		pEntry = PopHead(m_SortedLists[PageSize]);
 	}
 	else
 	{
@@ -248,7 +250,7 @@ bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t Alignment, uint64_t
 		// Start search for the next page size this allocation be placed inside
 		while (n < PAGE_SIZE__COUNT)
 		{
-			for (PAGE_ENTRY* pPage = m_FreePages[n].pHead; (pCandidatePage == nullptr) && (pPage != nullptr); pPage = pPage->pNext)
+			for (PAGE_ENTRY* pPage = m_SortedLists[n].pHead; (pCandidatePage == nullptr) && (pPage != nullptr); pPage = pPage->pNext)
 			{
 				if (ALIGN(pPage->Offset, Alignment) <= pPage->Offset + PAGE_SIZES[n])
 				{
@@ -303,6 +305,7 @@ bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t Alignment, uint64_t
 						break;
 					}
 
+					pSubPage->Size = static_cast<PAGE_SIZE>(n-1);
 					pSubPage->Offset = SubPageOffset + i * PAGE_SIZES[n-1];
 
 					InsertTail(rSubPages, pSubPage);
