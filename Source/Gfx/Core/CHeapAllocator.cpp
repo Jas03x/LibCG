@@ -200,28 +200,20 @@ void CHeapAllocator::InsertTail(PAGE_ENTRY_LINKED_LIST& List, PAGE_ENTRY* pEntry
 	}
 }
 
-void CHeapAllocator::RemoveEntry(PAGE_ENTRY_LINKED_LIST& rList, uint64_t Offset, PAGE_SIZE Size)
+CHeapAllocator::PAGE_ENTRY* CHeapAllocator::FindEntry(PAGE_ENTRY_LINKED_LIST& rList, uint64_t Offset, PAGE_SIZE Size)
 {
-	for (PAGE_ENTRY* pEntry = rList.pHead; pEntry != nullptr; pEntry = pEntry->pNext)
+	PAGE_ENTRY* pEntry = nullptr;
+
+	for (PAGE_ENTRY* pIt = rList.pHead; pIt != nullptr; pIt = pIt->pNext)
 	{
-		if ((pEntry->Offset == Offset) && (pEntry->Size == Size))
+		if ((pIt->Offset == Offset) && (pIt->Size == Size))
 		{
-			if (pEntry->pPrev != nullptr)
-			{
-				pEntry->pPrev->pNext = pEntry->pNext;
-			}
-
-			if (pEntry->pNext != nullptr)
-			{
-				pEntry->pNext->pPrev = pEntry->pPrev;
-			}
-
-			ZeroMemory(pEntry, sizeof(PAGE_ENTRY));
-			InsertTail(m_PageEntries, pEntry);
-
+			pEntry = pIt;
 			break;
 		}
 	}
+
+	return pEntry;
 }
 
 CHeapAllocator::PAGE_SIZE CHeapAllocator::GetPageSize(uint64_t Size)
@@ -299,8 +291,8 @@ bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t Alignment, uint64_t
 		{
 			PAGE_ENTRY_LINKED_LIST NewPages[PAGE_SIZE__COUNT] = {};
 
-			// Remove this candidage page from the contiguous array before starting
-			RemoveEntry(m_ContiguousList, pCandidatePage->Offset, pCandidatePage->Size);
+			// Find the contigous entry which will be replaced with the new pages
+			PAGE_ENTRY* pContigousEntry = FindEntry(m_ContiguousList, pCandidatePage->Offset, pCandidatePage->Size);
 
 			while (status && (n >= PageSize))
 			{
