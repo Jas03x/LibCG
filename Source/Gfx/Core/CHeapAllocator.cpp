@@ -4,6 +4,9 @@
 
 #include "Cg.hpp"
 
+#define IN_RANGE(x, a, b) (((x) >= (a)) && ((x) <= (b)))
+#define ALIGN(addr, alignment) (((addr) + ((alignment) - 1)) & ~((alignment) - 1))
+
 const uint64_t CHeapAllocator::PAGE_SIZES[CHeapAllocator::PAGE_SIZE__COUNT] =
 {
 	256, // PAGE_SIZE__256_BYTE
@@ -154,6 +157,25 @@ CHeapAllocator::PAGE_ENTRY* CHeapAllocator::AllocateEntry(void)
 	return pEntry;
 }
 
+CHeapAllocator::PAGE_ENTRY* CHeapAllocator::PopHead(PAGE_ENTRY_LINKED_LIST& List)
+{
+	PAGE_ENTRY* pEntry = nullptr;
+
+	if (List.pHead != nullptr)
+	{
+		pEntry = List.pHead;
+
+		List.pHead = List.pHead->pNext;
+
+		if (List.pHead != nullptr)
+		{
+			List.pHead->pPrev = nullptr;
+		}
+	}
+
+	return pEntry;
+}
+
 void CHeapAllocator::InsertTail(PAGE_ENTRY_LINKED_LIST& List, PAGE_ENTRY* pEntry)
 {
 	if (List.pHead == nullptr)
@@ -166,36 +188,6 @@ void CHeapAllocator::InsertTail(PAGE_ENTRY_LINKED_LIST& List, PAGE_ENTRY* pEntry
 		List.pTail->pNext = pEntry;
 		pEntry->pPrev = List.pTail;
 		List.pTail = pEntry;
-	}
-}
-
-void CHeapAllocator::InsertSequence(PAGE_ENTRY_LINKED_LIST& Dst, PAGE_ENTRY_LINKED_LIST& Src)
-{
-	if (Dst.pHead == nullptr)
-	{
-		Dst.pHead = Src.pHead;
-		Dst.pTail = Src.pHead;
-	}
-	else
-	{
-		for (PAGE_ENTRY* pEntry = Dst.pHead; pEntry != nullptr; pEntry = pEntry->pNext)
-		{
-			if (Src.pHead->Offset < pEntry->Offset)
-			{
-				if (pEntry == Dst.pHead)
-				{
-					pEntry->pPrev = Src.pTail;
-					Src.pTail->pNext = pEntry;
-					Dst.pHead = pEntry;
-				}
-				else
-				{
-
-				}
-
-				break;
-			}
-		}
 	}
 }
 
@@ -222,111 +214,132 @@ CHeapAllocator::PAGE_SIZE CHeapAllocator::GetPageSize(uint64_t Size)
 	return PageSize;
 }
 
-bool CHeapAllocator::Allocate(uint64_t Size, uint64_t& Offset)
+bool CHeapAllocator::Allocate(uint64_t Size, uint64_t Alignment, uint64_t& rOffset)
 {
 	bool status = true;
 
 	if (Size <= PAGE_SIZES[PAGE_SIZE__COUNT - 1])
 	{
-		status = AllocateOnePage(Size, Offset);
+		status = AllocateOnePage(Size, Alignment, rOffset);
 	}
 	else
 	{
-		status = AllocateMultiplePages(Size, Offset);
+		status = AllocateMultiplePages(Size, Alignment, rOffset);
 	}
 
 	return status;
 }
 
-bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t& Offset)
+bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t Alignment, uint64_t& rOffset)
 {
 	bool status = true;
 	PAGE_SIZE PageSize = GetPageSize(Size);
 	PAGE_ENTRY* pEntry = nullptr;
 
-	// Check if pages will need to be split up
-	if (m_FreePages[PageSize].pHead == nullptr)
+	if (m_FreePages[PageSize].pHead != nullptr)
 	{
-		// Break apart larger pages
+		pEntry = PopHead(m_FreePages[PageSize]);
+	}
+	else
+	{
 		uint32_t n = PageSize + 1;
+		PAGE_ENTRY* pCandidatePage = nullptr;
+
+		// Start search for the next page size this allocation be placed inside
 		while (n < PAGE_SIZE__COUNT)
 		{
-			if (m_FreePages[n].pHead != nullptr)
+			for (PAGE_ENTRY* pPage = m_FreePages[n].pHead; (pCandidatePage == nullptr) && (pPage != nullptr); pPage = pPage->pNext)
 			{
-				break;
-			}
-
-			n++;
-		}
-
-		if (n < PAGE_SIZE__COUNT)
-		{
-			while (n > PageSize)
-			{
-				PAGE_ENTRY* pLargePage = m_FreePages[n].pHead;
-				if (pLargePage == nullptr)
+				if (ALIGN(pPage->Offset, Alignment) <= pPage->Offset + PAGE_SIZES[n])
 				{
-					status = false;
+					pCandidatePage = pPage;
 					break;
 				}
+			}
 
-				uint64_t Offset = pLargePage->Offset;
-				uint32_t NumSubPages = PAGE_SIZES[n] / PAGE_SIZES[n-1];
+			if (pCandidatePage != nullptr) { break; }
+			else                           { n++;   }
+		}
 
-				m_FreePages[n].pHead = pLargePage->pNext;
-				m_FreePages[n].pHead->pPrev = nullptr;
-				pLargePage->pNext = nullptr;
+		// If a valid page is found, break it down to get the desired page size
+		if (pCandidatePage != nullptr)
+		{
+			PAGE_ENTRY_LINKED_LIST NewPages[PAGE_SIZE__COUNT] = {};
 
-				InsertTail(m_PageEntries, pLargePage);
-
-				PAGE_ENTRY_LINKED_LIST SmallPages = {};
-
-				for (uint32_t i = 0; i < NumSubPages; i++)
+			while (status && (n >= PageSize))
+			{
+				// Unlink the candidate
+				if (pCandidatePage->pPrev != nullptr)
 				{
-					PAGE_ENTRY* small_page = AllocateEntry();
-					if (small_page != nullptr)
-					{
-						small_page->Offset = Offset + i * PAGE_SIZES[n-1];
-						InsertTail(SmallPages, small_page);
-					}
-					else
+					pCandidatePage->pPrev->pNext = pCandidatePage->pNext;
+				}
+
+				if (pCandidatePage->pNext != nullptr)
+				{
+					pCandidatePage->pNext->pPrev = pCandidatePage->pPrev;
+				}
+
+				pCandidatePage->pPrev = nullptr;
+				pCandidatePage->pNext = nullptr;
+
+				// Break apart candidate page into subpages
+				uint64_t NumSubEntries = PAGE_SIZES[n] / PAGE_SIZES[n-1];
+
+				PAGE_ENTRY_LINKED_LIST& rSubPages = NewPages[n-1];
+
+				for (uint32_t i = 0; i < NumSubEntries; i++)
+				{
+					PAGE_ENTRY* pSubPage = AllocateEntry();
+
+					if (pSubPage == nullptr)
 					{
 						status = false;
 						break;
 					}
+
+					pSubPage->Offset = pCandidatePage->Offset + i * PAGE_SIZES[n-1];
+
+					InsertTail(rSubPages, pSubPage);
 				}
 
-				if (status)
+				// Find the next candidate page
+				pCandidatePage = nullptr;
+
+				for (PAGE_ENTRY* pPage = rSubPages.pHead; pPage != nullptr; pPage = pPage->pNext)
 				{
-					InsertSequence(m_FreePages[n], SmallPages);
+					if (ALIGN(pPage->Offset, Alignment) <= pPage->Offset + PAGE_SIZES[n-1])
+					{
+						pCandidatePage = pPage;
+						break;
+					}
 				}
-				else
+
+				if (pCandidatePage == nullptr)
 				{
+					status = false;
+					Console::Write(L"Error: Could not find candidate page\n");
 					break;
 				}
+			
+				// Move onto next iteration
+				n--;
+			}
+
+			// TODO: INSERT ALL NEW PAGES INTO CURRENT FREE PAGES
+
+			if (pCandidatePage != nullptr)
+			{
+				pEntry = pCandidatePage;
+			}
+			else
+			{
+				status = false;
+				Console::Write(L"Error: Failed to break down candidate page\n");
 			}
 		}
-		else
-		{
-			status = false;
-		}
 	}
 
-	if (status)
-	{
-		if (m_FreePages[PageSize].pHead != nullptr)
-		{
-			pEntry = m_FreePages[PageSize].pHead;
-			m_FreePages[PageSize].pHead = pEntry->pNext;
-			m_FreePages[PageSize].pHead->pPrev = nullptr;
-		}
-		else
-		{
-			status = false;
-		}
-	}
-
-	if (status)
+	if (status && (pEntry != nullptr))
 	{
 		ALLOCATION Allocation = {};
 		Allocation.Offset = pEntry->Offset;
@@ -335,7 +348,7 @@ bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t& Offset)
 	return status;
 }
 
-bool CHeapAllocator::AllocateMultiplePages(uint64_t Size, uint64_t& Offset)
+bool CHeapAllocator::AllocateMultiplePages(uint64_t Size, uint64_t Alignment, uint64_t& rOffset)
 {
 	bool status = true;
 

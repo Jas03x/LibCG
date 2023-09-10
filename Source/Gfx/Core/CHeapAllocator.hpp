@@ -73,17 +73,17 @@ public:
 	bool        Initialize(uint64_t HeapSizeInBytes);
 	void        Uninitialize(void);
 
-	bool        Allocate(uint64_t Size, uint64_t& Offset);
+	bool        Allocate(uint64_t Size, uint64_t Alignment, uint64_t& rOffset);
 
 private:
 	PAGE_CHUNK* AllocateChunk(void);
 	PAGE_ENTRY* AllocateEntry(void);
 
-	bool        AllocateOnePage(uint64_t Size, uint64_t& Offset);
-	bool        AllocateMultiplePages(uint64_t Size, uint64_t& Offset);
+	bool        AllocateOnePage(uint64_t Size, uint64_t Alignment, uint64_t& rOffset);
+	bool        AllocateMultiplePages(uint64_t Size, uint64_t Alignment, uint64_t& rOffset);
 
+	PAGE_ENTRY* PopHead(PAGE_ENTRY_LINKED_LIST& List);
 	void        InsertTail(PAGE_ENTRY_LINKED_LIST& List, PAGE_ENTRY* pEntry);
-	void        InsertSequence(PAGE_ENTRY_LINKED_LIST& Dst, PAGE_ENTRY_LINKED_LIST& Src);
 
 	PAGE_SIZE   GetPageSize(uint64_t Size);
 };
