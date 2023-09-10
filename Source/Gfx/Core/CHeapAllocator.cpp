@@ -200,6 +200,30 @@ void CHeapAllocator::InsertTail(PAGE_ENTRY_LINKED_LIST& List, PAGE_ENTRY* pEntry
 	}
 }
 
+void CHeapAllocator::RemoveEntry(PAGE_ENTRY_LINKED_LIST& rList, uint64_t Offset, PAGE_SIZE Size)
+{
+	for (PAGE_ENTRY* pEntry = rList.pHead; pEntry != nullptr; pEntry = pEntry->pNext)
+	{
+		if ((pEntry->Offset == Offset) && (pEntry->Size == Size))
+		{
+			if (pEntry->pPrev != nullptr)
+			{
+				pEntry->pPrev->pNext = pEntry->pNext;
+			}
+
+			if (pEntry->pNext != nullptr)
+			{
+				pEntry->pNext->pPrev = pEntry->pPrev;
+			}
+
+			ZeroMemory(pEntry, sizeof(PAGE_ENTRY));
+			InsertTail(m_PageEntries, pEntry);
+
+			break;
+		}
+	}
+}
+
 CHeapAllocator::PAGE_SIZE CHeapAllocator::GetPageSize(uint64_t Size)
 {
 	PAGE_SIZE PageSize = PAGE_SIZE__COUNT;
@@ -274,6 +298,9 @@ bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t Alignment, uint64_t
 		if (pCandidatePage != nullptr)
 		{
 			PAGE_ENTRY_LINKED_LIST NewPages[PAGE_SIZE__COUNT] = {};
+
+			// Remove this candidage page from the contiguous array before starting
+			RemoveEntry(m_ContiguousList, pCandidatePage->Offset, pCandidatePage->Size);
 
 			while (status && (n >= PageSize))
 			{

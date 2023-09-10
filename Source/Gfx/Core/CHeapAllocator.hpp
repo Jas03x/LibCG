@@ -86,6 +86,7 @@ private:
 
 	PAGE_ENTRY* PopHead(PAGE_ENTRY_LINKED_LIST& List);
 	void        InsertTail(PAGE_ENTRY_LINKED_LIST& List, PAGE_ENTRY* pEntry);
+	void        RemoveEntry(PAGE_ENTRY_LINKED_LIST& rList, uint64_t Offset, PAGE_SIZE Size);
 
 	PAGE_SIZE   GetPageSize(uint64_t Size);
 };
