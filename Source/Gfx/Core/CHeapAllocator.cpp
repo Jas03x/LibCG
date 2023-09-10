@@ -268,6 +268,8 @@ bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t Alignment, uint64_t
 
 			while (status && (n >= PageSize))
 			{
+				uint64_t SubPageOffset = pCandidatePage->Offset;
+
 				// Unlink the candidate
 				if (pCandidatePage->pPrev != nullptr)
 				{
@@ -281,6 +283,10 @@ bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t Alignment, uint64_t
 
 				pCandidatePage->pPrev = nullptr;
 				pCandidatePage->pNext = nullptr;
+
+				ZeroMemory(pCandidatePage, sizeof(PAGE_ENTRY));
+				InsertTail(m_PageEntries, pCandidatePage);
+				pCandidatePage = nullptr;
 
 				// Break apart candidate page into subpages
 				uint64_t NumSubEntries = PAGE_SIZES[n] / PAGE_SIZES[n-1];
@@ -297,14 +303,12 @@ bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t Alignment, uint64_t
 						break;
 					}
 
-					pSubPage->Offset = pCandidatePage->Offset + i * PAGE_SIZES[n-1];
+					pSubPage->Offset = SubPageOffset + i * PAGE_SIZES[n-1];
 
 					InsertTail(rSubPages, pSubPage);
 				}
 
 				// Find the next candidate page
-				pCandidatePage = nullptr;
-
 				for (PAGE_ENTRY* pPage = rSubPages.pHead; pPage != nullptr; pPage = pPage->pNext)
 				{
 					if (ALIGN(pPage->Offset, Alignment) <= pPage->Offset + PAGE_SIZES[n-1])
