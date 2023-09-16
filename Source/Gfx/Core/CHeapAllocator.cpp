@@ -109,8 +109,6 @@ CHeapAllocator::PAGE_CHUNK* CHeapAllocator::AllocateChunk(void)
 		}
 		else
 		{
-			CgAssert(m_Chunks.pTail != nullptr, L"Error: Chunk list tail null\n");
-
 			m_Chunks.pTail->pNext = pChunk;
 			m_Chunks.pTail = pChunk;
 		}
@@ -150,9 +148,17 @@ CHeapAllocator::PAGE_ENTRY* CHeapAllocator::AllocateEntry(void)
 
 	if (status)
 	{
-		CgAssert(m_PageEntries.pHead != nullptr, L"Error: No more available entries");
-		
 		pEntry = m_PageEntries.pHead;
+
+		if (pEntry == nullptr)
+		{
+			status = false;
+			Console::Write(L"Error: Could not allocate page entry\n");
+		}
+	}
+
+	if (status)
+	{
 		ZeroMemory(pEntry, sizeof(PAGE_ENTRY));
 
 		m_PageEntries.pHead = m_PageEntries.pHead->pNext;
@@ -273,7 +279,7 @@ bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t Alignment, uint64_t
 		// Start search for the next page size this allocation be placed inside
 		while (n < PAGE_SIZE__COUNT)
 		{
-			for (PAGE_ENTRY* pPage = m_SortedLists[n].pHead; (pCandidatePage == nullptr) && (pPage != nullptr); pPage = pPage->pNext)
+			for (PAGE_ENTRY* pPage = m_SortedLists[n].pHead; pPage != nullptr; pPage = pPage->pNext)
 			{
 				if (ALIGN(pPage->Offset, Alignment) <= pPage->Offset + PAGE_SIZES[n])
 				{
@@ -353,7 +359,7 @@ bool CHeapAllocator::AllocateOnePage(uint64_t Size, uint64_t Alignment, uint64_t
 					Console::Write(L"Error: Could not find candidate page\n");
 					break;
 				}
-			
+				
 				// Move onto next iteration
 				n--;
 			}
