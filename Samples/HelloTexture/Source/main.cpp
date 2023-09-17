@@ -146,19 +146,16 @@ public:
 
 		if (status)
 		{
-			byte color = 0;
-
 			byte TextureData[256][256][4];
 			for (uint32_t x = 0; x < 256; x++)
 			{
 				for (uint32_t y = 0; y < 256; y++)
 				{
-					TextureData[x][y][0] = color;
-					TextureData[x][y][1] =   0;
-					TextureData[x][y][2] =   0;
+					byte c = (((x / 5) % 2 == (y / 5) % 2)) ? 0 : 255;
+					TextureData[x][y][0] =   c;
+					TextureData[x][y][1] =   c;
+					TextureData[x][y][2] =   c;
 					TextureData[x][y][3] = 255;
-
-					color = (color == 255) ? 0 : color + 1;
 				}
 			}
 
