@@ -32,7 +32,7 @@ public:
 	bool Initialize(ID3D12Device4* pID3D12Device, ID3D12Heap* pID3D12Heap);
 	void Uninitialize(void);
 
-	CAllocation* CreateAllocation(const D3D12_RESOURCE_DESC& pDesc, D3D12_RESOURCE_STATES InitialState);
+	CAllocation* CreateAllocation(const D3D12_RESOURCE_DESC& rDesc, D3D12_RESOURCE_STATES InitialState);
 	void         DeleteAllocation(CAllocation* pAllocation);
 };
 

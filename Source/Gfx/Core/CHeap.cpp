@@ -55,23 +55,47 @@ void CHeap::Uninitialize(void)
 	m_pID3D12Device = nullptr;
 }
 
-CAllocation* CHeap::CreateAllocation(const D3D12_RESOURCE_DESC& pDesc, D3D12_RESOURCE_STATES InitialState)
+CAllocation* CHeap::CreateAllocation(const D3D12_RESOURCE_DESC& rDesc, D3D12_RESOURCE_STATES InitialState)
 {
 	bool status = true;
 
-	CAllocation* pAllocation = nullptr;
-
+	uint64_t Size = 0;
 	uint64_t Offset = 0;
+
+	CAllocation* pAllocation = nullptr;
 	ID3D12Resource* pID3D12Resource = nullptr;
 
-	if (!m_Allocator.Allocate(pDesc.Width, pDesc.Alignment, Offset))
+	switch (rDesc.Dimension)
 	{
-		status = false;
+		case D3D12_RESOURCE_DIMENSION_BUFFER:
+		{
+			Size = rDesc.Width;
+			break;
+		}
+		case D3D12_RESOURCE_DIMENSION_TEXTURE2D:
+		{
+			Size = rDesc.Width * rDesc.Height;
+			break;
+		}
+		default:
+		{
+			status = false;
+			Console::Write(L"Error: unknown allocation type\n");
+			break;
+		}
 	}
 
 	if (status)
 	{
-		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12Heap, Offset, &pDesc, InitialState, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12Resource)) != S_OK)
+		if (!m_Allocator.Allocate(Size, rDesc.Alignment, Offset))
+		{
+			status = false;
+		}
+	}
+
+	if (status)
+	{
+		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12Heap, Offset, &rDesc, InitialState, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12Resource)) != S_OK)
 		{
 			status = false;
 		}
