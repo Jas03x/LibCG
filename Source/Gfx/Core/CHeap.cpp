@@ -4,6 +4,8 @@
 
 #include "Cg.hpp"
 
+#include "CAllocation.hpp"
+
 CHeap::CHeap(void)
 {
 	m_SizeInBytes = 0;
@@ -29,6 +31,15 @@ bool CHeap::Initialize(ID3D12Device4* pID3D12Device, ID3D12Heap* pID3D12Heap)
 		m_pID3D12Heap = pID3D12Heap;
 		m_pID3D12Device = pID3D12Device;
 	}
+	else
+	{
+		status = false;
+	}
+
+	if (status)
+	{
+		status = m_Allocator.Initialize(m_SizeInBytes);
+	}
 
 	return status;
 }
@@ -44,23 +55,40 @@ void CHeap::Uninitialize(void)
 	m_pID3D12Device = nullptr;
 }
 
-bool CHeap::AllocateResource(const D3D12_RESOURCE_DESC& pDesc, D3D12_RESOURCE_STATES InitialState, ID3D12Resource** pResource)
+CAllocation* CHeap::CreateAllocation(const D3D12_RESOURCE_DESC& pDesc, D3D12_RESOURCE_STATES InitialState)
 {
 	bool status = true;
 
-	uint64_t AllocationSize = pDesc.Width;
+	CAllocation* pAllocation = nullptr;
 
-	if (m_OffsetInBytes + AllocationSize >= m_SizeInBytes)
+	uint64_t Offset = 0;
+	ID3D12Resource* pID3D12Resource = nullptr;
+
+	if (!m_Allocator.Allocate(pDesc.Width, pDesc.Alignment, Offset))
 	{
 		status = false;
-		Console::Write(L"Error: Cannot fit allocation in heap\n");
 	}
 
 	if (status)
 	{
-		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12Heap, m_OffsetInBytes, &pDesc, InitialState, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(pResource)) == S_OK)
+		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12Heap, Offset, &pDesc, InitialState, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(pID3D12Resource)) == S_OK)
 		{
-			m_OffsetInBytes += AllocationSize;
+			status = false;
+		}
+	}
+
+	if (status)
+	{
+		pAllocation = new CAllocation();
+
+		if (pAllocation != nullptr)
+		{
+			if (!pAllocation->Initialize(Offset, pID3D12Resource))
+			{
+				status = false;
+				delete pAllocation;
+				pAllocation = nullptr;
+			}
 		}
 		else
 		{
@@ -68,5 +96,15 @@ bool CHeap::AllocateResource(const D3D12_RESOURCE_DESC& pDesc, D3D12_RESOURCE_ST
 		}
 	}
 
-	return status;
+	return pAllocation;
+}
+
+void CHeap::DeleteAllocation(CAllocation* pAllocation)
+{
+	if (pAllocation != nullptr)
+	{
+		m_Allocator.Free(pAllocation->GetOffset());
+
+		delete pAllocation;
+	}
 }
