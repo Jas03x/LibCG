@@ -128,6 +128,9 @@ bool CHeapAllocator::Allocate(uint64_t Size, uint64_t Alignment, uint64_t& rOffs
 				PAGE_ENTRY* pNext = pIt->pNext; //  Store next pointer which will be overwritten
 
 				// Unlink pIt
+				if (pIt == m_FreePages.pHead) { m_FreePages.pHead = m_FreePages.pHead->pNext; }
+				if (pIt == m_FreePages.pTail) { m_FreePages.pTail = m_FreePages.pTail->pPrev; }
+
 				if (pIt->pPrev != nullptr) { pIt->pPrev->pNext = pIt->pNext; }
 				if (pIt->pNext != nullptr) { pIt->pNext->pPrev = pIt->pPrev; }
 
@@ -163,4 +166,70 @@ bool CHeapAllocator::Allocate(uint64_t Size, uint64_t Alignment, uint64_t& rOffs
 	}
 
 	return status;
+}
+
+void CHeapAllocator::Free(uint64_t Offset)
+{
+	std::vector<ALLOCATION>::iterator it = m_Allocations.begin();
+
+	while(it != m_Allocations.end())
+	{
+		if (it->Offset == Offset)
+		{
+			break;
+		}
+
+		it++;
+	}
+
+	if (it != m_Allocations.end())
+	{
+		ALLOCATION& rAllocation = *it;
+		
+		if (m_FreePages.pHead == nullptr)
+		{
+			m_FreePages.pHead = rAllocation.Entries.pHead;
+			m_FreePages.pTail = rAllocation.Entries.pTail;
+		}
+		else
+		{
+			PAGE_ENTRY* pIt = m_FreePages.pHead;
+
+			while (pIt != nullptr)
+			{
+				if (rAllocation.Offset < pIt->Offset)
+				{
+					break;
+				}
+
+				pIt = pIt->pNext;
+			}
+
+			if (pIt == m_FreePages.pHead)
+			{
+				rAllocation.Entries.pTail->pNext = m_FreePages.pHead;
+				m_FreePages.pHead->pPrev = rAllocation.Entries.pTail;
+				m_FreePages.pHead = rAllocation.Entries.pHead;
+			}
+			else if (pIt == nullptr)
+			{
+				m_FreePages.pTail->pNext = rAllocation.Entries.pHead;
+				rAllocation.Entries.pHead->pPrev = m_FreePages.pTail;
+				m_FreePages.pTail = rAllocation.Entries.pTail;
+			}
+			else
+			{
+				if (pIt->pPrev != nullptr) { pIt->pPrev->pNext = rAllocation.Entries.pHead; }
+				rAllocation.Entries.pHead->pPrev = pIt->pPrev;
+				rAllocation.Entries.pTail->pNext = pIt;
+				pIt->pPrev = rAllocation.Entries.pTail;
+			}
+		}
+
+		m_Allocations.erase(it);
+	}
+	else
+	{
+		Console::Write(L"Error: Could not find allocation to free\n");
+	}
 }

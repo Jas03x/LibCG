@@ -46,6 +46,7 @@ public:
 	void        Uninitialize(void);
 
 	bool        Allocate(uint64_t Size, uint64_t Alignment, uint64_t& rOffset);
+	void        Free(uint64_t Offset);
 };
 
 #endif // CG_HEAP_ALLOCATOR_HPP
