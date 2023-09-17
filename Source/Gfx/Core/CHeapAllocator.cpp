@@ -88,7 +88,7 @@ bool CHeapAllocator::Allocate(uint64_t Size, uint64_t Alignment, uint64_t& rOffs
 		PAGE_ENTRY* pIt = m_FreePages.pHead;
 		while (pIt != nullptr)
 		{
-			if ((pIt->Offset & (Alignment - 1)) == 0)
+			if ((Alignment == 0) || ((pIt->Offset & (Alignment - 1)) == 0))
 			{
 				uint64_t NumFreePages = 1;
 				PAGE_ENTRY* pFirstPage = pIt; // The first page of this range

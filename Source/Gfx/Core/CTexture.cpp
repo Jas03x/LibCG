@@ -18,7 +18,7 @@ bool CTexture::Initialize(CAllocation* pAllocation)
 {
     bool status = true;
     
-    if (m_pAllocation != nullptr)
+    if (pAllocation != nullptr)
     {
         m_pAllocation = pAllocation;
     }

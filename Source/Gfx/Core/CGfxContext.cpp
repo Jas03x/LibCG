@@ -1571,7 +1571,6 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 	{
 		D3D12_RESOURCE_DESC TextureBufferDesc = {};
 		TextureBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-		TextureBufferDesc.Alignment = 0;
 		TextureBufferDesc.Width = rDesc.Width;
         TextureBufferDesc.Height = rDesc.Height;
 		TextureBufferDesc.DepthOrArraySize = 1;
@@ -1581,6 +1580,10 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
         TextureBufferDesc.SampleDesc.Quality = 0;
 		TextureBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
         TextureBufferDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+		D3D12_RESOURCE_ALLOCATION_INFO TextureBufferInfo = m_pID3D12Device->GetResourceAllocationInfo(0, 1, &TextureBufferDesc);
+
+		TextureBufferDesc.Alignment = TextureBufferInfo.Alignment;
 
 		m_pID3D12Device->GetCopyableFootprints(&TextureBufferDesc, 0, 1, 0, &TextureBufferFootprint, NULL, NULL, &TextureBufferSizeInBytes);
 
