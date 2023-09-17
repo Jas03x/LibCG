@@ -1199,7 +1199,7 @@ IConstantBuffer* CGfxContext::CreateConstantBuffer(const CONSTANT_BUFFER_DESC& r
 		cbDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		cbDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		if (m_pID3D12Device->CreatePlacedResource(m_pD3D12UploadHeap, 0, &cbDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(pID3D12ConstantBufferResource)) == S_OK)
+		if (m_pID3D12Device->CreatePlacedResource(m_pD3D12UploadHeap, 0, &cbDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12ConstantBufferResource)) == S_OK)
 		{
 			status = false;
 			Console::Write(L"Error: Could not create upload buffer for constant buffer\n");
@@ -1382,7 +1382,7 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, uint32_t
 		VertexBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		VertexBufferDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		if (m_pID3D12Device->CreatePlacedResource(m_pD3D12UploadHeap, 0, &VertexBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(pID3D12VertexDataUploadBuffer)) == S_OK)
+		if (m_pID3D12Device->CreatePlacedResource(m_pD3D12UploadHeap, 0, &VertexBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12VertexDataUploadBuffer)) != S_OK)
 		{
 			status = false;
 			Console::Write(L"Error: Could not create upload buffer for vertex buffer\n");
@@ -1597,7 +1597,7 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 		TextureBufferUploadDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		TextureBufferUploadDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		if (m_pID3D12Device->CreatePlacedResource(m_pD3D12UploadHeap, 0, &TextureBufferUploadDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(pID3D12TextureDataUploadBuffer)) == S_OK)
+		if (m_pID3D12Device->CreatePlacedResource(m_pD3D12UploadHeap, 0, &TextureBufferUploadDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12TextureDataUploadBuffer)) == S_OK)
 		{
 			status = false;
 			Console::Write(L"Error: Could not create upload buffer for texture\n");

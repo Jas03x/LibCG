@@ -71,7 +71,7 @@ CAllocation* CHeap::CreateAllocation(const D3D12_RESOURCE_DESC& pDesc, D3D12_RES
 
 	if (status)
 	{
-		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12Heap, Offset, &pDesc, InitialState, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(pID3D12Resource)) == S_OK)
+		if (m_pID3D12Device->CreatePlacedResource(m_pID3D12Heap, Offset, &pDesc, InitialState, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(&pID3D12Resource)) != S_OK)
 		{
 			status = false;
 		}
