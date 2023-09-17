@@ -2,9 +2,11 @@
 
 #include <d3d12.h>
 
+#include "CAllocation.hpp"
+
 CTexture::CTexture(void)
 {
-    m_pID3D12TextureBuffer = nullptr;
+    m_pAllocation = nullptr;
 }
 
 CTexture::~CTexture(void)
@@ -12,13 +14,13 @@ CTexture::~CTexture(void)
 
 }
 
-bool CTexture::Initialize(ID3D12Resource* pID3D12TextureBuffer)
+bool CTexture::Initialize(CAllocation* pAllocation)
 {
     bool status = true;
     
-    if (pID3D12TextureBuffer != nullptr)
+    if (m_pAllocation != nullptr)
     {
-        m_pID3D12TextureBuffer = pID3D12TextureBuffer;
+        m_pAllocation = pAllocation;
     }
     else
     {
@@ -30,9 +32,10 @@ bool CTexture::Initialize(ID3D12Resource* pID3D12TextureBuffer)
 
 void CTexture::Uninitialize(void)
 {
-    if (m_pID3D12TextureBuffer != nullptr)
+    if (m_pAllocation != nullptr)
     {
-        m_pID3D12TextureBuffer->Release();
-        m_pID3D12TextureBuffer = nullptr;
+        m_pAllocation->Uninitialize();
+        delete m_pAllocation;
+        m_pAllocation = nullptr;
     }
 }

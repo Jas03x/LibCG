@@ -3,7 +3,7 @@
 
 #include "CgGfx.hpp"
 
-struct ID3D12Resource;
+class CAllocation;
 
 class CVertexBuffer : public IVertexBuffer
 {
@@ -11,13 +11,13 @@ class CVertexBuffer : public IVertexBuffer
 
 	uint64_t                          m_VertexBufferGpuVA;
 
-	ID3D12Resource*                   m_pID3D12Resource;
+	CAllocation*                      m_pAllocation;
 
 public:
 	CVertexBuffer(void);
 	~CVertexBuffer(void);
 
-	bool                              Initialize(ID3D12Resource* pID3D12VertexBuffer, const VERTEX_BUFFER_DESC& rDesc);
+	bool                              Initialize(CAllocation* pAllocation, const VERTEX_BUFFER_DESC& rDesc);
 	void                              Uninitialize(void);
 
 	uint64_t                          GetGpuVA(void);

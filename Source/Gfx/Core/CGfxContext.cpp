@@ -19,6 +19,7 @@
 #include "CTexture.hpp"
 #include "CVertexBuffer.hpp"
 #include "CWindow.hpp"
+#include "CAllocation.hpp"
 
 #include "EnumTranslator.hpp"
 
@@ -67,8 +68,8 @@ CGfxContext::CGfxContext(void)
 
 	m_pID3D12Device = nullptr;
 
-	m_pUploadHeap = nullptr;
 	m_pPrimaryHeap = nullptr;
+	m_pD3D12UploadHeap = nullptr;
 	m_pID3D12ShaderResourceHeap = nullptr;
 
 	m_pCopyQueue = nullptr;
@@ -261,10 +262,10 @@ void CGfxContext::Uninitialize(void)
 		m_pPrimaryHeap = nullptr;
 	}
 
-	if (m_pUploadHeap != nullptr)
+	if (m_pD3D12UploadHeap != nullptr)
 	{
-		delete m_pUploadHeap;
-		m_pUploadHeap = nullptr;
+		m_pD3D12UploadHeap->Release();
+		m_pD3D12UploadHeap = nullptr;
 	}
 
 	if (m_pCopyQueue != nullptr)
@@ -562,7 +563,6 @@ bool CGfxContext::InitializeHeaps(const ContextFactory::Descriptor& rDesc)
 {
 	bool status = true;
 
-	ID3D12Heap* pID3D12UploadHeap = nullptr;
 	ID3D12Heap* pID3D12PrimaryHeap = nullptr;
 
 	D3D12_RESOURCE_DESC HeapResourceDesc = { };
@@ -592,7 +592,7 @@ bool CGfxContext::InitializeHeaps(const ContextFactory::Descriptor& rDesc)
 		HeapDesc.SizeInBytes = UploadHeapAllocationInfo.SizeInBytes;
 		HeapDesc.Properties.Type = D3D12_HEAP_TYPE_UPLOAD;
 
-		if (m_pID3D12Device->CreateHeap(&HeapDesc, __uuidof(ID3D12Heap), reinterpret_cast<void**>(&pID3D12UploadHeap)) != S_OK)
+		if (m_pID3D12Device->CreateHeap(&HeapDesc, __uuidof(ID3D12Heap), reinterpret_cast<void**>(&m_pD3D12UploadHeap)) != S_OK)
 		{
 			status = false;
 			Console::Write(L"Error: Failed to create upload heap\n");
@@ -617,25 +617,6 @@ bool CGfxContext::InitializeHeaps(const ContextFactory::Descriptor& rDesc)
 
 	if (status)
 	{
-		m_pUploadHeap = new CHeap();
-		if (m_pUploadHeap != nullptr)
-		{
-			if (!m_pUploadHeap->Initialize(m_pID3D12Device, pID3D12UploadHeap))
-			{
-				status = false;
-				delete m_pUploadHeap;
-				m_pUploadHeap = nullptr;
-			}
-		}
-		else
-		{
-			status = false;
-			Console::Write(L"Error: Failed to allocate upload heap\n");
-		}
-	}
-
-	if (status)
-	{
 		m_pPrimaryHeap = new CHeap();
 		if (m_pPrimaryHeap != nullptr)
 		{
@@ -655,15 +636,10 @@ bool CGfxContext::InitializeHeaps(const ContextFactory::Descriptor& rDesc)
 
 	if (!status)
 	{
-		if (m_pUploadHeap != nullptr)
+		if (m_pD3D12UploadHeap != nullptr)
 		{
-			delete m_pUploadHeap;
-			m_pUploadHeap = nullptr;
-		}
-		else if (pID3D12UploadHeap != nullptr)
-		{
-			pID3D12UploadHeap->Release();
-			pID3D12UploadHeap = nullptr;
+			m_pD3D12UploadHeap->Release();
+			m_pD3D12UploadHeap = nullptr;
 		}
 
 		if (m_pPrimaryHeap != nullptr)
@@ -1223,9 +1199,10 @@ IConstantBuffer* CGfxContext::CreateConstantBuffer(const CONSTANT_BUFFER_DESC& r
 		cbDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		cbDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		if (!m_pUploadHeap->AllocateResource(cbDesc, D3D12_RESOURCE_STATE_GENERIC_READ, &pID3D12ConstantBufferResource))
+		if (m_pID3D12Device->CreatePlacedResource(m_pD3D12UploadHeap, 0, &cbDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(pID3D12ConstantBufferResource)) == S_OK)
 		{
 			status = false;
+			Console::Write(L"Error: Could not create upload buffer for constant buffer\n");
 		}
 	}
 
@@ -1385,8 +1362,9 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, uint32_t
 {
 	bool status = true;
 	IVertexBuffer* pIVertexBuffer = nullptr;
-	ID3D12Resource* pID3D12VertexBuffer = nullptr;
 	ID3D12Resource* pID3D12VertexDataUploadBuffer = nullptr;
+
+	CAllocation* pPrimaryBuffer = nullptr;
 	CCopyCommandBuffer* pCopyCommandBuffer = static_cast<CCopyCommandBuffer*>(m_pICopyCommandBuffer);
 
 	if (status)
@@ -1404,12 +1382,15 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, uint32_t
 		VertexBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		VertexBufferDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		if (!m_pUploadHeap->AllocateResource(VertexBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, &pID3D12VertexDataUploadBuffer))
+		if (m_pID3D12Device->CreatePlacedResource(m_pD3D12UploadHeap, 0, &VertexBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(pID3D12VertexDataUploadBuffer)) == S_OK)
 		{
 			status = false;
+			Console::Write(L"Error: Could not create upload buffer for vertex buffer\n");
 		}
 
-		if (!m_pPrimaryHeap->AllocateResource(VertexBufferDesc, D3D12_RESOURCE_STATE_COPY_DEST, &pID3D12VertexBuffer))
+		pPrimaryBuffer = m_pPrimaryHeap->CreateAllocation(VertexBufferDesc, D3D12_RESOURCE_STATE_COPY_DEST);
+
+		if (pPrimaryBuffer == nullptr)
 		{
 			status = false;
 		}
@@ -1440,13 +1421,13 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, uint32_t
 		D3D12_RESOURCE_BARRIER Barrier = {};
 		Barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 		Barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		Barrier.Transition.pResource = pID3D12VertexBuffer;
+		Barrier.Transition.pResource = pPrimaryBuffer->GetD3D12Interface();
 		Barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		Barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 		Barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COMMON; // Resources decay to the common state when accessed from a copy queue in commmand lists
 
 		pCopyCommandBuffer->Reset(nullptr);
-		pCopyCommandBuffer->CopyResource(pID3D12VertexBuffer, pID3D12VertexDataUploadBuffer);
+		pCopyCommandBuffer->CopyResource(pPrimaryBuffer->GetD3D12Interface(), pID3D12VertexDataUploadBuffer);
 		pCopyCommandBuffer->ResourceBarrier(1, &Barrier);
 		if (!pCopyCommandBuffer->Finalize())
 		{
@@ -1474,11 +1455,11 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, uint32_t
 		if (pIVertexBuffer != nullptr)
 		{
 			VERTEX_BUFFER_DESC Descriptor = {};
-			Descriptor.GpuVA = pID3D12VertexBuffer->GetGPUVirtualAddress();
+			Descriptor.GpuVA = pPrimaryBuffer->GetD3D12Interface()->GetGPUVirtualAddress();
 			Descriptor.Size = Size;
 			Descriptor.Stride = Stride;
 
-			if (!static_cast<CVertexBuffer*>(pIVertexBuffer)->Initialize(pID3D12VertexBuffer, Descriptor))
+			if (!static_cast<CVertexBuffer*>(pIVertexBuffer)->Initialize(pPrimaryBuffer, Descriptor))
 			{
 				status = false;
 				DestroyVertexBuffer(pIVertexBuffer);
@@ -1497,10 +1478,11 @@ IVertexBuffer* CGfxContext::CreateVertexBuffer(const void* pVertexData, uint32_t
 		pID3D12VertexDataUploadBuffer = nullptr;
 	}
 
-	if (!status && (pID3D12VertexBuffer != nullptr))
+	if (!status && (pPrimaryBuffer != nullptr))
 	{
-		pID3D12VertexBuffer->Release();
-		pID3D12VertexBuffer = nullptr;
+		pPrimaryBuffer->Uninitialize();
+		delete pPrimaryBuffer;
+		pPrimaryBuffer = nullptr;
 	}
 
 	return pIVertexBuffer;
@@ -1577,9 +1559,10 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 	
 	ITexture* pITexture = nullptr;
 
-	ID3D12Resource* pID3D12TextureBuffer = nullptr;
 	ID3D12Resource* pID3D12TextureDataUploadBuffer = nullptr;
 	CCopyCommandBuffer* pCopyCommandBuffer = static_cast<CCopyCommandBuffer*>(m_pICopyCommandBuffer);
+
+	CAllocation* pPrimaryAllocation = nullptr;
 
 	uint64_t TextureBufferSizeInBytes = 0;
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT TextureBufferFootprint = {};
@@ -1614,12 +1597,15 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 		TextureBufferUploadDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		TextureBufferUploadDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		if (!m_pUploadHeap->AllocateResource(TextureBufferUploadDesc, D3D12_RESOURCE_STATE_GENERIC_READ, &pID3D12TextureDataUploadBuffer))
+		if (m_pID3D12Device->CreatePlacedResource(m_pD3D12UploadHeap, 0, &TextureBufferUploadDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), reinterpret_cast<void**>(pID3D12TextureDataUploadBuffer)) == S_OK)
 		{
 			status = false;
+			Console::Write(L"Error: Could not create upload buffer for texture\n");
 		}
 
-		if (!m_pPrimaryHeap->AllocateResource(TextureBufferDesc, D3D12_RESOURCE_STATE_COPY_DEST, &pID3D12TextureBuffer))
+		pPrimaryAllocation = m_pPrimaryHeap->CreateAllocation(TextureBufferDesc, D3D12_RESOURCE_STATE_COPY_DEST);
+
+		if (pPrimaryAllocation == nullptr)
 		{
 			status = false;
 		}
@@ -1650,13 +1636,13 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 		D3D12_RESOURCE_BARRIER Barrier = {};
 		Barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 		Barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		Barrier.Transition.pResource = pID3D12TextureBuffer;
+		Barrier.Transition.pResource = pPrimaryAllocation->GetD3D12Interface();
 		Barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		Barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 		Barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COMMON; // Resources decay to the common state when accessed from a copy queue in commmand lists
 
 		D3D12_TEXTURE_COPY_LOCATION Dst = {};
-		Dst.pResource = pID3D12TextureBuffer;
+		Dst.pResource = pPrimaryAllocation->GetD3D12Interface();
 		Dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
 		Dst.SubresourceIndex = 0;
 
@@ -1698,7 +1684,7 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 		SrvDesc.Texture2D.PlaneSlice = 0;
 		SrvDesc.Texture2D.ResourceMinLODClamp = 0;
 
-        m_pID3D12Device->CreateShaderResourceView(pID3D12TextureBuffer, &SrvDesc, m_pID3D12ShaderResourceHeap->GetCPUDescriptorHandleForHeapStart());
+        m_pID3D12Device->CreateShaderResourceView(pPrimaryAllocation->GetD3D12Interface(), &SrvDesc, m_pID3D12ShaderResourceHeap->GetCPUDescriptorHandleForHeapStart());
 	}
 
 	if (status)
@@ -1707,7 +1693,7 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 
 		if (pITexture != nullptr)
 		{
-			if (!static_cast<CTexture*>(pITexture)->Initialize(pID3D12TextureBuffer))
+			if (!static_cast<CTexture*>(pITexture)->Initialize(pPrimaryAllocation))
 			{
 				status = false;
 				DestroyTexture(pITexture);
@@ -1726,10 +1712,11 @@ ITexture* CGfxContext::CreateTexture(const TEXTURE_DESC& rDesc)
 		pID3D12TextureDataUploadBuffer = nullptr;
 	}
 
-	if (!status && (pID3D12TextureBuffer != nullptr))
+	if (!status && (pPrimaryAllocation != nullptr))
 	{
-		pID3D12TextureBuffer->Release();
-		pID3D12TextureBuffer = nullptr;
+		pPrimaryAllocation->Uninitialize();
+		delete pPrimaryAllocation;
+		pPrimaryAllocation = nullptr;
 	}
 
 	return pITexture;

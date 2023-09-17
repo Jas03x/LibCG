@@ -4,10 +4,12 @@
 
 #include <d3d12.h>
 
+#include "CAllocation.hpp"
+
 CVertexBuffer::CVertexBuffer(void)
 {
 	m_VertexBufferGpuVA = 0;
-	m_pID3D12Resource = nullptr;
+	m_pAllocation = nullptr;
 
 	ZeroMemory(&m_Desc, sizeof(VERTEX_BUFFER_DESC));
 }
@@ -17,14 +19,14 @@ CVertexBuffer::~CVertexBuffer(void)
 
 }
 
-bool CVertexBuffer::Initialize(ID3D12Resource* pID3D12VertexBuffer, const VERTEX_BUFFER_DESC& rDesc)
+bool CVertexBuffer::Initialize(CAllocation* pAllocation, const VERTEX_BUFFER_DESC& rDesc)
 {
 	bool status = true;
 
-	if (pID3D12VertexBuffer != nullptr)
+	if (pAllocation != nullptr)
 	{
-		m_pID3D12Resource = pID3D12VertexBuffer;
-		m_VertexBufferGpuVA = m_pID3D12Resource->GetGPUVirtualAddress();
+		m_pAllocation = pAllocation;
+		m_VertexBufferGpuVA = pAllocation->GetD3D12Interface()->GetGPUVirtualAddress();
 		CopyMemory(&m_Desc, &rDesc, sizeof(VERTEX_BUFFER_DESC));
 	}
 	else
@@ -40,10 +42,11 @@ void CVertexBuffer::Uninitialize(void)
 	m_VertexBufferGpuVA = 0;
 	ZeroMemory(&m_Desc, sizeof(VERTEX_BUFFER_DESC));
 
-	if (m_pID3D12Resource != nullptr)
+	if (m_pAllocation != nullptr)
 	{
-		m_pID3D12Resource->Release();
-		m_pID3D12Resource = nullptr;
+		m_pAllocation->Uninitialize();
+		delete m_pAllocation;
+		m_pAllocation = nullptr;
 	}
 }
 

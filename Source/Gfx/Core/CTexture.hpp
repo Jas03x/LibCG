@@ -3,18 +3,18 @@
 
 #include "CgGfx.hpp"
 
-struct ID3D12Resource;
+class CAllocation;
 
 struct CTexture : public ITexture
 {
 private:
-    ID3D12Resource* m_pID3D12TextureBuffer;
+    CAllocation* m_pAllocation;
 
 public:
     CTexture(void);
     ~CTexture(void);
 
-    bool Initialize(ID3D12Resource* pID3D12TextureBuffer);
+    bool Initialize(CAllocation* pAllocation);
     void Uninitialize(void);
 };
 
