@@ -258,6 +258,7 @@ void CGfxContext::Uninitialize(void)
 
 	if (m_pPrimaryHeap != nullptr)
 	{
+		m_pPrimaryHeap->Uninitialize();
 		delete m_pPrimaryHeap;
 		m_pPrimaryHeap = nullptr;
 	}
@@ -623,6 +624,7 @@ bool CGfxContext::InitializeHeaps(const ContextFactory::Descriptor& rDesc)
 			if (!m_pPrimaryHeap->Initialize(m_pID3D12Device, pID3D12PrimaryHeap))
 			{
 				status = false;
+				m_pPrimaryHeap->Uninitialize();
 				delete m_pPrimaryHeap;
 				m_pPrimaryHeap = nullptr;
 			}
