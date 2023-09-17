@@ -152,9 +152,9 @@ public:
 				for (uint32_t y = 0; y < 256; y++)
 				{
 					byte c = (((x / 5) % 2 == (y / 5) % 2)) ? 0 : 255;
-					TextureData[x][y][0] =   c;
-					TextureData[x][y][1] =   c;
-					TextureData[x][y][2] =   c;
+					TextureData[x][y][0] = c;
+					TextureData[x][y][1] = c;
+					TextureData[x][y][2] = c;
 					TextureData[x][y][3] = 255;
 				}
 			}
