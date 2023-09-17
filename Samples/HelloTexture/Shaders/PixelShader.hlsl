@@ -16,8 +16,7 @@ struct PS_Output
 PS_Output main(PS_Input input)
 {
     PS_Output Output;
-    //Output.color = g_Texture.Sample(g_Sampler, input.uv);
-    Output.color = float4(1, 0, 0, 1);
+    Output.color = g_Texture.Sample(g_Sampler, input.uv);
 
     return Output;
 }
