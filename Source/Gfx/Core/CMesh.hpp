@@ -21,4 +21,4 @@ public:
 	virtual IVertexBuffer* GetVertexBuffer(void);
 };
 
-#endif //Cg_CMESH_HPP
+#endif // CG_CMESH_HPP

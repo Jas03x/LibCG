@@ -107,6 +107,9 @@
     <ClInclude Include="Source\Gfx\Core\CAllocation.hpp">
       <Filter>Source Files\Gfx\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CgMdl.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Cg.cpp">

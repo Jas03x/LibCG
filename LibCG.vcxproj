@@ -171,6 +171,7 @@
     <ClInclude Include="Include\CgDef.hpp" />
     <ClInclude Include="Include\CgGfx.hpp" />
     <ClInclude Include="Include\CgMath.hpp" />
+    <ClInclude Include="Include\CgMdl.hpp" />
     <ClInclude Include="Include\CgSystem.hpp" />
     <ClInclude Include="Source\Gfx\Core\CAllocation.hpp" />
     <ClInclude Include="Source\Gfx\Core\CCommandBuffer.hpp" />
