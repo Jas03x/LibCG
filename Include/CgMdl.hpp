@@ -15,7 +15,7 @@
 * |-----------------|-----------------------------|
 * |    Block        |   Block N                   |
 * |-----------------|-----------------------------|
-* |    UInt16       |   End of File 'EOF'         |
+* |    UInt32       |   End of File 'EOF'         |
 * |_________________|_____________________________|
 *
 * Header
@@ -129,7 +129,7 @@
 * |-----------------|-----------------------------|
 * |    Uint32       |   Block Signature 'BLK'     |
 * |-----------------|-----------------------------|
-* |    MDL_String   |   Texture                   |
+* |    MDL_Material |   Material                  |
 * |-----------------|-----------------------------|
 * |    Uint32       |   End of data 'END'         |
 * |_________________|_____________________________|
@@ -217,6 +217,20 @@
 * |-----------------|-----------------------------|
 * |    Uint32       |   End of data 'END'         |
 * |_________________|_____________________________|
+* 
+* _________________________________________________
+* |                MDL Material Format            |
+* |-----------------------------------------------|
+* |    Type         |   Description               |
+* |-----------------|-----------------------------|
+* |    Uint32       |   Material Signature 'MTL'  |
+* |-----------------|-----------------------------|
+* |    MDL_String   |   Name                      |
+* |-----------------|-----------------------------|
+* |    MDL_String   |   Texture                   |
+* |-----------------|-----------------------------|
+* |    Uint32       |   End of data 'END'         |
+* |_________________|_____________________________|
 *
 */
 
@@ -249,28 +263,29 @@ struct MDL_HEADER
 
 struct MDL_BLOCK
 {
-	uint64_t signature;
-	uint8_t  type;
-	uint16_t reserved;
+	uint32_t signature;
+	uint32_t type;
+	uint32_t reserved[2];
 };
 
-struct MDL_ARRAY
+struct MDL_LIST
 {
-	uint64_t signature;
-	uint8_t  type;
+	uint32_t signature;
+	uint32_t type;
 	uint32_t length;
+	uint32_t reserved;
 };
 
 struct MDL_VERTEX
 {
-	uint8_t signature;
-	float   position[3];
-	float   normal[3];
-	float   uv[2];
-	uint8_t node_index;
-	uint8_t bone_count;
-	uint8_t bone_indices[4];
-	float   bone_weights[4];
+	uint16_t signature;
+	float    position[3];
+	float    normal[3];
+	float    uv[2];
+	uint8_t  node_index;
+	uint8_t  bone_count;
+	uint8_t  bone_indices[4];
+	float    bone_weights[4];
 };
 
 struct MDL_STRING
@@ -282,8 +297,8 @@ struct MDL_STRING
 
 struct MDL_MATRIX
 {
-	uint8_t signature;
-	float   elements[16];
+	uint32_t signature;
+	float    elements[16];
 };
 
 #endif // CG_MDL__HPP
