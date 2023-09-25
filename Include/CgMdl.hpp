@@ -81,6 +81,16 @@
 * |-----------------|-----------------------------|
 * |    MDL_Array    |   Nodes                     |
 * |-----------------|-----------------------------|
+* |    UInt32       |   End of data 'END'         |
+* |_________________|_____________________________|
+* 
+* _________________________________________________
+* |           MDL Bone Data Block Format          |
+* |-----------------------------------------------|
+* |    Type         |   Description               |
+* |-----------------|-----------------------------|
+* |    UInt64       |   Block Signature 'BLOCK'   |
+* |-----------------|-----------------------------|
 * |    MDL_Array    |   Bones                     |
 * |-----------------|-----------------------------|
 * |    UInt32       |   End of data 'END'         |
@@ -182,7 +192,7 @@
 
 #include <stdint.h>
 
-enum
+enum MDL_SIGNATURE
 {
 	MDL_SIG    = 0x00000000004C444D, // 'MDL'
 	MDL_EOF    = 0x0000000000464F45, // 'EOF'
@@ -198,10 +208,20 @@ enum
 
 enum MDL_BLOCK_TYPE
 {
-	MDL_INVALID_BLOCK  = 0x00000000, // INVALID
-	MDL_NODE_BLOCK     = 0x45444F4E, // 'NODE'
-	MDL_MATERIAL_BLOCK = 0x004C544D, // 'MTL'
-	MDL_MESH_BLOCK     = 0x4853454D  // 'MESH'
+	MDL_INVALID_BLOCK  = 0x0000000000000000, // INVALID
+	MDL_NODE_BLOCK     = 0x4B4C425F45444F4E, // 'NODE_BLK'
+	MDL_BONE_BLOCK     = 0x4B4C425F454E4F42, // 'BONE_BLK'
+	MDL_MATERIAL_BLOCK = 0x004B4C425F4C544D, // 'MTL_BLK'
+	MDL_MESH_BLOCK     = 0x4B4C425F4853454D  // 'MESH_BLK'
+};
+
+enum MDL_ARRAY_TYPE
+{
+	MDL_INVALID_ARRAY = 0x0000000000000000, // INVALID
+	MDL_VERTEX_ARRAY  = 0x5252415F58545256, // 'VRTX_ARR'
+	MDL_INDEX_ARRAY   = 0x5252415F58444E49, // 'INDX_ARR'
+	MDL_NODE_ARRAY    = 0x5252415F45444F4E, // 'NODE_ARR'
+	MDL_BONE_ARRAY    = 0x5252415F454E4F42  // 'BONE_ARR'
 };
 
 struct MDL_HEADER
@@ -247,6 +267,7 @@ struct MDL_STRING
 struct MDL_MATRIX
 {
 	uint8_t signature;
+	float   elements[16];
 };
 
 #endif // CG_MDL__HPP
