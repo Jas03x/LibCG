@@ -16,7 +16,8 @@ CHeap::CHeap(void)
 
 CHeap::~CHeap(void)
 {
-
+	CgAssert(m_pID3D12Heap == nullptr, L"DX12 heap interface not released\n");
+	CgAssert(m_pID3D12Device == nullptr, L"DX12 device interface not released\n");
 }
 
 bool CHeap::Initialize(ID3D12Device4* pID3D12Device, ID3D12Heap* pID3D12Heap)

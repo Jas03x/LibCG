@@ -43,6 +43,7 @@ CFile::CFile()
 
 CFile::~CFile()
 {
+	CgAssert(hFile == nullptr, L"File handle not closed\n");
 }
 
 CFile* CFile::Open(const wchar_t* Path)

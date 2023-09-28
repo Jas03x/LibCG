@@ -2,6 +2,8 @@
 
 #include <d3d12.h>
 
+#include "Cg.hpp"
+
 CAllocation::CAllocation(void)
 {
 	m_Offset = 0;
@@ -10,7 +12,7 @@ CAllocation::CAllocation(void)
 
 CAllocation::~CAllocation(void)
 {
-
+	CgAssert(m_pID3D12Resource == nullptr, L"DX12 resource interface not released\n");
 }
 
 bool CAllocation::Initialize(uint64_t Offset, ID3D12Resource* pID3D12Resource)

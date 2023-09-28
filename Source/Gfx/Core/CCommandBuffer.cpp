@@ -16,7 +16,8 @@ CCommandBuffer::CCommandBuffer(void)
 
 CCommandBuffer::~CCommandBuffer(void)
 {
-
+	CgAssert(m_pID3D12CommandList == nullptr, L"DX12 command list interface not released\n");
+	CgAssert(m_pID3D12CommandAllocator == nullptr, L"DX12 command allocator interface not released\n");
 }
 
 bool CCommandBuffer::Initialize(ID3D12CommandAllocator* pICommandAllocator, ID3D12GraphicsCommandList* pICommandList)

@@ -80,7 +80,23 @@ CGfxContext::CGfxContext(void)
 
 CGfxContext::~CGfxContext(void)
 {
+#if _DEBUG
+	CgAssert(m_hDxgiDebugModule == nullptr, L"DXGI debug module not released\n");
+	CgAssert(m_pIDxgiDebugInterface == nullptr, L"DXGI debug interface not released\n");
+	CgAssert(m_pID3D12DebugInterface == nullptr, L"DXGI DX12 debug interface not released\n");
+#endif
 
+	CgAssert(m_pIDxgiFactory == nullptr, L"DXGI debug factory not released\n");
+	CgAssert(m_pIDxgiAdapter == nullptr, L"DXGI adapter not released\n");
+	CgAssert(m_pIWindow == nullptr, L"Window not de-allocated\n");
+	CgAssert(m_pSwapChain == nullptr, L"Swapchain not de-allocated\n");
+	CgAssert(m_pID3D12Device == nullptr, L"DX12 device not released\n");
+	CgAssert(m_pPrimaryHeap == nullptr, L"Primary heap not de-allocated\n");
+	CgAssert(m_pD3D12UploadHeap == nullptr, L"DX12 upload heap not released\n");
+	CgAssert(m_pID3D12ShaderResourceHeap == nullptr, L"DX12 shader resource heap not released\n");
+	CgAssert(m_pCopyQueue == nullptr, L"DX12 copy queue not released\n");
+	CgAssert(m_pGraphicsQueue == nullptr, L"DX12 graphics queue not released\n");
+	CgAssert(m_pICopyCommandBuffer == nullptr, L"Copy command buffer not de-allocated\n");
 }
 
 bool CGfxContext::Initialize(IWindow* pIWindow, const ContextFactory::Descriptor& rDesc)

@@ -13,7 +13,7 @@ CMesh::CMesh(void)
 
 CMesh::~CMesh(void)
 {
-
+	CgAssert(m_pIVertexBuffer == nullptr, L"Vertex buffer not de-allocated\n");
 }
 
 bool CMesh::Initialize(uint32_t NumVertices, IVertexBuffer* pIVertexBuffer)

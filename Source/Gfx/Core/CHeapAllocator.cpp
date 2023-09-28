@@ -16,7 +16,7 @@ CHeapAllocator::CHeapAllocator(void)
 
 CHeapAllocator::~CHeapAllocator(void)
 {
-
+	CgAssert(m_PageEntryArray == nullptr, L"Page entry array not de-allocated\n");
 }
 
 bool CHeapAllocator::Initialize(uint64_t HeapSizeInBytes)
@@ -31,7 +31,7 @@ bool CHeapAllocator::Initialize(uint64_t HeapSizeInBytes)
 
 	if (status)
 	{
-		uint32_t NumPages = HeapSizeInBytes / PAGE_SIZE;
+		uint32_t NumPages = static_cast<uint32_t>(HeapSizeInBytes / PAGE_SIZE);
 		m_PageEntryArray = reinterpret_cast<PAGE_ENTRY*>(Memory::Allocate(NumPages * sizeof(PAGE_ENTRY), true));
 
 		for (uint32_t i = 0; i < NumPages; i++)

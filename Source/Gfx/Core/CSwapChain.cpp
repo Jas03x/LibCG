@@ -22,7 +22,13 @@ CSwapChain::CSwapChain(void)
 
 CSwapChain::~CSwapChain(void)
 {
+	CgAssert(m_pIDxgiSwapChain == nullptr, L"DXGI swapchain interface not released\n");
+	CgAssert(m_pID3D12DescriptorHeap == nullptr, L"DX12 descriptor heap interface not released\n");
 
+	for (uint32_t i = 0; i < NUM_BUFFERS; i++)
+	{
+		CgAssert(m_pID3D12RenderBuffers[i] == nullptr, L"DX12 render buffer interface not released\n");
+	}
 }
 
 bool CSwapChain::Initialize(IDXGISwapChain4* pIDxgiSwapChain, ID3D12DescriptorHeap* pIRtvDescriptorHeap, const Descriptor& rDesc)

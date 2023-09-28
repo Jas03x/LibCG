@@ -53,6 +53,9 @@ CRendererState::CRendererState(void)
 
 CRendererState::~CRendererState(void)
 {
+	CgAssert(m_pID3D12PipelineState == nullptr, L"DX12 pipeline state interface not released\n");
+	CgAssert(m_pID3D12RootSignature == nullptr, L"DX12 root signature interface not released\n");
+	CgAssert(m_pShaderResourceHeap == nullptr, L"DX12 shader resource heap interface not released\n");
 }
 
 bool CRendererState::Initialize(ID3D12RootSignature* pIRootSignature, ID3D12PipelineState* pIPipelineState, ID3D12DescriptorHeap* pShaderResourceHeap)

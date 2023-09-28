@@ -4,6 +4,7 @@
 
 #include <d3d12.h>
 
+#include "Cg.hpp"
 #include "CAllocation.hpp"
 
 CVertexBuffer::CVertexBuffer(void)
@@ -16,7 +17,7 @@ CVertexBuffer::CVertexBuffer(void)
 
 CVertexBuffer::~CVertexBuffer(void)
 {
-
+	CgAssert(m_pAllocation == nullptr, L"Vertex buffer allocation not de-allocated\n");
 }
 
 bool CVertexBuffer::Initialize(CAllocation* pAllocation, const VERTEX_BUFFER_DESC& rDesc)

@@ -2,6 +2,7 @@
 
 #include <d3d12.h>
 
+#include "Cg.hpp"
 #include "CAllocation.hpp"
 
 CTexture::CTexture(void)
@@ -11,7 +12,7 @@ CTexture::CTexture(void)
 
 CTexture::~CTexture(void)
 {
-
+    CgAssert(m_pAllocation == nullptr, L"Texture allocation not de-allocated\n");
 }
 
 bool CTexture::Initialize(CAllocation* pAllocation)

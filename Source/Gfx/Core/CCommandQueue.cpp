@@ -19,6 +19,8 @@ CCommandQueue::CCommandQueue(void)
 
 CCommandQueue::~CCommandQueue(void)
 {
+	CgAssert(m_pID3D12Fence == nullptr, L"DX12 fence interface not released\n");
+	CgAssert(m_pID3D12CommandQueue == nullptr, L"DX12 command queue interface not released\n");
 }
 
 bool CCommandQueue::Initialize(COMMAND_QUEUE_TYPE Type, ID3D12CommandQueue* pICommandQueue, ID3D12Fence* pIFence)

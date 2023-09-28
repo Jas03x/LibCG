@@ -13,7 +13,8 @@ CConstantBuffer::CConstantBuffer(void)
 
 CConstantBuffer::~CConstantBuffer(void)
 {
-
+	CgAssert(m_CpuVA == nullptr, L"Constant buffer cpu va not unmapped\n");
+	CgAssert(m_pID3D12Resource == nullptr, L"DX12 resource interface not released\n");
 }
 
 bool CConstantBuffer::Initialize(ID3D12Resource* pID3D12ConstantBufferResource, void* CpuVA)
