@@ -1,7 +1,7 @@
-#ifndef CG_MDL__HPP
-#define CG_MDL__HPP
+#ifndef MDL__HPP
+#define MDL__HPP
 
-#include "CgDef.hpp"
+#include <stdint.h>
 
 /*
 * _________________________________________________
@@ -301,4 +301,4 @@ struct MDL_MATRIX
 	float    elements[16];
 };
 
-#endif // CG_MDL__HPP
+#endif // MDL__HPP
