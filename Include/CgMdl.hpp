@@ -281,6 +281,7 @@ struct MDL_VERTEX
 	float    position[3];
 	float    normal[3];
 	float    uv[2];
+	uint8_t  material_index;
 	uint8_t  node_index;
 	uint8_t  bone_count;
 	uint8_t  bone_indices[4];
