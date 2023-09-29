@@ -1,5 +1,5 @@
-#ifndef MDL__HPP
-#define MDL__HPP
+#ifndef MDL_HPP
+#define MDL_HPP
 
 #include <stdint.h>
 
@@ -301,4 +301,4 @@ struct MDL_MATRIX
 	float    elements[16];
 };
 
-#endif // MDL__HPP
+#endif // MDL_HPP
