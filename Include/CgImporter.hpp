@@ -1,12 +1,50 @@
 #ifndef CG_IMPORTER__HPP
 #define CG_IMPORTER__HPP
 
+#include <stdint.h>
+
+#include <string>
+#include <vector>
+
 class Importer
 {
 public:
+	struct Vertex
+	{
+		float       position[3];
+		float       normal[3];
+		float       uv[2];
+		uint8_t     node_index;
+		uint8_t     bone_count;
+		uint8_t     bone_indices[4];
+		float       bone_weights[4];
+	};
+
+	struct Bone
+	{
+		std::string name;
+		float       matrix[16];
+	};
+
+	struct Node
+	{
+		std::string name;
+		float       matrix[16];
+	};
+
+	struct Material
+	{
+		std::string name;
+		std::string texture;
+	};
+
 	struct MDL_DATA
 	{
-
+		std::vector<Vertex>   vertices;
+		std::vector<uint32_t> indices;
+		std::vector<Node>     nodes;
+		std::vector<Bone>     bones;
+		std::vector<Material> materials;
 	};
 
 public:
