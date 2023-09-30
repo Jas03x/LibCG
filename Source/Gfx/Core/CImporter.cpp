@@ -23,12 +23,12 @@ bool Importer::ReadMdl(const wchar_t* path, MDL_DATA& rData)
 
 MDL_Importer::MDL_Importer(Importer::MDL_DATA& rData) : m_rData(rData)
 {
-
+	m_pFile = nullptr;
 }
 
 MDL_Importer::~MDL_Importer(void)
 {
-
+	CgAssert(m_pFile == nullptr, L"MDL file not closed\n");
 }
 
 bool MDL_Importer::ReadSignature(uint32_t expected_signature)
@@ -66,7 +66,7 @@ bool MDL_Importer::Read(const wchar_t* path)
 
 	if (status)
 	{
-		MDL_HEADER mdl_header;
+		MDL_HEADER mdl_header = { 0 };
 
 		if (m_pFile->ReadBytes(&mdl_header, sizeof(MDL_HEADER)))
 		{
@@ -144,6 +144,11 @@ bool MDL_Importer::ReadBlock(MDL_BLOCK_HEADER& rBlockHeader)
 				status = ReadNodeBlock(rBlockHeader);
 				break;
 			}
+			case MDL_BONE:
+			{
+				status = ReadBoneBlock(rBlockHeader);
+				break;
+			}
 		}
 	}
 
@@ -191,6 +196,47 @@ bool MDL_Importer::ReadNodeBlock(MDL_BLOCK_HEADER& rBlockHeader)
 	return status;
 }
 
+bool MDL_Importer::ReadBoneBlock(MDL_BLOCK_HEADER& rBlockHeader)
+{
+	bool status = true;
+
+	MDL_LIST_HEADER list_header = { 0 };
+
+	if (!m_pFile->ReadBytes(&list_header, sizeof(MDL_LIST_HEADER)))
+	{
+		status = false;
+	}
+
+	if (status)
+	{
+		if (list_header.signature != MDL_LIST)
+		{
+			Console::Write(L"Error: Expected MDL list\n");
+			status = false;
+		}
+		else if (list_header.type != MDL_BONE)
+		{
+			Console::Write(L"Error: Expected bone list\n");
+			status = false;
+		}
+	}
+
+	if (status)
+	{
+		for (uint32_t i = 0; status && (i < list_header.length); i++)
+		{
+			status = ReadBone();
+		}
+	}
+
+	if (status)
+	{
+		status = ReadSignature(MDL_END);
+	}
+
+	return status;
+}
+
 bool MDL_Importer::ReadNode(void)
 {
 	bool status = true;
@@ -199,18 +245,7 @@ bool MDL_Importer::ReadNode(void)
 	m_rData.nodes.push_back(Importer::Node());
 	Importer::Node& rNode = m_rData.nodes.back();
 
-	if (m_pFile->Read(&node_signature))
-	{
-		if (node_signature != MDL_NODE)
-		{
-			Console::Write(L"Error: Expected node\n");
-			status = false;
-		}
-	}
-	else
-	{
-		status = false;
-	}
+	status = ReadSignature(MDL_NODE);
 
 	if (status)
 	{
@@ -225,6 +260,33 @@ bool MDL_Importer::ReadNode(void)
 	if (status)
 	{
 		status = ReadMatrix(rNode.matrix);
+	}
+
+	if (status)
+	{
+		status = ReadSignature(MDL_END);
+	}
+
+	return status;
+}
+
+bool MDL_Importer::ReadBone(void)
+{
+	bool status = true;
+
+	m_rData.bones.push_back(Importer::Bone());
+	Importer::Bone& rBone = m_rData.bones.back();
+
+	status = ReadSignature(MDL_BONE);
+
+	if (status)
+	{
+		status = ReadString(rBone.name);
+	}
+
+	if (status)
+	{
+		status = ReadMatrix(rBone.offset_matrix);
 	}
 
 	if (status)

@@ -23,7 +23,7 @@ public:
 	struct Bone
 	{
 		std::string name;
-		float       matrix[16];
+		float       offset_matrix[16];
 	};
 
 	struct Node
