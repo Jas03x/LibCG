@@ -33,12 +33,27 @@ public:
 		WRITE = 1
 	};
 
-	static File*  Open(const wchar_t* Path);
-	static File*  Open(const FILE_PATH& Path);
+public:
+	static File*     Open(const wchar_t* Path);
+	static File*     Open(const FILE_PATH& Path);
 
-	static void   Close(File* pIFile);
+	static void      Close(File* pIFile);
 
-	virtual bool  Read(byte** ppBuffer, uint32_t* pSize) = 0;
+	static bool      Read(const wchar_t* Path, byte** ppBuffer, uint32_t* pSize);
+
+public:
+	virtual bool     Read(int8_t*   pInt8)  = 0;
+	virtual bool     Read(int16_t*  pInt16) = 0;
+	virtual bool     Read(int32_t*  pInt32) = 0;
+	virtual bool     Read(int64_t*  pInt64) = 0;
+	virtual bool     Read(uint8_t*  pUInt8)  = 0;
+	virtual bool     Read(uint16_t* pUInt16) = 0;
+	virtual bool     Read(uint32_t* pUInt32) = 0;
+	virtual bool     Read(uint64_t* pUInt64) = 0;
+
+	virtual uint64_t GetSize(void) = 0;
+
+	virtual bool     ReadBytes(uint8_t* pBuffer, uint32_t numBytes) = 0;
 };
 
 // System

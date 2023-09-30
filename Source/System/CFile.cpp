@@ -36,6 +36,67 @@ void File::Close(File* pIFile)
 	return CFile::Close(static_cast<CFile*>(pIFile));
 }
 
+bool File::Read(const wchar_t* Path, byte** ppBuffer, uint32_t* pSize)
+{
+	bool   status = true;
+	CFile* pFile = nullptr;
+
+	if ((ppBuffer == nullptr) || (pSize == nullptr))
+	{
+		status = false;
+		Console::Write(L"Error: Invalid or null buffer/size parameters\n");
+	}
+
+	if (status)
+	{
+		pFile = CFile::Open(Path);
+		if (pFile == nullptr)
+		{
+			status = false;
+		}
+	}
+
+	if (status)
+	{
+		*pSize = pFile->GetSize();
+
+		if (*pSize == 0)
+		{
+			status = false;
+		}
+	}
+
+	if (status)
+	{
+		*ppBuffer = reinterpret_cast<BYTE*>(Memory::Allocate(*pSize, true));
+		if (*ppBuffer == nullptr)
+		{
+			status = false;
+			Console::Write(L"Error: Could not allocate buffer to read file\n");
+		}
+	}
+
+	if (status)
+	{
+		status = pFile->ReadBytes(*ppBuffer, *pSize);
+
+		if (!status)
+		{
+			Memory::Release(*ppBuffer);
+			*ppBuffer = nullptr;
+			*pSize = 0;
+		}
+	}
+
+	if (pFile != nullptr)
+	{
+		File::Close(pFile);
+		pFile = nullptr;
+	}
+
+	return status;
+}
+
 CFile::CFile()
 {
 	hFile = nullptr;
@@ -74,50 +135,79 @@ void CFile::Close(CFile* pCFile)
 	delete pCFile;
 }
 
-bool CFile::Read(byte** ppBuffer, uint32_t* pSize)
+bool CFile::Read(int8_t* pInt8)
+{
+	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pInt8), sizeof(int8_t));
+}
+
+bool CFile::Read(int16_t* pInt16)
+{
+	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pInt16), sizeof(int16_t));
+}
+
+bool CFile::Read(int32_t* pInt32)
+{
+	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pInt32), sizeof(int32_t));
+}
+
+bool CFile::Read(int64_t* pInt64)
+{
+	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pInt64), sizeof(int64_t));
+}
+
+bool CFile::Read(uint8_t* pUInt8)
+{
+	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pUInt8), sizeof(uint8_t));
+}
+
+bool CFile::Read(uint16_t* pUInt16)
+{
+	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pUInt16), sizeof(uint16_t));
+}
+
+bool CFile::Read(uint32_t* pUInt32)
+{
+	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pUInt32), sizeof(uint32_t));
+}
+
+bool CFile::Read(uint64_t* pUInt64)
+{
+	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pUInt64), sizeof(uint64_t));
+}
+
+bool CFile::ReadBytes(uint8_t* pBuffer, uint32_t numBytes)
 {
 	bool status = true;
-	LARGE_INTEGER lpFileSize = {};
 
-	if ((ppBuffer == nullptr) || (pSize == nullptr))
+	DWORD bytesRead = 0;
+
+	if (ReadFile(hFile, pBuffer, numBytes, &bytesRead, NULL) != 0)
 	{
 		status = false;
-		Console::Write(L"Error: Invalid or null buffer/size parameters\n");
 	}
-
-	if (status)
+	else
 	{
-		if (!GetFileSizeEx(hFile, &lpFileSize))
-		{
-			status = false;
-			Console::Write(L"Error: Could not get file size\n");
-		}
-	}
-
-	if (status)
-	{
-		*ppBuffer = reinterpret_cast<BYTE*>(Memory::Allocate(lpFileSize.QuadPart, true));
-		if (*ppBuffer == nullptr)
-		{
-			status = false;
-			Console::Write(L"Error: Could not allocate buffer to read file\n");
-		}
-	}
-
-	if (status)
-	{
-		DWORD nBytesRead = 0;
-
-		if (ReadFile(hFile, *ppBuffer, static_cast<DWORD>(lpFileSize.QuadPart), &nBytesRead, NULL))
-		{
-			*pSize = nBytesRead;
-		}
-		else
-		{
-			status = false;
-			Console::Write(L"Error: Could read file contents\n");
-		}
+		status = (bytesRead == numBytes);
+		Console::Write(L"Error: Could not read %u bytes from file\n", numBytes);
 	}
 
 	return status;
+}
+
+uint64_t CFile::GetSize(void)
+{
+	uint64_t size = 0;
+
+	LARGE_INTEGER lpFileSize = {};
+
+	if ((hFile != NULL) && (GetFileSizeEx(hFile, &lpFileSize) != 0))
+	{
+		size = lpFileSize.QuadPart;
+	}
+	else
+	{
+		Console::Write(L"Error: Could not get file size\n");
+	}
+
+	return size;
 }

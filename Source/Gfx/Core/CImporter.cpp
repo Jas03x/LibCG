@@ -54,7 +54,11 @@ bool MDL_Importer::Read(const wchar_t* path)
 	return status;
 }
 
-bool MDL_Importer::ReadFile(class File* pFile)
+bool MDL_Importer::ReadFile(File* pFile)
 {
+	bool status = true;
 
+
+
+	return status;
 }
