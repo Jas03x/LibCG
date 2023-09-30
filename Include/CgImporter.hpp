@@ -29,6 +29,7 @@ public:
 	struct Node
 	{
 		std::string name;
+		std::string parent;
 		float       matrix[16];
 	};
 

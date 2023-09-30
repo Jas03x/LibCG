@@ -287,11 +287,11 @@ struct MDL_VERTEX_DATA
 	float    bone_weights[4];
 };
 
-struct MDL_STRING_DATA
+struct MDL_STRING_HEADER
 {
 	uint32_t signature;
 	uint8_t  length;
-	char     data[];
+	// char  data[];
 };
 
 struct MDL_MATRIX_DATA

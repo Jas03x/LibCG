@@ -16,8 +16,14 @@ public:
 	bool Read(const wchar_t* path);
 
 private:
+	bool ReadSignature(uint32_t expected_signature);
+
 	bool ReadBlock(struct MDL_BLOCK_HEADER& rBlockHeader);
-	bool ReadNodeBlock(void);
+	bool ReadNodeBlock(struct MDL_BLOCK_HEADER& rBlockHeader);
+
+	bool ReadNode(void);
+	bool ReadString(std::string& rString);
+	bool ReadMatrix(float* pMatrix);
 };
 
 #endif // CG_IMPORTER_HPP
