@@ -137,45 +137,45 @@ void CFile::Close(CFile* pCFile)
 
 bool CFile::Read(int8_t* pInt8)
 {
-	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pInt8), sizeof(int8_t));
+	return CFile::ReadBytes(pInt8, sizeof(int8_t));
 }
 
 bool CFile::Read(int16_t* pInt16)
 {
-	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pInt16), sizeof(int16_t));
+	return CFile::ReadBytes(pInt16, sizeof(int16_t));
 }
 
 bool CFile::Read(int32_t* pInt32)
 {
-	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pInt32), sizeof(int32_t));
+	return CFile::ReadBytes(pInt32, sizeof(int32_t));
 }
 
 bool CFile::Read(int64_t* pInt64)
 {
-	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pInt64), sizeof(int64_t));
+	return CFile::ReadBytes(pInt64, sizeof(int64_t));
 }
 
 bool CFile::Read(uint8_t* pUInt8)
 {
-	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pUInt8), sizeof(uint8_t));
+	return CFile::ReadBytes(pUInt8, sizeof(uint8_t));
 }
 
 bool CFile::Read(uint16_t* pUInt16)
 {
-	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pUInt16), sizeof(uint16_t));
+	return CFile::ReadBytes(pUInt16, sizeof(uint16_t));
 }
 
 bool CFile::Read(uint32_t* pUInt32)
 {
-	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pUInt32), sizeof(uint32_t));
+	return CFile::ReadBytes(pUInt32, sizeof(uint32_t));
 }
 
 bool CFile::Read(uint64_t* pUInt64)
 {
-	return CFile::ReadBytes(reinterpret_cast<uint8_t*>(pUInt64), sizeof(uint64_t));
+	return CFile::ReadBytes(pUInt64, sizeof(uint64_t));
 }
 
-bool CFile::ReadBytes(uint8_t* pBuffer, uint32_t numBytes)
+bool CFile::ReadBytes(void* pBuffer, uint32_t numBytes)
 {
 	bool status = true;
 
@@ -188,7 +188,11 @@ bool CFile::ReadBytes(uint8_t* pBuffer, uint32_t numBytes)
 	else
 	{
 		status = (bytesRead == numBytes);
-		Console::Write(L"Error: Could not read %u bytes from file\n", numBytes);
+
+		if (!status)
+		{
+			Console::Write(L"Error: Could not read %u bytes from file\n", numBytes);
+		}
 	}
 
 	return status;

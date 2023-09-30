@@ -53,7 +53,7 @@ public:
 
 	virtual uint64_t GetSize(void) = 0;
 
-	virtual bool     ReadBytes(uint8_t* pBuffer, uint32_t numBytes) = 0;
+	virtual bool     ReadBytes(void* pBuffer, uint32_t numBytes) = 0;
 };
 
 // System

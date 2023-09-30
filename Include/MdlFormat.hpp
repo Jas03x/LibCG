@@ -260,14 +260,14 @@ struct MDL_HEADER
 	uint32_t reserved[6];
 };
 
-struct MDL_BLOCK
+struct MDL_BLOCK_HEADER
 {
 	uint32_t signature;
 	uint32_t type;
 	uint32_t reserved[2];
 };
 
-struct MDL_LIST
+struct MDL_LIST_HEADER
 {
 	uint32_t signature;
 	uint32_t type;
@@ -275,7 +275,7 @@ struct MDL_LIST
 	uint32_t reserved;
 };
 
-struct MDL_VERTEX
+struct MDL_VERTEX_DATA
 {
 	uint16_t signature;
 	float    position[3];
@@ -287,14 +287,14 @@ struct MDL_VERTEX
 	float    bone_weights[4];
 };
 
-struct MDL_STRING
+struct MDL_STRING_DATA
 {
 	uint32_t signature;
 	uint8_t  length;
 	char     data[];
 };
 
-struct MDL_MATRIX
+struct MDL_MATRIX_DATA
 {
 	uint32_t signature;
 	float    elements[16];

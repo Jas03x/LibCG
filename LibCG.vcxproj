@@ -173,7 +173,7 @@
     <ClInclude Include="Include\CgImporter.hpp" />
     <ClInclude Include="Include\CgMath.hpp" />
     <ClInclude Include="Include\CgSystem.hpp" />
-    <ClInclude Include="Include\Mdl.hpp" />
+    <ClInclude Include="Include\MdlFormat.hpp" />
     <ClInclude Include="Source\Gfx\Core\CAllocation.hpp" />
     <ClInclude Include="Source\Gfx\Core\CCommandBuffer.hpp" />
     <ClInclude Include="Source\Gfx\Core\CCommandQueue.hpp" />

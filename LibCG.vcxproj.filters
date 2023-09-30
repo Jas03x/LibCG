@@ -107,7 +107,7 @@
     <ClInclude Include="Source\Gfx\Core\CAllocation.hpp">
       <Filter>Source Files\Gfx\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Mdl.hpp">
+    <ClInclude Include="Include\MdlFormat.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CgImporter.hpp">
