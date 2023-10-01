@@ -149,6 +149,17 @@ bool MDL_Importer::ReadBlock(MDL_BLOCK_HEADER& rBlockHeader)
 				status = ReadBoneBlock(rBlockHeader);
 				break;
 			}
+			case MDL_MESH:
+			{
+				status = ReadMeshBlock(rBlockHeader);
+				break;
+			}
+			default:
+			{
+				status = false;
+				Console::Write(L"Error: Invalid block type\n");
+				break;
+			}
 		}
 	}
 
@@ -237,6 +248,47 @@ bool MDL_Importer::ReadBoneBlock(MDL_BLOCK_HEADER& rBlockHeader)
 	return status;
 }
 
+bool MDL_Importer::ReadMeshBlock(MDL_BLOCK_HEADER& rBlockHeader)
+{
+	bool status = true;
+
+	MDL_LIST_HEADER list_header = { 0 };
+
+	if (!m_pFile->ReadBytes(&list_header, sizeof(MDL_LIST_HEADER)))
+	{
+		status = false;
+	}
+
+	if (status)
+	{
+		if (list_header.signature != MDL_LIST)
+		{
+			Console::Write(L"Error: Expected MDL list\n");
+			status = false;
+		}
+		else if (list_header.type != MDL_MESH)
+		{
+			Console::Write(L"Error: Expected mesh list\n");
+			status = false;
+		}
+	}
+
+	if (status)
+	{
+		for (uint32_t i = 0; status && (i < list_header.length); i++)
+		{
+			status = ReadMesh();
+		}
+	}
+
+	if (status)
+	{
+		status = ReadSignature(MDL_END);
+	}
+
+	return status;
+}
+
 bool MDL_Importer::ReadNode(void)
 {
 	bool status = true;
@@ -287,6 +339,103 @@ bool MDL_Importer::ReadBone(void)
 	if (status)
 	{
 		status = ReadMatrix(rBone.offset_matrix);
+	}
+
+	if (status)
+	{
+		status = ReadSignature(MDL_END);
+	}
+
+	return status;
+}
+
+bool MDL_Importer::ReadMesh(void)
+{
+	bool status = true;
+
+	m_rData.meshes.push_back(Importer::Mesh());
+	Importer::Mesh& rMesh = m_rData.meshes.back();
+
+	status = ReadSignature(MDL_MESH);
+
+	if (status)
+	{
+		status = ReadString(rMesh.name);
+	}
+
+	if (status)
+	{
+		status = ReadVertexList(rMesh.vertices);
+	}
+
+	if (status)
+	{
+
+	}
+
+	if (status)
+	{
+		status = ReadSignature(MDL_END);
+	}
+
+	return status;
+}
+
+bool MDL_Importer::ReadVertexList(std::vector<Importer::Vertex>& rVertices)
+{
+	bool status = true;
+	MDL_LIST_HEADER list_header = { 0 };
+
+	if (m_pFile->ReadBytes(&list_header, sizeof(MDL_LIST_HEADER)))
+	{
+		if (list_header.signature != MDL_LIST)
+		{
+			Console::Write(L"Error: Expected MDL list\n");
+			status = false;
+		}
+		else if (list_header.type != MDL_VERTEX)
+		{
+			Console::Write(L"Error: Expected vertex list\n");
+			status = false;
+		}
+	}
+	else
+	{
+		status = false;
+	}
+
+	if (status)
+	{
+		for (uint32_t i = 0; status && (i < list_header.length); i++)
+		{
+			MDL_VERTEX_DATA vertex_data = { 0 };
+
+			if (m_pFile->ReadBytes(&vertex_data, sizeof(MDL_VERTEX_DATA)))
+			{
+				if (vertex_data.signature != MDL_VERTEX)
+				{
+					Console::Write(L"Error: Expected vertex\n");
+					status = false;
+				}
+				else
+				{
+					rVertices.push_back(Importer::Vertex());
+					Importer::Vertex& rVertex = rVertices.back();
+
+					memcpy(rVertex.position, vertex_data.position, sizeof(rVertex.position));
+					memcpy(rVertex.normal, vertex_data.normal, sizeof(rVertex.normal));
+					memcpy(rVertex.uv, vertex_data.uv, sizeof(rVertex.uv));
+					rVertex.node_index = vertex_data.node_index;
+					rVertex.bone_count = vertex_data.bone_count;
+					memcpy(rVertex.bone_indices, vertex_data.bone_indices, sizeof(rVertex.bone_indices));
+					memcpy(rVertex.bone_weights, vertex_data.bone_weights, sizeof(rVertex.bone_weights));
+				}
+			}
+			else
+			{
+				status = false;
+			}
+		}
 	}
 
 	if (status)

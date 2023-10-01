@@ -21,9 +21,14 @@ private:
 	bool ReadBlock(struct MDL_BLOCK_HEADER& rBlockHeader);
 	bool ReadNodeBlock(struct MDL_BLOCK_HEADER& rBlockHeader);
 	bool ReadBoneBlock(struct MDL_BLOCK_HEADER& rBlockHeader);
+	bool ReadMeshBlock(MDL_BLOCK_HEADER& rBlockHeader);
 
 	bool ReadBone(void);
 	bool ReadNode(void);
+	bool ReadMesh(void);
+
+	bool ReadVertexList(std::vector<Importer::Vertex>& rVertices);
+
 	bool ReadString(std::string& rString);
 	bool ReadMatrix(float* pMatrix);
 };

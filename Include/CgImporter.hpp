@@ -39,12 +39,18 @@ public:
 		std::string texture;
 	};
 
-	struct MDL_DATA
+	struct Mesh
 	{
+		std::string           name;
 		std::vector<Vertex>   vertices;
 		std::vector<uint32_t> indices;
+	};
+
+	struct MDL_DATA
+	{
 		std::vector<Node>     nodes;
 		std::vector<Bone>     bones;
+		std::vector<Mesh>     meshes;
 		std::vector<Material> materials;
 	};
 
