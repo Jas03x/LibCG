@@ -149,6 +149,11 @@ bool MDL_Importer::ReadBlock(MDL_BLOCK_HEADER& rBlockHeader)
 				status = ReadBoneBlock(rBlockHeader);
 				break;
 			}
+			case MDL_MTL:
+			{
+				status = ReadMaterialBlock(rBlockHeader);
+				break;
+			}
 			case MDL_MESH:
 			{
 				status = ReadMeshBlock(rBlockHeader);
@@ -237,6 +242,47 @@ bool MDL_Importer::ReadBoneBlock(MDL_BLOCK_HEADER& rBlockHeader)
 		for (uint32_t i = 0; status && (i < list_header.length); i++)
 		{
 			status = ReadBone();
+		}
+	}
+
+	if (status)
+	{
+		status = ReadSignature(MDL_END);
+	}
+
+	return status;
+}
+
+bool MDL_Importer::ReadMtlBlock(MDL_BLOCK_HEADER& rBlockHeader)
+{
+	bool status = true;
+
+	MDL_LIST_HEADER list_header = { 0 };
+
+	if (!m_pFile->ReadBytes(&list_header, sizeof(MDL_LIST_HEADER)))
+	{
+		status = false;
+	}
+
+	if (status)
+	{
+		if (list_header.signature != MDL_LIST)
+		{
+			Console::Write(L"Error: Expected MDL list\n");
+			status = false;
+		}
+		else if (list_header.type != MDL_MTL)
+		{
+			Console::Write(L"Error: Expected material list\n");
+			status = false;
+		}
+	}
+
+	if (status)
+	{
+		for (uint32_t i = 0; status && (i < list_header.length); i++)
+		{
+			status = ReadMtl();
 		}
 	}
 
@@ -339,6 +385,33 @@ bool MDL_Importer::ReadBone(void)
 	if (status)
 	{
 		status = ReadMatrix(rBone.offset_matrix);
+	}
+
+	if (status)
+	{
+		status = ReadSignature(MDL_END);
+	}
+
+	return status;
+}
+
+bool MDL_Importer::ReadMtl(void)
+{
+	bool status = true;
+
+	m_rData.materials.push_back(Importer::Material());
+	Importer::Material& rMtl = m_rData.materials.back();
+
+	status = ReadSignature(MDL_MTL);
+
+	if (status)
+	{
+		status = ReadString(rMtl.name);
+	}
+
+	if (status)
+	{
+		status = ReadString(rMtl.texture);
 	}
 
 	if (status)

@@ -21,10 +21,12 @@ private:
 	bool ReadBlock(struct MDL_BLOCK_HEADER& rBlockHeader);
 	bool ReadNodeBlock(struct MDL_BLOCK_HEADER& rBlockHeader);
 	bool ReadBoneBlock(struct MDL_BLOCK_HEADER& rBlockHeader);
+	bool ReadMtlBlock(MDL_BLOCK_HEADER& rBlockHeader);
 	bool ReadMeshBlock(MDL_BLOCK_HEADER& rBlockHeader);
 
 	bool ReadBone(void);
 	bool ReadNode(void);
+	bool ReadMtl(void);
 	bool ReadMesh(void);
 
 	bool ReadIndexList(std::vector<uint16_t>& rIndices);
