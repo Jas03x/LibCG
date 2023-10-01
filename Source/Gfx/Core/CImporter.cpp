@@ -9,11 +9,7 @@ bool Importer::ReadMdl(const wchar_t* path, MDL_DATA& rData)
 
 	MDL_Importer importer(rData);
 
-	if (importer.Read(path))
-	{
-
-	}
-	else
+	if (!importer.Read(path))
 	{
 		status = false;
 	}
