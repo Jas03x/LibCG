@@ -17,7 +17,20 @@ bool ReadShaderBytecode(const FILE_PATH& Path, SHADER_BYTECODE& rDesc)
 
 	if (status)
 	{
-		if (!pFile->Read(&rDesc.pCode, &rDesc.Size) )
+		rDesc.Size = pFile->GetSize();
+
+		rDesc.pCode = reinterpret_cast<BYTE*>(Memory::Allocate(rDesc.Size, true));
+
+		if (rDesc.pCode == nullptr)
+		{
+			status = false;
+			Console::Write(L"Error: Could not allocate buffer to read file\n");
+		}
+	}
+
+	if (status)
+	{
+		if (!pFile->ReadBytes(rDesc.pCode, rDesc.Size) )
 		{
 			status = false;
 			Console::Write(L"Error: Failed to read shader file %s\n", Path.FileName);
@@ -28,6 +41,17 @@ bool ReadShaderBytecode(const FILE_PATH& Path, SHADER_BYTECODE& rDesc)
 	{
 		File::Close(pFile);
 		pFile = nullptr;
+	}
+
+	if (!status)
+	{
+		rDesc.Size = 0;
+		
+		if (rDesc.pCode != nullptr)
+		{
+			Memory::Release(rDesc.pCode);
+			rDesc.pCode = nullptr;
+		}
 	}
 
 	return status;

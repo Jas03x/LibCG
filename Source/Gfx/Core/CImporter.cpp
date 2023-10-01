@@ -151,7 +151,7 @@ bool MDL_Importer::ReadBlock(MDL_BLOCK_HEADER& rBlockHeader)
 			}
 			case MDL_MTL:
 			{
-				status = ReadMaterialBlock(rBlockHeader);
+				status = ReadMtlBlock(rBlockHeader);
 				break;
 			}
 			case MDL_MESH:

@@ -39,8 +39,6 @@ public:
 
 	static void      Close(File* pIFile);
 
-	static bool      Read(const wchar_t* Path, byte** ppBuffer, uint32_t* pSize);
-
 public:
 	virtual bool     Read(int8_t*   pInt8)  = 0;
 	virtual bool     Read(int16_t*  pInt16) = 0;

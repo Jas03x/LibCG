@@ -36,67 +36,6 @@ void File::Close(File* pIFile)
 	return CFile::Close(static_cast<CFile*>(pIFile));
 }
 
-bool File::Read(const wchar_t* Path, byte** ppBuffer, uint32_t* pSize)
-{
-	bool   status = true;
-	CFile* pFile = nullptr;
-
-	if ((ppBuffer == nullptr) || (pSize == nullptr))
-	{
-		status = false;
-		Console::Write(L"Error: Invalid or null buffer/size parameters\n");
-	}
-
-	if (status)
-	{
-		pFile = CFile::Open(Path);
-		if (pFile == nullptr)
-		{
-			status = false;
-		}
-	}
-
-	if (status)
-	{
-		*pSize = pFile->GetSize();
-
-		if (*pSize == 0)
-		{
-			status = false;
-		}
-	}
-
-	if (status)
-	{
-		*ppBuffer = reinterpret_cast<BYTE*>(Memory::Allocate(*pSize, true));
-		if (*ppBuffer == nullptr)
-		{
-			status = false;
-			Console::Write(L"Error: Could not allocate buffer to read file\n");
-		}
-	}
-
-	if (status)
-	{
-		status = pFile->ReadBytes(*ppBuffer, *pSize);
-
-		if (!status)
-		{
-			Memory::Release(*ppBuffer);
-			*ppBuffer = nullptr;
-			*pSize = 0;
-		}
-	}
-
-	if (pFile != nullptr)
-	{
-		File::Close(pFile);
-		pFile = nullptr;
-	}
-
-	return status;
-}
-
 CFile::CFile()
 {
 	hFile = nullptr;
