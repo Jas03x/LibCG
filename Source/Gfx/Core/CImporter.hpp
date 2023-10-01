@@ -27,6 +27,7 @@ private:
 	bool ReadNode(void);
 	bool ReadMesh(void);
 
+	bool ReadIndexList(std::vector<uint16_t>& rIndices);
 	bool ReadVertexList(std::vector<Importer::Vertex>& rVertices);
 
 	bool ReadString(std::string& rString);

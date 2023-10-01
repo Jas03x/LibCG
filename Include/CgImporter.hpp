@@ -43,7 +43,7 @@ public:
 	{
 		std::string           name;
 		std::vector<Vertex>   vertices;
-		std::vector<uint32_t> indices;
+		std::vector<uint16_t> indices;
 	};
 
 	struct MDL_DATA

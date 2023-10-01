@@ -370,7 +370,7 @@ bool MDL_Importer::ReadMesh(void)
 
 	if (status)
 	{
-
+		status = ReadIndexList(rMesh.indices);
 	}
 
 	if (status)
@@ -435,6 +435,47 @@ bool MDL_Importer::ReadVertexList(std::vector<Importer::Vertex>& rVertices)
 			{
 				status = false;
 			}
+		}
+	}
+
+	if (status)
+	{
+		status = ReadSignature(MDL_END);
+	}
+
+	return status;
+}
+
+bool MDL_Importer::ReadIndexList(std::vector<uint16_t>& rIndices)
+{
+	bool status = true;
+	MDL_LIST_HEADER list_header = { 0 };
+
+	if (m_pFile->ReadBytes(&list_header, sizeof(MDL_LIST_HEADER)))
+	{
+		if (list_header.signature != MDL_LIST)
+		{
+			Console::Write(L"Error: Expected MDL list\n");
+			status = false;
+		}
+		else if (list_header.type != MDL_INDEX)
+		{
+			Console::Write(L"Error: Expected index list\n");
+			status = false;
+		}
+	}
+	else
+	{
+		status = false;
+	}
+
+	if (status)
+	{
+		rIndices.resize(list_header.length);
+
+		if (!m_pFile->ReadBytes(&rIndices[0], list_header.length * sizeof(uint16_t)))
+		{
+			status = false;
 		}
 	}
 
